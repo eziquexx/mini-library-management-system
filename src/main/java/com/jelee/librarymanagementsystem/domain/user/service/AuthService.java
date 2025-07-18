@@ -9,6 +9,8 @@ import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.Role;
+import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +23,17 @@ public class AuthService {
   
   // 회원가입
   public Long signUp(JoinRequest request) {
+
+    // 아이디 중복 체크
+    if (userRepository.existsByUsername(request.getUsername())) {
+      throw new BaseException(ErrorCode.USER_USERNAME_DUPLICATED);
+    }
+    
+    // 이메일 중복 체크
+    if (userRepository.existsByEmail(request.getEmail())) {
+      throw new BaseException(ErrorCode.USER_EMAIL_DUPLICATED);
+    }
+
     User user = User.builder()
               .username(request.getUsername())
               .password(passwordEncoder.encode(request.getPassword()))
