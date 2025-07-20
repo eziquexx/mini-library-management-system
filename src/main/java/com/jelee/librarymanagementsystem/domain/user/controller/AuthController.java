@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.user.service.AuthService;
+import com.jelee.librarymanagementsystem.global.common.ApiResponse;
+import com.jelee.librarymanagementsystem.global.exception.MessageProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,13 +20,15 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
   
   private final AuthService authService;
+  private final MessageProvider messageProvider;
 
   // 회원가입 api
   @PostMapping("/signup")
-  public ResponseEntity<String> singUp(@RequestBody JoinRequest request) {
+  public ResponseEntity<ApiResponse> singUp(@RequestBody JoinRequest request) {
     Long userId = authService.signUp(request);
+    String successMessage = messageProvider.getMessage("signup.success");
     return ResponseEntity
               .status(HttpStatus.CREATED)
-              .body("회원가입이 완료되었습니다. userId: " + userId);
+              .body(new ApiResponse("SUCCESS", successMessage, userId));
   }
 }

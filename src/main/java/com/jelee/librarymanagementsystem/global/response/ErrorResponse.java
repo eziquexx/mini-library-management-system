@@ -5,9 +5,9 @@ public class ErrorResponse {
   private final String code;
   private final String message;
 
-  public ErrorResponse(ErrorCode errorCode) {
-    this.code = errorCode.getCode();
-    this.message = MessageProvider.getMessage(errorCode.getCode());
+  public ErrorResponse(String code, String message) {
+    this.code = code;
+    this.message = message;
   }
 
   public String getCode() {
