@@ -5,11 +5,7 @@ public class BaseException extends RuntimeException {
   private final ErrorCode errorCode;
 
   public BaseException(ErrorCode errorCode) {
-<<<<<<< HEAD
-    super(errorCode.getCode()); //errorCode.getCode()
-=======
-    super(errorCode.getMessage());
->>>>>>> origin/feature/exception
+    super(errorCode.getCode());
     this.errorCode = errorCode;
   }
 
