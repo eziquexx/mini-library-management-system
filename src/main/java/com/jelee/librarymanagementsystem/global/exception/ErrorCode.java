@@ -4,8 +4,13 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
+<<<<<<< HEAD
   USER_USERNAME_DUPLICATED(HttpStatus.CONFLICT, "USER_001", "error.username.duplicate"),
   USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT, "USER_002", "error.email.duplicate");
+=======
+  USER_USERNAME_DUPLICATED(HttpStatus.CONFLICT, "USER_001", null),
+  USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT, "USER_002", null);
+>>>>>>> origin/feature/exception
 
   private final HttpStatus httpStatus;
   private final String code;
