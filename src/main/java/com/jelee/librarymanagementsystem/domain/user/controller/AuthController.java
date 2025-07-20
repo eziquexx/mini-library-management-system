@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.user.service.AuthService;
-import com.jelee.librarymanagementsystem.global.common.ApiResponse;
-import com.jelee.librarymanagementsystem.global.exception.MessageProvider;
+import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import lombok.RequiredArgsConstructor;
 

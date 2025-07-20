@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.global.exception;
+package com.jelee.librarymanagementsystem.global.response;
 
 public class ErrorResponse {
   

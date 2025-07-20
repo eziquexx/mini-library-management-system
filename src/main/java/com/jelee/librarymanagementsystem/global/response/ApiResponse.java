@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.global.common;
+package com.jelee.librarymanagementsystem.global.response;
 
 public class ApiResponse<T> {
   private String code;

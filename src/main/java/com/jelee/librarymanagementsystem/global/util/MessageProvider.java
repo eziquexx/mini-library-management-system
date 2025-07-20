@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.global.exception;
+package com.jelee.librarymanagementsystem.global.util;
 
 import java.util.Locale;
 
