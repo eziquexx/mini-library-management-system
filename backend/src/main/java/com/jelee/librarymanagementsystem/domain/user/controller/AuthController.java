@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
+import com.jelee.librarymanagementsystem.domain.user.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.user.service.AuthService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -30,5 +31,12 @@ public class AuthController {
     return ResponseEntity
               .status(HttpStatus.CREATED)
               .body(new ApiResponse("SUCCESS", successMessage, userId));
+  }
+
+  // 로그인 api
+  @PostMapping("/signin")
+  public ResponseEntity signIn(@RequestBody LoginRequest request) {
+    Long userId = authService.signIn(request);
+    return ResponseEntity.ok(userId);
   }
 }
