@@ -65,4 +65,28 @@ public class AuthController {
                 message, 
                 request.getUsername()));
   }
+
+  // 로그아웃 api
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(HttpServletResponse response) {
+    // Jwt 제거
+    ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0) // 쿠키 즉시 만료
+                .sameSite("Strict")
+                .build();
+    
+    response.addHeader("Set-Cookie", deleteCookie.toString());
+
+    String message = messageProvider.getMessage(SuccessCode.USER_LOGOUT_SUCCESS.getMessage());
+
+    return ResponseEntity
+              .status(SuccessCode.USER_LOGOUT_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                SuccessCode.USER_LOGOUT_SUCCESS, 
+                message, 
+                null));
+  }
 }
