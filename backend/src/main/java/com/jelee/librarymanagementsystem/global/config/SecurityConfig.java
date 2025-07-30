@@ -7,9 +7,24 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.jwt.JwtAccessDeniedHandler;
+import com.jelee.librarymanagementsystem.global.jwt.JwtAuthenticationEntryPoint;
+import com.jelee.librarymanagementsystem.global.jwt.JwtAuthenticationFilter;
+import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final JwtTokenProvider jwtTokenProvider;
+  private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+  private final JwtAccessDeniedHandler accessDeniedHandler;
+  private final UserRepository userRepository;
   
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -17,10 +32,15 @@ public class SecurityConfig {
       .csrf(csrf -> csrf.disable())
       .sessionManagement(session -> session
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .exceptionHandling()
+      .authenticationEntryPoint(authenticationEntryPoint)
+      .accessDeniedHandler(accessDeniedHandler)
+      .and()
       .authorizeRequests(auth -> auth
-          .requestMatchers("/").permitAll()
-          .anyRequest().permitAll()
+          .requestMatchers("/", "/api/v1/auth/**").permitAll()
+          .anyRequest().authenticated()
       )
+      .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class)
       ;
 
     return http.build();

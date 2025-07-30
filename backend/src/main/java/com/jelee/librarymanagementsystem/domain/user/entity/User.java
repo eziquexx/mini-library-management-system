@@ -1,6 +1,11 @@
 package com.jelee.librarymanagementsystem.domain.user.entity;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
@@ -25,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -52,5 +57,11 @@ public class User {
   @PreUpdate
   public void preUpdate() {
     this.lastLoginDate = LocalDateTime.now();
+  }
+
+  // --- UserDetails 인터페이스 구현
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.singleton(() -> "ROLE_" + role.name());
   }
 }

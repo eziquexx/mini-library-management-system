@@ -1,11 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.user.service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +9,10 @@ import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.user.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
-import com.jelee.librarymanagementsystem.global.exception.ErrorCode;
+import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +22,7 @@ public class AuthService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtTokenProvider jwtTokenProvider;
   
   // 회원가입
   public Long signUp(JoinRequest request) {
@@ -51,17 +49,17 @@ public class AuthService {
   }
 
   // 로그인
-  public Long signIn(LoginRequest request) {
+  public String signIn(LoginRequest request) {
 
-    // DB에 있는 비밀번호 가져오기
+    // DB에 있는 유저 정보 가져오기
     User user = userRepository.findByUsername(request.getUsername())
-      .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+      .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
     
-    // request와 DB의 username과 password가 동일한지 체크.
-    if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-      return user.getId();
-    } else {
-      throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+    // request와 DB의 password가 동일한지 체크
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+      throw new BaseException(ErrorCode.INVALID_PASSWORD);
     }
+
+    return jwtTokenProvider.generateToken(user.getUsername(), user.getRole().name());
   }
 }
