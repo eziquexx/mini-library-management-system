@@ -1,17 +1,19 @@
-package com.jelee.librarymanagementsystem.global.exception;
+package com.jelee.librarymanagementsystem.global.enums;
 
 import org.springframework.http.HttpStatus;
 
-public enum ErrorCode {
+public enum SuccessCode {
 
-  USER_USERNAME_DUPLICATED(HttpStatus.CONFLICT, "USER_001", "error.username.duplicate"),
-  USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT, "USER_002", "error.email.duplicate");
-
+  USER_CREATED(HttpStatus.CREATED, "USER_201", "success.user.signup"),
+  USER_LOGIN_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.login"),
+  BOOK_REGISTERED(HttpStatus.CREATED, "BOOK_201", "success.book.registered");
+ 
+  // 필드
   private final HttpStatus httpStatus;
   private final String code;
   private final String message;
 
-  ErrorCode(HttpStatus httpStatus, String code, String message) {
+  SuccessCode(HttpStatus httpStatus, String code, String message) {
     this.httpStatus = httpStatus;
     this.code = code;
     this.message = message;
@@ -20,7 +22,7 @@ public enum ErrorCode {
   public HttpStatus getHttpStatus() {
     return httpStatus;
   }
-
+  
   public String getCode() {
     return code;
   }

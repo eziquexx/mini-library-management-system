@@ -4,7 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.jelee.librarymanagementsystem.global.response.ErrorResponse;
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
+import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 @RestControllerAdvice
@@ -17,13 +18,18 @@ public class GlobalExceptionHandler {
   }
   
   @ExceptionHandler(BaseException.class)
-  public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex) {
+  public ResponseEntity<ApiResponse<Void>> handleBaseException(BaseException ex) {
     ErrorCode errorCode = ex.getErrorCode();
     String message = messageProvider.getMessage(errorCode.getMessage());
-    ErrorResponse response = new ErrorResponse(errorCode.getCode(), message);
+    // ApiResponse response = new ApiResponse(errorCode.getCode(), message, null);
+    // ApiResponse response = new ApiResponse<T>(errorCode.getCode(), message, message);
 
     return ResponseEntity
         .status(errorCode.getHttpStatus())
-        .body(response);
+        .body(ApiResponse.error(
+          errorCode.getCode(),
+          message,
+          null
+        ));
   }
 }

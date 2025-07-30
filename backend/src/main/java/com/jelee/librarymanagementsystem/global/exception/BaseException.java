@@ -1,5 +1,7 @@
 package com.jelee.librarymanagementsystem.global.exception;
 
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
+
 public class BaseException extends RuntimeException {
   
   private final ErrorCode errorCode;
