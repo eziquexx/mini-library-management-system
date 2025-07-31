@@ -1,7 +1,10 @@
 package com.jelee.librarymanagementsystem.domain.user.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.user.dto.LoginRequest;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.AuthService;
 import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
@@ -88,5 +92,16 @@ public class AuthController {
                 SuccessCode.USER_LOGOUT_SUCCESS, 
                 message, 
                 null));
+  }
+
+  // 사용자 인증
+  @GetMapping("/me")
+  public ResponseEntity<?> getMyInfo(Authentication authentication) {
+    User user = (User) authentication.getPrincipal(); // 인증 객체
+
+    if (user == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 없습니다.");
+    }
+    return ResponseEntity.ok("로그인한 사용자: " + user.getUsername());
   }
 }

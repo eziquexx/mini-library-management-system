@@ -62,6 +62,40 @@ public class User implements UserDetails {
   // --- UserDetails 인터페이스 구현
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Collections.singleton(() -> "ROLE_" + role.name());
+    if (role == null) {
+      return Collections.emptyList();
+    }
+
+    return Collections.singleton(() -> role.toString());
+  }
+
+  @Override
+  public String getUsername() { 
+    return username; 
+  }
+
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
   }
 }
