@@ -9,7 +9,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,11 +21,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
   private final ObjectMapper objectMapper;
-  private final MessageSource messageSource;
+  private final MessageProvider messageProvider;
 
-  public JwtAuthenticationEntryPoint(ObjectMapper objectMapper, MessageSource messageSource) {
+  public JwtAuthenticationEntryPoint(ObjectMapper objectMapper, MessageProvider messageProvider) {
     this.objectMapper = objectMapper;
-    this.messageSource = messageSource;
+    this.messageProvider = messageProvider;
   }
 
   @Override
@@ -35,9 +37,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     response.setCharacterEncoding("UTF-8");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-    String message = messageSource.getMessage("error.unauthorized", null, Locale.getDefault());
-    ApiResponse<?> apiResponse = ApiResponse.error("AUTH_401", message, null);
-System.out.println("[AUTH ENTRY POINT] triggered by: " + authException.getClass());
+    // String message = messageSource.getMessage("error.unauthorized", null, Locale.getDefault());
+    String message = messageProvider.getMessage(ErrorCode.UNAUTHORIZED.getMessage());
+    ApiResponse<?> apiResponse = ApiResponse.error(ErrorCode.UNAUTHORIZED, message, null);
+
+    System.out.println("[AUTH ENTRY POINT] triggered by: " + authException.getClass());
 
     response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
   }

@@ -1,5 +1,6 @@
 package com.jelee.librarymanagementsystem.global.response;
 
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 
 public class ApiResponse<T> {
@@ -19,8 +20,8 @@ public class ApiResponse<T> {
   }
 
   // 실패, 에러
-  public static <T> ApiResponse<T> error(String code, String message, T data) {
-    return new ApiResponse<>(code, message, data);
+  public static <T> ApiResponse<T> error(ErrorCode errorCode, String message, T data) {
+    return new ApiResponse<>(errorCode.getCode(), message, data);
   }
 
   public String getCode() {

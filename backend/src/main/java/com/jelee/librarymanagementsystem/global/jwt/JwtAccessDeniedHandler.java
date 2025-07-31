@@ -9,7 +9,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,11 +20,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
   private final ObjectMapper objectMapper;
-  private final MessageSource messageSource;
+  private final MessageProvider messageProvider;
 
-  public JwtAccessDeniedHandler (ObjectMapper objectMapper, MessageSource messageSource) {
+  public JwtAccessDeniedHandler (ObjectMapper objectMapper, MessageProvider messageProvider) {
     this.objectMapper = objectMapper;
-    this.messageSource = messageSource;
+    this.messageProvider = messageProvider;
   }
 
   @Override
@@ -34,8 +36,10 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     response.setCharacterEncoding("UTF-8");
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-    String message = messageSource.getMessage("error.forbidden", null, Locale.getDefault());
-    ApiResponse<?> apiResponse = ApiResponse.error("AUTH_403", message, null);
+    // String message = messageSource.getMessage("error.forbidden", null, Locale.getDefault());
+
+    String message = messageProvider.getMessage(ErrorCode.FORBIDDEN.getMessage());
+    ApiResponse<?> apiResponse = ApiResponse.error(ErrorCode.FORBIDDEN, message, null);
 
     response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
   }
