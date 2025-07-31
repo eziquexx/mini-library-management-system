@@ -7,6 +7,7 @@ public enum SuccessCode {
   USER_CREATED(HttpStatus.CREATED, "USER_201", "success.user.signup"),
   USER_LOGIN_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.login"),
   USER_LOGOUT_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.logout"),
+  USER_AUTHORIZED_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.authorized"),
   BOOK_REGISTERED(HttpStatus.CREATED, "BOOK_201", "success.book.registered");
  
   // 필드

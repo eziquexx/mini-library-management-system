@@ -14,6 +14,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.user.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.AuthService;
+import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -99,9 +100,23 @@ public class AuthController {
   public ResponseEntity<?> getMyInfo(Authentication authentication) {
     User user = (User) authentication.getPrincipal(); // 인증 객체
 
+    String message = messageProvider.getMessage(SuccessCode.USER_AUTHORIZED_SUCCESS.getMessage());
+
     if (user == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 없습니다.");
+      message = messageProvider.getMessage(ErrorCode.UNAUTHORIZED.getMessage());
+
+      return ResponseEntity
+                .status(ErrorCode.UNAUTHORIZED.getHttpStatus())
+                .body(ApiResponse.error(
+                  ErrorCode.UNAUTHORIZED, 
+                  message, 
+                  null));
     }
-    return ResponseEntity.ok("로그인한 사용자: " + user.getUsername());
+    return ResponseEntity
+              .status(SuccessCode.USER_AUTHORIZED_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                SuccessCode.USER_AUTHORIZED_SUCCESS, 
+                message, 
+                user.getUsername()));
   }
 }
