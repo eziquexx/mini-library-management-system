@@ -29,13 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   @NonNull HttpServletResponse response,
                                   @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-    // 로그인, 회원가입 요청은 필터 무시
-    String path = request.getRequestURI();
-    if (path.startsWith("/api/v1/auth")) {
-      filterChain.doFilter(request, response); 
-      return;
-    }
-    
     // 1. 쿠키에서 Jwt 찾기
     String token = null;
     if (request.getCookies() != null) {
