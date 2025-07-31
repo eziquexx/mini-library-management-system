@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.user.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
