@@ -32,14 +32,12 @@ public class SecurityConfig {
       .csrf(csrf -> csrf.disable())
       .sessionManagement(session -> session
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .exceptionHandling()
-      .authenticationEntryPoint(authenticationEntryPoint)
-      .accessDeniedHandler(accessDeniedHandler)
-      .and()
-      .authorizeRequests(auth -> auth
+      .exceptionHandling(exception -> exception
+          .authenticationEntryPoint(authenticationEntryPoint)
+          .accessDeniedHandler(accessDeniedHandler))
+      .authorizeHttpRequests(auth -> auth
           .requestMatchers("/", "/api/v1/auth/**").permitAll()
-          .anyRequest().authenticated()
-      )
+          .anyRequest().authenticated())
       .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class)
       ;
 
