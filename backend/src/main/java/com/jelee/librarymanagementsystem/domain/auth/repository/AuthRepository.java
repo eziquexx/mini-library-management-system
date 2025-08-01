@@ -1,12 +1,12 @@
-package com.jelee.librarymanagementsystem.domain.user.repository;
+package com.jelee.librarymanagementsystem.domain.auth.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.auth.entity.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface AuthRepository extends JpaRepository<User, Long> {
   // 아이디 중복 체크
   boolean existsByUsername(String username);
 
