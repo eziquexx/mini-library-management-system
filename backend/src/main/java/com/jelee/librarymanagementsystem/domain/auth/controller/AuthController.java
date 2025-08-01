@@ -2,8 +2,6 @@ package com.jelee.librarymanagementsystem.domain.auth.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
-import com.jelee.librarymanagementsystem.domain.user.entity.User;
-import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -92,30 +88,5 @@ public class AuthController {
                 SuccessCode.USER_LOGOUT_SUCCESS, 
                 message, 
                 null));
-  }
-
-  // 사용자 인증
-  @GetMapping("/me")
-  public ResponseEntity<?> getMyInfo(Authentication authentication) {
-    User user = (User) authentication.getPrincipal(); // 인증 객체
-
-    String message = messageProvider.getMessage(SuccessCode.USER_AUTHORIZED_SUCCESS.getMessage());
-
-    if (user == null) {
-      message = messageProvider.getMessage(ErrorCode.UNAUTHORIZED.getMessage());
-
-      return ResponseEntity
-                .status(ErrorCode.UNAUTHORIZED.getHttpStatus())
-                .body(ApiResponse.error(
-                  ErrorCode.UNAUTHORIZED, 
-                  message, 
-                  null));
-    }
-    return ResponseEntity
-              .status(SuccessCode.USER_AUTHORIZED_SUCCESS.getHttpStatus())
-              .body(ApiResponse.success(
-                SuccessCode.USER_AUTHORIZED_SUCCESS, 
-                message, 
-                user.getUsername()));
   }
 }
