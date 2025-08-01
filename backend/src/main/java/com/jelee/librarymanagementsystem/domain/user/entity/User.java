@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.auth.entity;
+package com.jelee.librarymanagementsystem.domain.user.entity;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

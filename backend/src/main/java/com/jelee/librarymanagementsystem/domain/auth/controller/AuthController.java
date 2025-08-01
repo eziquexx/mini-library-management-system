@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
-import com.jelee.librarymanagementsystem.domain.auth.entity.User;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
-import com.jelee.librarymanagementsystem.domain.auth.entity.User;
-import com.jelee.librarymanagementsystem.domain.auth.repository.AuthRepository;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-  private final AuthRepository userRepository;
+  private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
   

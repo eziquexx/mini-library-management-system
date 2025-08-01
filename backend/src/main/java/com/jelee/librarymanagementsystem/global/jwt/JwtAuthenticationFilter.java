@@ -8,8 +8,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.jelee.librarymanagementsystem.domain.auth.entity.User;
-import com.jelee.librarymanagementsystem.domain.auth.repository.AuthRepository;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   
   private final JwtTokenProvider jwtTokenProvider;
-  private final AuthRepository userRepository;
+  private final UserRepository userRepository;
 
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request,
