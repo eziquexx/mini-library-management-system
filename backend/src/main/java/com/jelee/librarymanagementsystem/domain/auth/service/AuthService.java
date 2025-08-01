@@ -60,6 +60,10 @@ public class AuthService {
       throw new BaseException(ErrorCode.INVALID_PASSWORD);
     }
 
+    // 마지막 로그인 시간 저장
+    user.setLastLoginDate(LocalDateTime.now());
+    userRepository.save(user);
+
     return jwtTokenProvider.generateToken(user.getUsername(), user.getRole().name());
   }
 }
