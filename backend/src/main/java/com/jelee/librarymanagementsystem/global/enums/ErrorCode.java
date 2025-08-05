@@ -10,7 +10,9 @@ public enum ErrorCode {
   INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "USER_401", "error.user.invalid_password"),
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH_401", "error.unauthorized"),
   FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH403", "error.forbidden"),
-  USER_EMAIL_SAME(HttpStatus.BAD_REQUEST, "USER_003", "error.email.same");
+  USER_EMAIL_SAME(HttpStatus.BAD_REQUEST, "USER_003", "error.email.same"),
+  USER_PASSWORD_SAME(HttpStatus.BAD_REQUEST, "USER_004", "error.password.same"),
+  USER_PASSWORD_NOTSAME(HttpStatus.BAD_REQUEST, "USER_005", "error.password.notsame");
 
   private final HttpStatus httpStatus;
   private final String code;

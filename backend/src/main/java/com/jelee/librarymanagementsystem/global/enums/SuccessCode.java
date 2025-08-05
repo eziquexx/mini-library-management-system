@@ -9,7 +9,8 @@ public enum SuccessCode {
   USER_LOGOUT_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.logout"),
   USER_AUTHORIZED_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.authorized"),
   BOOK_REGISTERED(HttpStatus.CREATED, "BOOK_201", "success.book.registered"),
-  USER_EMAIL_UPDATE_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.email.update");
+  USER_EMAIL_UPDATE_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.email.update"),
+  USER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.password.update");
  
   // 필드
   private final HttpStatus httpStatus;

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.UpdateEmailDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UpdatePasswordDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserInfoResponseDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
@@ -75,5 +76,21 @@ public class UserController {
                 SuccessCode.USER_EMAIL_UPDATE_SUCCESS, 
                 message, 
                 user.getEmail()));
+  }
+
+  // password 업데이트
+  @PatchMapping("/password")
+  public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDTO updatePassword,
+                                          @AuthenticationPrincipal User user) {
+    userService.updatePassword(user.getUsername(), updatePassword.getPassword(), updatePassword.getRepassword());
+
+    String message = messageProvider.getMessage(SuccessCode.USER_PASSWORD_UPDATE_SUCCESS.getMessage());
+    
+    return ResponseEntity
+              .status(SuccessCode.USER_PASSWORD_UPDATE_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                SuccessCode.USER_PASSWORD_UPDATE_SUCCESS, 
+                message, 
+                user.getUsername()));
   }
 }

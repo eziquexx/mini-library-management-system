@@ -1,5 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.user.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
   
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   // email 업데이트
   @Transactional
@@ -34,6 +36,28 @@ public class UserService {
 
     // 이메일 저장.authController
     user.setEmail(newEmail);
+    userRepository.save(user);
+  }
+
+  // password 업데이트
+  @Transactional
+  public void updatePassword(String username, String newPassword, String rePassword) {
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+    
+    // 기존 비밀번호와 새로운 비밀번호가 동일한지 체크
+    if (passwordEncoder.matches(newPassword, user.getPassword())) {
+      throw new BaseException(ErrorCode.USER_PASSWORD_SAME);
+    }
+
+    // 새 비밀번호와 다시 입력 새 비밀번호가 동일한지 체크
+    if (!newPassword.equals(rePassword)) {
+      throw new BaseException(ErrorCode.USER_PASSWORD_NOTSAME);
+    }
+
+    // 새로운 비밀번호 암호화 후 저장.
+    String encodedNewPassword = passwordEncoder.encode(newPassword);
+    user.setPassword(encodedNewPassword);
     userRepository.save(user);
   }
 }
