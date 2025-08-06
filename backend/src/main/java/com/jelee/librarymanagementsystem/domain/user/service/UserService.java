@@ -60,4 +60,17 @@ public class UserService {
     user.setPassword(encodedNewPassword);
     userRepository.save(user);
   }
+
+  @Transactional
+  public void deleteAccount(String password, String username) {
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+    
+    // 비밀번호가 일치하는지 체크
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new BaseException(ErrorCode.INVALID_PASSWORD);
+    }
+
+    userRepository.delete(user);
+  }
 }

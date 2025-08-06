@@ -3,12 +3,14 @@ package com.jelee.librarymanagementsystem.domain.user.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.DeleteAccountDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UpdateEmailDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UpdatePasswordDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserInfoResponseDTO;
@@ -90,6 +92,22 @@ public class UserController {
               .status(SuccessCode.USER_PASSWORD_UPDATE_SUCCESS.getHttpStatus())
               .body(ApiResponse.success(
                 SuccessCode.USER_PASSWORD_UPDATE_SUCCESS, 
+                message, 
+                user.getUsername()));
+  }
+
+  // 회원 탈퇴 - 계정 삭제
+  @DeleteMapping()
+  public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountDTO deleteAccount,
+                                        @AuthenticationPrincipal User user) {
+    userService.deleteAccount(deleteAccount.getPassword(), user.getUsername());
+
+    String message = messageProvider.getMessage(SuccessCode.USER_DELETE_ACCOUNT_SUCCESS.getMessage());
+
+    return ResponseEntity
+              .status(SuccessCode.USER_DELETE_ACCOUNT_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                SuccessCode.USER_DELETE_ACCOUNT_SUCCESS, 
                 message, 
                 user.getUsername()));
   }
