@@ -16,9 +16,10 @@ import com.jelee.librarymanagementsystem.domain.user.dto.UpdatePasswordDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserInfoResponseDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
-import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
-import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
+import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
+import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -36,16 +37,16 @@ public class UserController {
   public ResponseEntity<?> getMyInfo(Authentication authentication) {
     User user = (User) authentication.getPrincipal(); // 인증 객체
 
-    String message = messageProvider.getMessage(SuccessCode.USER_AUTHORIZED_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(AuthSuccessCode.AUTH_USER_VERIFIED.getMessage());
 
     // user에 인증 정보가 없으면
     if (user == null) {
-      message = messageProvider.getMessage(ErrorCode.UNAUTHORIZED.getMessage());
+      message = messageProvider.getMessage(AuthErrorCode.AUTH_UNAUTHORIZED.getMessage());
 
       return ResponseEntity
-                .status(ErrorCode.UNAUTHORIZED.getHttpStatus())
+                .status(AuthErrorCode.AUTH_UNAUTHORIZED.getHttpStatus())
                 .body(ApiResponse.error(
-                  ErrorCode.UNAUTHORIZED, 
+                  AuthErrorCode.AUTH_UNAUTHORIZED, 
                   message, 
                   null));
     }
@@ -59,9 +60,9 @@ public class UserController {
     );
 
     return ResponseEntity
-              .status(SuccessCode.USER_AUTHORIZED_SUCCESS.getHttpStatus())
+              .status(AuthSuccessCode.AUTH_USER_VERIFIED.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_AUTHORIZED_SUCCESS, 
+                AuthSuccessCode.AUTH_USER_VERIFIED, 
                 message, 
                 userInfo));
   }
@@ -71,11 +72,11 @@ public class UserController {
   public ResponseEntity<?> updateEmail(@RequestBody UpdateEmailDTO updateEmail,
                                       @AuthenticationPrincipal User user) {
     userService.updateEmail(user.getUsername(), updateEmail.getEmail());
-    String message = messageProvider.getMessage(SuccessCode.USER_EMAIL_UPDATE_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
     return ResponseEntity
-              .status(SuccessCode.USER_EMAIL_UPDATE_SUCCESS.getHttpStatus())
+              .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_EMAIL_UPDATE_SUCCESS, 
+                UserSuccessCode.USER_EMAIL_UPDATE, 
                 message, 
                 user.getEmail()));
   }
@@ -86,12 +87,12 @@ public class UserController {
                                           @AuthenticationPrincipal User user) {
     userService.updatePassword(user.getUsername(), updatePassword.getPassword(), updatePassword.getRepassword());
 
-    String message = messageProvider.getMessage(SuccessCode.USER_PASSWORD_UPDATE_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
     
     return ResponseEntity
-              .status(SuccessCode.USER_PASSWORD_UPDATE_SUCCESS.getHttpStatus())
+              .status(UserSuccessCode.USER_PASSWORD_UPDATE.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_PASSWORD_UPDATE_SUCCESS, 
+                UserSuccessCode.USER_PASSWORD_UPDATE, 
                 message, 
                 user.getUsername()));
   }
@@ -102,12 +103,12 @@ public class UserController {
                                         @AuthenticationPrincipal User user) {
     userService.deleteAccount(deleteAccount.getPassword(), user.getUsername());
 
-    String message = messageProvider.getMessage(SuccessCode.USER_DELETE_ACCOUNT_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_DELETE_ACCOUNT.getMessage());
 
     return ResponseEntity
-              .status(SuccessCode.USER_DELETE_ACCOUNT_SUCCESS.getHttpStatus())
+              .status(UserSuccessCode.USER_DELETE_ACCOUNT.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_DELETE_ACCOUNT_SUCCESS, 
+                UserSuccessCode.USER_DELETE_ACCOUNT, 
                 message, 
                 user.getUsername()));
   }

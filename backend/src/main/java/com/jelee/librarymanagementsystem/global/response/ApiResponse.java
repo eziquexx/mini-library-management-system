@@ -1,7 +1,7 @@
 package com.jelee.librarymanagementsystem.global.response;
 
-import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
-import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
+import com.jelee.librarymanagementsystem.global.response.code.ErrorCode;
+import com.jelee.librarymanagementsystem.global.response.code.SuccessCode;
 
 public class ApiResponse<T> {
   private String code;

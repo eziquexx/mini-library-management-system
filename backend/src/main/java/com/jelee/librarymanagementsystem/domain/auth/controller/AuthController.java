@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
-import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
+import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,12 +31,12 @@ public class AuthController {
   public ResponseEntity<ApiResponse<Long>> singUp(@RequestBody JoinRequest request) {
     Long userId = authService.signUp(request);
 
-    String message = messageProvider.getMessage(SuccessCode.USER_CREATED.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_CREATED.getMessage());
     
     return ResponseEntity
-              .status(SuccessCode.USER_CREATED.getHttpStatus())
+              .status(UserSuccessCode.USER_CREATED.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_CREATED, 
+                UserSuccessCode.USER_CREATED, 
                 message, 
                 userId));
   }
@@ -56,12 +57,12 @@ public class AuthController {
 
     response.addHeader("Set-Cookie", cookie.toString());
 
-    String message = messageProvider.getMessage(SuccessCode.USER_LOGIN_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getMessage());
 
     return ResponseEntity
-              .status(SuccessCode.USER_LOGIN_SUCCESS.getHttpStatus())
+              .status(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_LOGIN_SUCCESS,
+                AuthSuccessCode.AUTH_LOGIN_SUCCESS,
                 message, 
                 request.getUsername()));
   }
@@ -80,12 +81,12 @@ public class AuthController {
     
     response.addHeader("Set-Cookie", deleteCookie.toString());
 
-    String message = messageProvider.getMessage(SuccessCode.USER_LOGOUT_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getMessage());
 
     return ResponseEntity
-              .status(SuccessCode.USER_LOGOUT_SUCCESS.getHttpStatus())
+              .status(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getHttpStatus())
               .body(ApiResponse.success(
-                SuccessCode.USER_LOGOUT_SUCCESS, 
+                AuthSuccessCode.AUTH_LOGOUT_SUCCESS, 
                 message, 
                 null));
   }

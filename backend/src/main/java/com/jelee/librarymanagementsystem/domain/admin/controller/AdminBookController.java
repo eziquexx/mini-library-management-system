@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
 import com.jelee.librarymanagementsystem.domain.admin.service.AdminBookService;
-import com.jelee.librarymanagementsystem.global.enums.SuccessCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -29,12 +29,12 @@ public class AdminBookController {
   public ResponseEntity<?> createBook(@RequestBody BookRequestDTO bookDTO) {
     BookResponseDTO responseDTO = adminBookService.createBook(bookDTO);
 
-    String message = messageProvider.getMessage(SuccessCode.BOOK_CREATED.getMessage());
+    String message = messageProvider.getMessage(BookSuccessCode.BOOK_CREATED.getMessage());
 
     return ResponseEntity
-            .status(SuccessCode.BOOK_CREATED.getHttpStatus())
+            .status(BookSuccessCode.BOOK_CREATED.getHttpStatus())
             .body(ApiResponse.success(
-              SuccessCode.BOOK_CREATED, 
+              BookSuccessCode.BOOK_CREATED, 
               message, 
               responseDTO));
   }
@@ -43,12 +43,12 @@ public class AdminBookController {
   public ResponseEntity<?> updateBook(@RequestBody BookRequestDTO bookDTO) {
     BookResponseDTO responseDTO = adminBookService.updateBook(bookDTO);
     
-    String message = messageProvider.getMessage(SuccessCode.BOOK_UPDATED.getMessage());
+    String message = messageProvider.getMessage(BookSuccessCode.BOOK_UPDATED.getMessage());
 
     return ResponseEntity
-            .status(SuccessCode.BOOK_UPDATED.getHttpStatus())
+            .status(BookSuccessCode.BOOK_UPDATED.getHttpStatus())
             .body(ApiResponse.success(
-              SuccessCode.BOOK_UPDATED, 
+              BookSuccessCode.BOOK_UPDATED, 
               message, 
               responseDTO));
   }

@@ -7,8 +7,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
+import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,8 +36,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     // String message = messageSource.getMessage("error.forbidden", null, Locale.getDefault());
 
-    String message = messageProvider.getMessage(ErrorCode.FORBIDDEN.getMessage());
-    ApiResponse<?> apiResponse = ApiResponse.error(ErrorCode.FORBIDDEN, message, null);
+    String message = messageProvider.getMessage(AuthErrorCode.AUTH_FORBIDDEN.getMessage());
+    ApiResponse<?> apiResponse = ApiResponse.error(AuthErrorCode.AUTH_FORBIDDEN, message, null);
 
     response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
   }

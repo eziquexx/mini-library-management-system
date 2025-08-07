@@ -9,10 +9,10 @@ import com.jelee.librarymanagementsystem.domain.auth.dto.JoinRequest;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
-import com.jelee.librarymanagementsystem.global.enums.ErrorCode;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
+import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,12 +29,12 @@ public class AuthService {
 
     // 아이디 중복 체크
     if (userRepository.existsByUsername(request.getUsername())) {
-      throw new BaseException(ErrorCode.USER_USERNAME_DUPLICATED);
+      throw new BaseException(UserErrorCode.USER_USERNAME_DUPLICATED);
     }
     
     // 이메일 중복 체크
     if (userRepository.existsByEmail(request.getEmail())) {
-      throw new BaseException(ErrorCode.USER_EMAIL_DUPLICATED);
+      throw new BaseException(UserErrorCode.USER_EMAIL_DUPLICATED);
     }
 
     User user = User.builder()
@@ -53,11 +53,11 @@ public class AuthService {
 
     // DB에 있는 유저 정보 가져오기
     User user = userRepository.findByUsername(request.getUsername())
-      .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+      .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
     // request와 DB의 password가 동일한지 체크
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-      throw new BaseException(ErrorCode.INVALID_PASSWORD);
+      throw new BaseException(UserErrorCode.INVALID_PASSWORD);
     }
 
     // 마지막 로그인 시간 저장
