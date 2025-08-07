@@ -2,6 +2,7 @@ package com.jelee.librarymanagementsystem.domain.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +26,8 @@ public class AdminBookController {
   
   // 도서 등록
   @PostMapping()
-  public ResponseEntity<?> createBook(@RequestBody BookRequestDTO bookDto) {
-    BookResponseDTO responseDTO = adminBookService.createBook(bookDto);
+  public ResponseEntity<?> createBook(@RequestBody BookRequestDTO bookDTO) {
+    BookResponseDTO responseDTO = adminBookService.createBook(bookDTO);
 
     String message = messageProvider.getMessage(SuccessCode.BOOK_REGISTERED.getMessage());
 
@@ -37,5 +38,4 @@ public class AdminBookController {
               message, 
               responseDTO));
   }
-
 }
