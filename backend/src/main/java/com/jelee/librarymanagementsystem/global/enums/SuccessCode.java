@@ -12,11 +12,11 @@ public enum SuccessCode {
   USER_EMAIL_UPDATE_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.email.update"),
   USER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.password.update"),
   USER_DELETE_ACCOUNT_SUCCESS(HttpStatus.OK, "AUTH_200", "success.user.delete.account"),
-  BOOK_CREATED(HttpStatus.CREATED, "BOOK_201", "도서가 성공적으로 등록되었습니다."),
-  BOOK_UPDATED(HttpStatus.OK, "BOOK_200", "도서 수정이 완료되었습니다."),
-  BOOK_DELETED(HttpStatus.OK, "BOOK_204", "도서가 삭제되었습니다."),
-  BOOK_FETCHED(HttpStatus.OK, "BOOK_210", "도서 조회가 완료되었습니다."),
-  BOOK_LIST_FETCHED(HttpStatus.OK, "BOOK_211", "도서 목록 조회가 완료되었습니다.");
+  BOOK_CREATED(HttpStatus.CREATED, "BOOK_201", "book.success.created"),
+  BOOK_UPDATED(HttpStatus.OK, "BOOK_200", "book.success.updated"),
+  BOOK_DELETED(HttpStatus.OK, "BOOK_204", "book.success.deleted"),
+  BOOK_FETCHED(HttpStatus.OK, "BOOK_210", "book.success.fetched"),
+  BOOK_LIST_FETCHED(HttpStatus.OK, "BOOK_211", "book.success.list_fetched");
  
   // 필드
   private final HttpStatus httpStatus;

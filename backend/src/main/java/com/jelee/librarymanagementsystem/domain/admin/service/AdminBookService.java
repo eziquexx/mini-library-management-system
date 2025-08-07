@@ -30,4 +30,20 @@ public class AdminBookService {
 
     return new BookResponseDTO(saveBook);
   }
+
+  // 도서 수정
+  public BookResponseDTO updateBook(BookRequestDTO bookDTO) {
+    Book book = Book.builder()
+                  .title(bookDTO.getTitle())
+                  .author(bookDTO.getAuthor())
+                  .publisher(bookDTO.getPublisher())
+                  .publishedDate(bookDTO.getPublishedDate())
+                  .location(bookDTO.getLocation())
+                  .description(bookDTO.getDescription())
+                  .build();
+    
+    Book updateBook = adminBookRepository.save(book);
+
+    return new BookResponseDTO(updateBook);
+  }
 }

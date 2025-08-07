@@ -29,12 +29,26 @@ public class AdminBookController {
   public ResponseEntity<?> createBook(@RequestBody BookRequestDTO bookDTO) {
     BookResponseDTO responseDTO = adminBookService.createBook(bookDTO);
 
-    String message = messageProvider.getMessage(SuccessCode.BOOK_REGISTERED.getMessage());
+    String message = messageProvider.getMessage(SuccessCode.BOOK_CREATED.getMessage());
 
     return ResponseEntity
-            .status(SuccessCode.BOOK_REGISTERED.getHttpStatus())
+            .status(SuccessCode.BOOK_CREATED.getHttpStatus())
             .body(ApiResponse.success(
-              SuccessCode.BOOK_REGISTERED, 
+              SuccessCode.BOOK_CREATED, 
+              message, 
+              responseDTO));
+  }
+  // 도서 수정
+  @PutMapping()
+  public ResponseEntity<?> updateBook(@RequestBody BookRequestDTO bookDTO) {
+    BookResponseDTO responseDTO = adminBookService.updateBook(bookDTO);
+    
+    String message = messageProvider.getMessage(SuccessCode.BOOK_UPDATED.getMessage());
+
+    return ResponseEntity
+            .status(SuccessCode.BOOK_UPDATED.getHttpStatus())
+            .body(ApiResponse.success(
+              SuccessCode.BOOK_UPDATED, 
               message, 
               responseDTO));
   }
