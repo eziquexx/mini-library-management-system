@@ -1,5 +1,6 @@
 package com.jelee.librarymanagementsystem.global.exception;
 
+import org.hibernate.boot.model.relational.Database;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,18 +19,19 @@ public class GlobalExceptionHandler {
   }
   
   @ExceptionHandler(BaseException.class)
-  public ResponseEntity<ApiResponse<Void>> handleBaseException(BaseException ex) {
+  public ResponseEntity<ApiResponse<?>> handleBaseException(BaseException ex) {
     ErrorCode errorCode = ex.getErrorCode();
     String message = messageProvider.getMessage(errorCode.getMessage());
-    // ApiResponse response = new ApiResponse(errorCode.getCode(), message, null);
-    // ApiResponse response = new ApiResponse<T>(errorCode.getCode(), message, message);
+    
+    Object data = null;
+    if (ex instanceof DataBaseException) {
+      data = ((DataBaseException) ex).getData();
+    }
+
+    ApiResponse<?> response = ApiResponse.error(errorCode, message, data);
 
     return ResponseEntity
         .status(errorCode.getHttpStatus())
-        .body(ApiResponse.error(
-          errorCode,
-          message,
-          null
-        ));
+        .body(response);
   }
 }
