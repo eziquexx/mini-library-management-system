@@ -19,6 +19,7 @@ public class AdminBookService {
   public BookResponseDTO createBook(BookRequestDTO bookDTO) {
     Book book = Book.builder()
                   .title(bookDTO.getTitle())
+                  .isbn(bookDTO.getIsbn())
                   .author(bookDTO.getAuthor())
                   .publisher(bookDTO.getPublisher())
                   .publishedDate(bookDTO.getPublishedDate())
@@ -35,6 +36,7 @@ public class AdminBookService {
   public BookResponseDTO updateBook(BookRequestDTO bookDTO) {
     Book book = Book.builder()
                   .title(bookDTO.getTitle())
+                  .isbn(bookDTO.getIsbn())
                   .author(bookDTO.getAuthor())
                   .publisher(bookDTO.getPublisher())
                   .publishedDate(bookDTO.getPublishedDate())

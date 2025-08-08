@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class BookRequestDTO {
   private String title;
+  private String isbn;
   private String author;
   private String publisher;
   private LocalDate publishedDate;
