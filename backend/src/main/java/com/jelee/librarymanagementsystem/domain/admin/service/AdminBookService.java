@@ -7,6 +7,7 @@ import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
 import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
 import com.jelee.librarymanagementsystem.domain.admin.repository.AdminBookRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.exception.DataBaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,9 @@ public class AdminBookService {
 
     // location 중복 체크
     if (adminBookRepository.existsByLocation(request.getLocation())) {
-      throw new BaseException(BookErrorCode.BOOK_LOCATION_DUPLICATED);
+      Book sameLocationBook = adminBookRepository.findByLocation(request.getLocation());
+
+      throw new DataBaseException(BookErrorCode.BOOK_LOCATION_DUPLICATED, sameLocationBook);
     }
 
     Book book = Book.builder()
