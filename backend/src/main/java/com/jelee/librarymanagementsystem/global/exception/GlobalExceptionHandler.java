@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.global.exception;
 
-import org.hibernate.boot.model.relational.Database;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
