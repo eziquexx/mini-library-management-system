@@ -3,6 +3,7 @@ package com.jelee.librarymanagementsystem.domain.admin.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateRequest;
 import com.jelee.librarymanagementsystem.global.enums.BookStatus;
 
 import jakarta.persistence.Entity;
@@ -55,5 +56,16 @@ public class Book {
   @PreUpdate
   public void preUpdate() {
     this.updatedAt = LocalDateTime.now();
+  }
+
+  // 업데이트 메서드
+  public void update(BookUpdateRequest request) {
+    this.title = request.getTitle();
+    this.isbn = request.getIsbn();
+    this.author = request.getAuthor();
+    this.publisher = request.getPublisher();
+    this.publishedDate = request.getPublishedDate();
+    this.location = request.getLocation();
+    this.description = request.getDescription();
   }
 }

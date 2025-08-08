@@ -11,6 +11,9 @@ public interface AdminBookRepository extends JpaRepository<Book, Long> {
   // 동일 location 체크
   boolean existsByLocation(String location);
 
+  // 특정 도서 location 체크
+  boolean existsByLocationAndIdNot(String location, Long id);
+
   // location 위치
   Book findByLocation(String location);
 }

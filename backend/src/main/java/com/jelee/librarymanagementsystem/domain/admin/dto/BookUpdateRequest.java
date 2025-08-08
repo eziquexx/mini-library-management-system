@@ -1,0 +1,32 @@
+package com.jelee.librarymanagementsystem.domain.admin.dto;
+
+import java.time.LocalDate;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+
+@Getter
+public class BookUpdateRequest {
+
+  @NotBlank
+  private String title;
+
+  @NotBlank
+  private String isbn;
+
+  @NotBlank
+  private String author;
+
+  @NotBlank
+  private String publisher;
+
+  @NotNull
+  private LocalDate publishedDate;
+
+  @NotBlank
+  private String location;
+
+  @NotBlank
+  private String description;
+}
