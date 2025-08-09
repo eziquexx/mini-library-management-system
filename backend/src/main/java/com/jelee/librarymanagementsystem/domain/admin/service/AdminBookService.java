@@ -1,5 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.admin.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
@@ -103,5 +105,18 @@ public class AdminBookService {
     book.update(request);
 
     return new BookResponseDTO(book);
+  }
+
+  // 도서 삭제
+  @Transactional
+  public void deleteBook(Long bookId) {
+    Optional<Book> optionalBook = adminBookRepository.findById(bookId);
+
+    // Optional 안에 실제 Book이 있는지 확인
+    if (optionalBook.isPresent()) {
+      adminBookRepository.delete(optionalBook.get());
+    } else {
+      throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
+    }
   }
 }
