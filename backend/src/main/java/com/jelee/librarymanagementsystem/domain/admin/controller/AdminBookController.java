@@ -1,6 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.admin.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,5 +54,20 @@ public class AdminBookController {
               BookSuccessCode.BOOK_UPDATED, 
               message, 
               responseDTO));
+  }
+
+  // 도서 삭제
+  @DeleteMapping("/{bookId}")
+  public ResponseEntity<?> deleteBook(@PathVariable Long bookId) {
+    adminBookService.deleteBook(bookId);
+    
+    String message = messageProvider.getMessage(BookSuccessCode.BOOK_DELETED.getMessage());
+
+    return ResponseEntity
+              .status(BookSuccessCode.BOOK_DELETED.getHttpStatus())
+              .body(ApiResponse.success(
+                BookSuccessCode.BOOK_DELETED, 
+                message, 
+                bookId));
   }
 }
