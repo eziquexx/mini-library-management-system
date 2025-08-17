@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateRequest;
+import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.service.AdminBookService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
@@ -43,7 +43,7 @@ public class AdminBookController {
   }
   // 도서 수정
   @PutMapping("/{bookId}")
-  public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody BookUpdateRequest bookDTO) {
+  public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody BookUpdateReqDTO bookDTO) {
     BookResponseDTO responseDTO = adminBookService.updateBook(bookId, bookDTO);
     
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_UPDATED.getMessage());

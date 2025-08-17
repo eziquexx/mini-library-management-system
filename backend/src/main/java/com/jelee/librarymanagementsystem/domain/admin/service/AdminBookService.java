@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateRequest;
+import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
 import com.jelee.librarymanagementsystem.domain.admin.repository.AdminBookRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -70,7 +70,7 @@ public class AdminBookService {
 
   // 도서 수정
   @Transactional
-  public BookResponseDTO updateBook(Long bookId, BookUpdateRequest request) {
+  public BookResponseDTO updateBook(Long bookId, BookUpdateReqDTO request) {
 
     Book book = adminBookRepository.findById(bookId)
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));

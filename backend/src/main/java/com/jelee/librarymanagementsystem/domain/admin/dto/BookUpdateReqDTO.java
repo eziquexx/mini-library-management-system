@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class BookUpdateRequest {
+public class BookUpdateReqDTO {
 
   @NotBlank
   private String title;
