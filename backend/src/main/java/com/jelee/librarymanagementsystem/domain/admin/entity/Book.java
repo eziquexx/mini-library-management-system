@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.global.enums.BookStatus;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -42,6 +43,8 @@ public class Book {
   @Enumerated(EnumType.STRING)
   private BookStatus status;
   private String location;
+
+  @Column(columnDefinition = "TEXT")
   private String description;
 
   private LocalDateTime createdAt;
