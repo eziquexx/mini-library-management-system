@@ -1,6 +1,8 @@
 package com.jelee.librarymanagementsystem.domain.admin.repository;
 
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
@@ -17,4 +19,7 @@ public interface AdminBookRepository extends JpaRepository<Book, Long> {
 
   // location 위치
   Book findByLocation(String location);
+
+  // 키워드 검색
+  List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String titleKeyword, String authorKeyword);
 }
