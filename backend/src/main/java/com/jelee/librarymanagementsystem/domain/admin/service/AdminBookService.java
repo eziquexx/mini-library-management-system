@@ -1,11 +1,14 @@
 package com.jelee.librarymanagementsystem.domain.admin.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
+import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
 import com.jelee.librarymanagementsystem.domain.admin.repository.AdminBookRepository;
@@ -118,5 +121,28 @@ public class AdminBookService {
     } else {
       throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
     }
+  }
+
+  // 도서 검색
+  @Transactional
+  public List<BookSearchResDTO> searchBooksByKeyword(String keyword) {
+
+    List<Book> books = adminBookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
+    System.out.println("검색 키워드: [" + keyword + "]");
+
+    if (books.isEmpty()) {
+      throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
+    }
+
+    return books.stream()
+        .map(book -> new BookSearchResDTO(
+          book.getId(),
+          book.getTitle(),
+          book.getAuthor(),
+          book.getPublisher(),
+          book.getPublishedDate(),
+          book.getLocation()
+        ))
+        .collect(Collectors.toList());
   }
 }
