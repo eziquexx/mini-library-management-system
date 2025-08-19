@@ -2,8 +2,11 @@ package com.jelee.librarymanagementsystem.domain.admin.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
@@ -12,6 +15,7 @@ import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
 import com.jelee.librarymanagementsystem.domain.admin.repository.AdminBookRepository;
+import com.jelee.librarymanagementsystem.global.enums.BookSearchType;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.exception.DataBaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
@@ -124,25 +128,67 @@ public class AdminBookService {
   }
 
   // 도서 검색
+  // @Transactional
+  // public List<BookSearchResDTO> searchBooksByKeyword(String keyword) {
+
+  //   List<Book> books = adminBookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
+  //   System.out.println("검색 키워드: [" + keyword + "]");
+
+  //   if (books.isEmpty()) {
+  //     throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
+  //   }
+
+  //   return books.stream()
+  //       .map(book -> new BookSearchResDTO(
+  //         book.getId(),
+  //         book.getTitle(),
+  //         book.getAuthor(),
+  //         book.getPublisher(),
+  //         book.getPublishedDate(),
+  //         book.getLocation()
+  //       ))
+  //       .collect(Collectors.toList());
+  // }
+
+  // 도서 검색 - 페이징
   @Transactional
-  public List<BookSearchResDTO> searchBooksByKeyword(String keyword) {
+  public Page<BookSearchResDTO> searchBooks(String typeStr, String keyword, int page, int size) {
 
-    List<Book> books = adminBookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
-    System.out.println("검색 키워드: [" + keyword + "]");
+    Pageable pageable = PageRequest.of(page, size);
 
-    if (books.isEmpty()) {
+    // 타입 예외처리
+    BookSearchType type;
+    try {
+      type = BookSearchType.valueOf(typeStr.toUpperCase());
+    } catch(IllegalArgumentException e) {
+      throw new BaseException(BookErrorCode.BOOK_SEARCH_TYPE_FAILED);
+    }
+    
+    Page<Book> result;
+    
+    switch (type) {
+      case ALL:
+        result = adminBookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, pageable);
+        break;
+      case TITLE:
+        result = adminBookRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        break;
+      case AUTHOR:
+        result = adminBookRepository.findByAuthorContainingIgnoreCase(keyword, pageable);
+        break;
+      default:
+        throw new IllegalStateException("Unexpected search type: " + type);
+    }
+
+    if (result.isEmpty()) {
       throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
     }
 
-    return books.stream()
-        .map(book -> new BookSearchResDTO(
-          book.getId(),
-          book.getTitle(),
-          book.getAuthor(),
-          book.getPublisher(),
-          book.getPublishedDate(),
-          book.getLocation()
-        ))
-        .collect(Collectors.toList());
+    List<BookSearchResDTO> dtoList = result.getContent()
+        .stream()
+        .map(BookSearchResDTO::new)
+        .toList();
+
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 }
