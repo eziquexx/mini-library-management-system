@@ -1,8 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.admin.repository;
 
-
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
@@ -21,5 +20,14 @@ public interface AdminBookRepository extends JpaRepository<Book, Long> {
   Book findByLocation(String location);
 
   // 키워드 검색
-  List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String titleKeyword, String authorKeyword);
+  // List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String titleKeyword, String authorKeyword);
+
+  // 키워드 타입별 검색 - title, author (all)
+  Page<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author, Pageable pageable);
+  
+  // 키워드 타입별 검색 - title
+  Page<Book> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+  // 키워드 타입별 검색 - author
+  Page<Book> findByAuthorContainingIgnoreCase(String author, Pageable pageable);
 }

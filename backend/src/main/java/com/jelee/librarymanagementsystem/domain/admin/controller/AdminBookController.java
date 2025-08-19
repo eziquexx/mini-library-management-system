@@ -1,7 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.admin.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.service.AdminBookService;
@@ -77,10 +76,31 @@ public class AdminBookController {
   }
 
   // 도서 검색
+  // @GetMapping("/search")
+  // public ResponseEntity<?> searchBook(@RequestBody BookSearchReqDTO request) {
+  //   String keyword = request.getKeyword();
+  //   List<BookSearchResDTO> books = adminBookService.searchBooksByKeyword(keyword);
+
+  //   String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
+
+  //   return ResponseEntity
+  //             .status(BookSuccessCode.BOOK_LIST_FETCHED.getHttpStatus())
+  //             .body(ApiResponse.success(
+  //               BookSuccessCode.BOOK_LIST_FETCHED, 
+  //               message, 
+  //               books));
+  // }
+
+  // 도서 검색 - 페이징
+  // Page 기능 사용
   @GetMapping("/search")
-  public ResponseEntity<?> searchBook(@RequestBody BookSearchReqDTO request) {
-    String keyword = request.getKeyword();
-    List<BookSearchResDTO> books = adminBookService.searchBooksByKeyword(keyword);
+  public ResponseEntity<?> searchBooks(
+      @RequestParam String type,
+      @RequestParam String keyword,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    Page<BookSearchResDTO> books = adminBookService.searchBooks(type, keyword, page, size);
 
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
 

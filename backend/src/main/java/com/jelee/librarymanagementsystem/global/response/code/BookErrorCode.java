@@ -16,7 +16,8 @@ public enum BookErrorCode implements ErrorCode {
   BOOK_DATE_INVALID(HttpStatus.BAD_REQUEST, "BOOK_009", "error.book.date.invalid"),
   BOOK_LOCATION_BLANK(HttpStatus.BAD_REQUEST, "BOOK_010", "error.book.location.blank"),
   BOOK_DESCRIPTION_BLANK(HttpStatus.BAD_REQUEST, "BOOK_011", "error.book.description.blank"),
-  BOOK_UPDATE_FALIED(HttpStatus.INTERNAL_SERVER_ERROR, "BOOK_500", "error.book.update_failed");
+  BOOK_UPDATE_FALIED(HttpStatus.INTERNAL_SERVER_ERROR, "BOOK_500", "error.book.update_failed"),
+  BOOK_SEARCH_TYPE_FAILED(HttpStatus.BAD_REQUEST, "BOOK_012", "error.book.search.type");
 
   private final HttpStatus httpStatus;
   private final String code;
