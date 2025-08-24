@@ -1,12 +1,12 @@
-package com.jelee.librarymanagementsystem.domain.admin.repository;
+package com.jelee.librarymanagementsystem.domain.book.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
+import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 
-public interface AdminBookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, Long> {
   // 동일 ISBN 체크
   boolean existsByIsbn(String isbn);
 
@@ -30,4 +30,7 @@ public interface AdminBookRepository extends JpaRepository<Book, Long> {
 
   // 키워드 타입별 검색 - author
   Page<Book> findByAuthorContainingIgnoreCase(String author, Pageable pageable);
+
+  // 도서 전체 목록 조회
+  Page<Book> findAll(Pageable pageable);
 }

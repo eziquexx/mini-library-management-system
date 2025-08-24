@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.admin.service;
+package com.jelee.librarymanagementsystem.domain.book.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,13 +9,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
-import com.jelee.librarymanagementsystem.domain.admin.repository.AdminBookRepository;
-import com.jelee.librarymanagementsystem.global.enums.BookSearchType;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookListResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookRequestDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookResponseDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.entity.Book;
+import com.jelee.librarymanagementsystem.domain.book.enums.BookSearchType;
+import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.exception.DataBaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
@@ -25,9 +26,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AdminBookService {
+public class BookService {
 
-  private final AdminBookRepository adminBookRepository;
+  private final BookRepository adminBookRepository;
   
   // 도서 등록
   @Transactional
@@ -189,6 +190,20 @@ public class AdminBookService {
         .map(BookSearchResDTO::new)
         .toList();
 
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 도서 전체 목록 조회
+  public Page<BookListResDTO> allListBooks(int page, int size) {
+
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<Book> result = adminBookRepository.findAll(pageable);
+    List<BookListResDTO> dtoList = result.getContent()
+        .stream()
+        .map(BookListResDTO::new)
+        .toList();
+    
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 }

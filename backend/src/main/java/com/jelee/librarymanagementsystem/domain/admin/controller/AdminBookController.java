@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.admin.service.AdminBookService;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookListResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookRequestDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookResponseDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.service.BookService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -28,13 +29,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminBookController {
 
-  private final AdminBookService adminBookService;
+  private final BookService bookService;
   private final MessageProvider messageProvider;
   
   // 도서 등록
   @PostMapping()
   public ResponseEntity<?> createBook(@RequestBody BookRequestDTO bookDTO) {
-    BookResponseDTO responseDTO = adminBookService.createBook(bookDTO);
+    BookResponseDTO responseDTO = bookService.createBook(bookDTO);
 
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_CREATED.getMessage());
 
@@ -48,7 +49,7 @@ public class AdminBookController {
   // 도서 수정
   @PutMapping("/{bookId}")
   public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody BookUpdateReqDTO bookDTO) {
-    BookResponseDTO responseDTO = adminBookService.updateBook(bookId, bookDTO);
+    BookResponseDTO responseDTO = bookService.updateBook(bookId, bookDTO);
     
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_UPDATED.getMessage());
 
@@ -63,7 +64,7 @@ public class AdminBookController {
   // 도서 삭제
   @DeleteMapping("/{bookId}")
   public ResponseEntity<?> deleteBook(@PathVariable Long bookId) {
-    adminBookService.deleteBook(bookId);
+    bookService.deleteBook(bookId);
     
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_DELETED.getMessage());
 
@@ -100,7 +101,7 @@ public class AdminBookController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
 
-    Page<BookSearchResDTO> books = adminBookService.searchBooks(type, keyword, page, size);
+    Page<BookSearchResDTO> books = bookService.searchBooks(type, keyword, page, size);
 
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
 
@@ -110,5 +111,23 @@ public class AdminBookController {
                 BookSuccessCode.BOOK_LIST_FETCHED, 
                 message, 
                 books));
+  }
+
+  // 도저 전체 목록 조회
+  @GetMapping()
+  public ResponseEntity<?> allListBooks(
+    @RequestParam(defaultValue = "0") int page, 
+    @RequestParam(defaultValue = "10") int size) {
+
+    Page<BookListResDTO> listBooks = bookService.allListBooks(page, size);
+
+    String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
+    
+    return ResponseEntity
+              .status(BookSuccessCode.BOOK_LIST_FETCHED.getHttpStatus())
+              .body(ApiResponse.success(
+                BookSuccessCode.BOOK_LIST_FETCHED, 
+                message, 
+                listBooks));
   }
 }
