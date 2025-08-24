@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.admin.repository;
+package com.jelee.librarymanagementsystem.domain.book.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 
-public interface AdminBookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, Long> {
   // 동일 ISBN 체크
   boolean existsByIsbn(String isbn);
 
