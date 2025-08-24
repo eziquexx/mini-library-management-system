@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
+import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 
 public interface AdminBookRepository extends JpaRepository<Book, Long> {
   // 동일 ISBN 체크

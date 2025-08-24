@@ -2,7 +2,7 @@ package com.jelee.librarymanagementsystem.domain.admin.dto;
 
 import java.time.LocalDate;
 
-import com.jelee.librarymanagementsystem.domain.admin.entity.Book;
+import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
