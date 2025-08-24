@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.jelee.librarymanagementsystem.domain.book.dto.BookUpdateReqDTO;
-import com.jelee.librarymanagementsystem.global.enums.BookStatus;
+import com.jelee.librarymanagementsystem.domain.book.enums.BookStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
