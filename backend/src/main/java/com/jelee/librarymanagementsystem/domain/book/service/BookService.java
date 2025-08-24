@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookService {
 
-  private final BookRepository adminBookRepository;
+  private final BookRepository bookRepository;
   
   // 도서 등록
   @Transactional
@@ -55,8 +55,8 @@ public class BookService {
     }
 
     // location 중복 체크
-    if (adminBookRepository.existsByLocation(request.getLocation())) {
-      Book sameLocationBook = adminBookRepository.findByLocation(request.getLocation());
+    if (bookRepository.existsByLocation(request.getLocation())) {
+      Book sameLocationBook = bookRepository.findByLocation(request.getLocation());
 
       throw new DataBaseException(BookErrorCode.BOOK_LOCATION_DUPLICATED, sameLocationBook);
     }
@@ -71,7 +71,7 @@ public class BookService {
                   .description(request.getDescription())
                   .build();
 
-    Book saveBook = adminBookRepository.save(book);
+    Book saveBook = bookRepository.save(book);
 
     return new BookResponseDTO(saveBook);
   }
@@ -80,7 +80,7 @@ public class BookService {
   @Transactional
   public BookResponseDTO updateBook(Long bookId, BookUpdateReqDTO request) {
 
-    Book book = adminBookRepository.findById(bookId)
+    Book book = bookRepository.findById(bookId)
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
 
     // 필수 필드 Null 체크(title, isbn, author, publisher, publishedDate, location)
@@ -104,8 +104,8 @@ public class BookService {
     }
 
     // location 중복 체크
-    if (adminBookRepository.existsByLocationAndIdNot(request.getLocation(), bookId)) {
-      Book sameLocationBook = adminBookRepository.findByLocation(request.getLocation());
+    if (bookRepository.existsByLocationAndIdNot(request.getLocation(), bookId)) {
+      Book sameLocationBook = bookRepository.findByLocation(request.getLocation());
 
       throw new DataBaseException(BookErrorCode.BOOK_LOCATION_DUPLICATED, sameLocationBook);
     }
@@ -118,11 +118,11 @@ public class BookService {
   // 도서 삭제
   @Transactional
   public void deleteBook(Long bookId) {
-    Optional<Book> optionalBook = adminBookRepository.findById(bookId);
+    Optional<Book> optionalBook = bookRepository.findById(bookId);
 
     // Optional 안에 실제 Book이 있는지 확인
     if (optionalBook.isPresent()) {
-      adminBookRepository.delete(optionalBook.get());
+      bookRepository.delete(optionalBook.get());
     } else {
       throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
     }
@@ -132,7 +132,7 @@ public class BookService {
   // @Transactional
   // public List<BookSearchResDTO> searchBooksByKeyword(String keyword) {
 
-  //   List<Book> books = adminBookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
+  //   List<Book> books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
   //   System.out.println("검색 키워드: [" + keyword + "]");
 
   //   if (books.isEmpty()) {
@@ -169,13 +169,13 @@ public class BookService {
     
     switch (type) {
       case ALL:
-        result = adminBookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, pageable);
+        result = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, pageable);
         break;
       case TITLE:
-        result = adminBookRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        result = bookRepository.findByTitleContainingIgnoreCase(keyword, pageable);
         break;
       case AUTHOR:
-        result = adminBookRepository.findByAuthorContainingIgnoreCase(keyword, pageable);
+        result = bookRepository.findByAuthorContainingIgnoreCase(keyword, pageable);
         break;
       default:
         throw new IllegalStateException("Unexpected search type: " + type);
@@ -198,7 +198,7 @@ public class BookService {
 
     Pageable pageable = PageRequest.of(page, size);
 
-    Page<Book> result = adminBookRepository.findAll(pageable);
+    Page<Book> result = bookRepository.findAll(pageable);
     List<BookListResDTO> dtoList = result.getContent()
         .stream()
         .map(BookListResDTO::new)
