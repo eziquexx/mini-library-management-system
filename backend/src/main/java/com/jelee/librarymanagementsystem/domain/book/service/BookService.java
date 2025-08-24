@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jelee.librarymanagementsystem.domain.book.dto.BookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.BookRequestDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.BookResponseDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.BookSearchResDTO;
@@ -189,6 +190,20 @@ public class BookService {
         .map(BookSearchResDTO::new)
         .toList();
 
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 도서 전체 목록 조회
+  public Page<BookListResDTO> allListBooks(int page, int size) {
+
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<Book> result = adminBookRepository.findAll(pageable);
+    List<BookListResDTO> dtoList = result.getContent()
+        .stream()
+        .map(BookListResDTO::new)
+        .toList();
+    
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 }
