@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookRequestDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.admin.service.AdminBookService;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookRequestDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookResponseDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;

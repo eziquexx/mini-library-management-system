@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.admin.dto;
+package com.jelee.librarymanagementsystem.domain.book.dto;
 
 import java.time.LocalDate;
 

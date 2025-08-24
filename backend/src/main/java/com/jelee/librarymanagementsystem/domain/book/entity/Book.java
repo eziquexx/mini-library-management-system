@@ -3,7 +3,7 @@ package com.jelee.librarymanagementsystem.domain.book.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.jelee.librarymanagementsystem.domain.admin.dto.BookUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.BookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.global.enums.BookStatus;
 
 import jakarta.persistence.Column;
