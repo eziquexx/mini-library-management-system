@@ -36,7 +36,11 @@ public class SecurityConfig {
           .authenticationEntryPoint(authenticationEntryPoint)
           .accessDeniedHandler(accessDeniedHandler))
       .authorizeHttpRequests(auth -> auth
-          .requestMatchers("/", "/api/v1/auth/**", "/api/v1/admin/books/**").permitAll()
+          .requestMatchers(
+            "/", 
+            "/api/v1/auth/**", 
+            "/api/v1/admin/books/**",
+            "/api/v1/admin/users/**").permitAll()
           .anyRequest().authenticated())
       .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class)
       ;

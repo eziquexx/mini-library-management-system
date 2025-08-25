@@ -1,9 +1,16 @@
 package com.jelee.librarymanagementsystem.domain.user.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -61,6 +68,7 @@ public class UserService {
     userRepository.save(user);
   }
 
+  // 회원 탈퇴, 삭제
   @Transactional
   public void deleteAccount(String password, String username) {
     User user = userRepository.findByUsername(username)
@@ -73,4 +81,34 @@ public class UserService {
 
     userRepository.delete(user);
   }
+
+
+  /*
+   * 관리자 - 회원 관리
+   */
+
+  // 관리자 - 회원 전체 조회 (+페이징)
+  public Page<UserListResDTO> allListUsers(int page, int size) {
+
+    // Pageable 기능
+    Pageable pageable = PageRequest.of(page, size);
+
+    // User 전체 조회 가져와서 Page로 변경
+    Page<User> result = userRepository.findAll(pageable);
+
+    // Page -> List로 변경
+    List<UserListResDTO> dtoList = result.getContent()
+        .stream()
+        .map(UserListResDTO::new)
+        .toList();
+
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 관리자 - 회원 검색
+
+  // 관리자 - 회원 권한 수정
+
+  // 관리자 - 회원 삭제
+
 }
