@@ -3,6 +3,7 @@ package com.jelee.librarymanagementsystem.domain.book.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 
@@ -32,5 +33,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
   Page<Book> findByAuthorContainingIgnoreCase(String author, Pageable pageable);
 
   // 도서 전체 목록 조회
+  @NonNull
   Page<Book> findAll(Pageable pageable);
 }
