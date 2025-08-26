@@ -10,7 +10,8 @@ public enum UserErrorCode implements ErrorCode {
   USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT, "USER_002", "error.user.email_duplicate"),
   USER_EMAIL_SAME(HttpStatus.BAD_REQUEST, "USER_003", "error.user.email_same"),
   USER_PASSWORD_SAME(HttpStatus.BAD_REQUEST, "USER_004", "error.user.password_same"),
-  USER_PASSWORD_NOTSAME(HttpStatus.BAD_REQUEST, "USER_005", "error.password.notsame");
+  USER_PASSWORD_NOTSAME(HttpStatus.BAD_REQUEST, "USER_005", "error.password.notsame"),
+  USER_SEARCH_TYPE_FAILED(HttpStatus.BAD_REQUEST, "USER_006", "error.user.search.type");
 
   private final HttpStatus httpStatus;
   private final String code;
