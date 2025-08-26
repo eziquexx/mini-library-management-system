@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
@@ -43,9 +44,28 @@ public class AdminUserController {
                 message, 
                 ListUsers));
   }
-  
 
   // 관리자 - 회원 검색
+  @GetMapping("search")
+  public ResponseEntity<?> searchUser(
+    @RequestParam String type,
+    @RequestParam String keyword,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+
+    // Page 기능 + User 조회
+    Page<UserSearchResDTO> user = userService.searchUser(type, keyword, page, size);
+    
+    // 성공 메시지
+    String message = messageProvider.getMessage(UserSuccessCode.USER_SEARCH.getMessage());
+
+    return ResponseEntity
+              .status(UserSuccessCode.USER_SEARCH.getHttpStatus())
+              .body(ApiResponse.success(
+                UserSuccessCode.USER_SEARCH, 
+                message, 
+                user));
+  }
 
   // 관리자 - 회원 권한 수정
 

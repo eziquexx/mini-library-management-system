@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
@@ -105,7 +107,48 @@ public class UserService {
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 
-  // 관리자 - 회원 검색
+  // 관리자 - 회원 검색 (+페이징)
+  public Page<UserSearchResDTO> searchUser(String typeStr, String keyword, int page, int size) {
+
+    // Pageable 기능
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 타입 예외처리
+    UserSearchType type;
+    try {
+      type = UserSearchType.valueOf(typeStr.toUpperCase());
+    } catch(IllegalArgumentException e) {
+      throw new BaseException(UserErrorCode.USER_SEARCH_TYPE_FAILED);
+    }
+
+    // 검색 결과 Page<User> 타입으로 저장
+    Page<User> result;
+
+    // Switch문 - type별 조건 실행
+    switch (type) {
+      case USERNAME:
+        result = userRepository.findByUsernameContainingIgnoreCase(keyword, pageable);
+        break;
+      case EMAIL:
+        result = userRepository.findByEmailContainingIgnoreCase(keyword, pageable);
+        break;
+      default:
+        throw new IllegalArgumentException("Unexpected search type: " + type);
+    }
+
+    // 검색 결과 예외 처리
+    if (result.isEmpty()) {
+      throw new BaseException(UserErrorCode.USER_NOT_FOUND);
+    }
+
+    // Page -> List 형변환
+    List<UserSearchResDTO> dtoList = result.getContent()
+        .stream()
+        .map(UserSearchResDTO::new)
+        .toList();
+
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
 
   // 관리자 - 회원 권한 수정
 

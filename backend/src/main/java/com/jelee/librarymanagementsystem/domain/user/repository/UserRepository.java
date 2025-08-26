@@ -22,4 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
   // 관리자 - 사용자 전체 목록 조회 (+페이징)
   @NonNull
   Page<User> findAll(Pageable pageable);
+
+  // 관리자 - 회원 username 검색 (+페이징)
+  Page<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
+
+  // 관리자 - 회원 email 검색 (+페이징)
+  Page<User> findByEmailContainingIgnoreCase(String email, Pageable pageable);
 }

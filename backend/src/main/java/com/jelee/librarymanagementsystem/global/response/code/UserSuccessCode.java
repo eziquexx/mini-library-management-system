@@ -8,7 +8,8 @@ public enum UserSuccessCode implements SuccessCode {
   USER_EMAIL_UPDATE(HttpStatus.OK, "USER_200", "success.user.email_update"),
   USER_PASSWORD_UPDATE(HttpStatus.OK, "USER_200", "success.user.password_update"),
   USER_DELETE_ACCOUNT(HttpStatus.OK, "USER_202", "success.user.deleted"),
-  USER_LIST_FETCHED(HttpStatus.OK, "User_200", "success.user.list_fetched");
+  USER_LIST_FETCHED(HttpStatus.OK, "USER_203", "success.user.list_fetched"),
+  USER_SEARCH(HttpStatus.OK, "USER_204", "success.user.search");
 
   private final HttpStatus httpStatus;
   private final String code;
