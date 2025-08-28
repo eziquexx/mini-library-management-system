@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.UserAdminDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
@@ -75,9 +76,9 @@ public class AdminUserController {
   @PatchMapping("/{userId}/role")
   public ResponseEntity<?> updateUserRole(
     @PathVariable Long userId,
-    @RequestBody UserAdminDTO.RoleUpdateReqDTO roleUpdateDTO) {
+    @RequestBody UserRoleUpdateReqDTO roleUpdateDTO) {
     
-    UserAdminDTO.RoleUpdateResDTO responseDTO = userService.updateUserRole(userId, roleUpdateDTO);
+    UserRoleUpdatedResDTO responseDTO = userService.updateUserRole(userId, roleUpdateDTO);
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATE.getMessage());
 
@@ -88,7 +89,6 @@ public class AdminUserController {
                 message, 
                 responseDTO));
   }
-
 
   // 관리자 - 회원 삭제
 

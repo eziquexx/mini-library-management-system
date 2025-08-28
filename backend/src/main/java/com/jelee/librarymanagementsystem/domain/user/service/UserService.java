@@ -11,8 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.UserAdminDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
@@ -153,7 +154,7 @@ public class UserService {
   }
 
   // 관리자 - 회원 권한 수정
-  public UserAdminDTO.RoleUpdateResDTO updateUserRole(Long userId, UserAdminDTO.RoleUpdateReqDTO roleUpdateDTO) {
+  public UserRoleUpdatedResDTO updateUserRole(Long userId, UserRoleUpdateReqDTO roleUpdateDTO) {
 
     // 사용자 정보 확인 + 예외 처리
     User user = userRepository.findById(userId)
@@ -165,7 +166,7 @@ public class UserService {
     userRepository.save(user);
 
     // 응답 반환
-    return UserAdminDTO.RoleUpdateResDTO.builder()
+    return UserRoleUpdatedResDTO.builder()
       .id(user.getId())
       .username(user.getUsername())
       .role(user.getRole())
