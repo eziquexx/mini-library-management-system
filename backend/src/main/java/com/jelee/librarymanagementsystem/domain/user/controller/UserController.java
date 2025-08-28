@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.DeleteAccountDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UpdateEmailDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UpdatePasswordDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserInfoResponseDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResponseDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;

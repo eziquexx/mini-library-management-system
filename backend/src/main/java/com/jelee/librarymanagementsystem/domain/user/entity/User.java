@@ -46,6 +46,7 @@ public class User implements UserDetails {
 
   private LocalDateTime joinDate;
   private LocalDateTime lastLoginDate;
+  private LocalDateTime updatedAt;
 
   @Enumerated(EnumType.STRING)
   private UserStatus status;
