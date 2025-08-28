@@ -11,7 +11,14 @@ public class BaseException extends RuntimeException {
     this.errorCode = errorCode;
   }
 
+  // 예외 메시지 추가 정보 포함
+  public BaseException(ErrorCode errorCode, String message) {
+    super(errorCode.getCode() + ": " + message);
+    this.errorCode = errorCode;
+  }
+
   public ErrorCode getErrorCode() {
     return errorCode;
   }
+
 }

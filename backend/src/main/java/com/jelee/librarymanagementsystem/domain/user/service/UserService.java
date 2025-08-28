@@ -1,5 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.user.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.UserAdminDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -151,6 +153,25 @@ public class UserService {
   }
 
   // 관리자 - 회원 권한 수정
+  public UserAdminDTO.RoleUpdateResDTO updateUserRole(Long userId, UserAdminDTO.RoleUpdateReqDTO roleUpdateDTO) {
+
+    // 사용자 정보 확인 + 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
+    
+    // 권한 변경 및 저장
+    user.setRole(roleUpdateDTO.getRole());
+    user.setUpdatedAt(LocalDateTime.now());
+    userRepository.save(user);
+
+    // 응답 반환
+    return UserAdminDTO.RoleUpdateResDTO.builder()
+      .id(user.getId())
+      .username(user.getUsername())
+      .role(user.getRole())
+      .updatedAt(user.getUpdatedAt())
+      .build();
+  }
 
   // 관리자 - 회원 삭제
 
