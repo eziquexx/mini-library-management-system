@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.user.dto;
+package com.jelee.librarymanagementsystem.domain.user.dto.admin;
 
 import com.jelee.librarymanagementsystem.global.enums.Role;
 

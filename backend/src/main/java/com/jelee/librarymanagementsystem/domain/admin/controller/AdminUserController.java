@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdatedResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;

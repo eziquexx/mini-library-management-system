@@ -11,10 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.UserListResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserRoleUpdatedResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.UserSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
