@@ -15,6 +15,8 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -172,6 +174,27 @@ public class UserService {
       .role(user.getRole())
       .updatedAt(user.getUpdatedAt())
       .build();
+  }
+
+  // 관리자 - 회원 상태 수정
+  public UserStatusUpdateResDTO updateUserStatus(Long userId, UserStatusUpdateReqDTO statusUpdateDTO) {
+
+    // 사용자 정보 확인 + 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
+    
+    // 상태 변경 및 저장
+    user.setStatus(statusUpdateDTO.getStatus());
+    user.setUpdatedAt(LocalDateTime.now());
+    userRepository.save(user);
+
+    // 응답 반환
+    return UserStatusUpdateResDTO.builder()
+        .id(user.getId())
+        .username(user.getUsername())
+        .status(user.getStatus())
+        .updatedAt(user.getUpdatedAt())
+        .build();
   }
 
   // 관리자 - 회원 삭제

@@ -14,6 +14,8 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
@@ -89,6 +91,25 @@ public class AdminUserController {
                 message, 
                 responseDTO));
   }
+
+  // 관리자 - 회원 상태 수정
+  @PatchMapping("/{userId}/status")
+  public ResponseEntity<?> updateUserStatus(
+    @PathVariable Long userId, 
+    @RequestBody UserStatusUpdateReqDTO statusUpdateDTO) {
+    
+    UserStatusUpdateResDTO responseDTO = userService.updateUserStatus(userId, statusUpdateDTO);
+    
+    String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATE.getMessage());
+
+    return ResponseEntity
+              .status(UserSuccessCode.USER_STATUS_UPDATE.getHttpStatus())
+              .body(ApiResponse.success(
+                UserSuccessCode.USER_STATUS_UPDATE, 
+                message, 
+                responseDTO));
+  }
+
 
   // 관리자 - 회원 삭제
 
