@@ -17,6 +17,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedRe
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -34,7 +35,7 @@ public class UserService {
 
   // email 업데이트
   @Transactional
-  public void updateEmail(String username, String newEmail) {
+  public UpdateEmailResDTO updateEmail(String username, String newEmail) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
@@ -48,9 +49,18 @@ public class UserService {
       throw new BaseException(UserErrorCode.USER_EMAIL_DUPLICATED);
     }
 
-    // 이메일 저장.authController
+    // user객체에 변경할 이메일, 수정된 날짜 저장 후 DB에 user객체 저장.
     user.setEmail(newEmail);
+    user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
+
+    // 응답
+    return UpdateEmailResDTO.builder()
+              .id(user.getId())
+              .username(user.getUsername())
+              .email(user.getEmail())
+              .updatedAt(user.getUpdatedAt())
+              .build();
   }
 
   // password 업데이트
@@ -69,9 +79,10 @@ public class UserService {
       throw new BaseException(UserErrorCode.USER_PASSWORD_NOTSAME);
     }
 
-    // 새로운 비밀번호 암호화 후 저장.
+    // 새로운 비밀번호 암호화, 수정된 날짜 저장 후 DB에 user 객체 저장.
     String encodedNewPassword = passwordEncoder.encode(newPassword);
     user.setPassword(encodedNewPassword);
+    user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
   }
 

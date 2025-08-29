@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResponseDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -69,16 +70,20 @@ public class UserController {
 
   // 사용자 - email 업데이트
   @PatchMapping("/email")
-  public ResponseEntity<?> updateEmail(@RequestBody UpdateEmailDTO updateEmail,
-                                      @AuthenticationPrincipal User user) {
-    userService.updateEmail(user.getUsername(), updateEmail.getEmail());
+  public ResponseEntity<?> updateEmail(
+    @RequestBody UpdateEmailReqDTO updateEmail, 
+    @AuthenticationPrincipal User user) {
+    
+    UpdateEmailResDTO responseDTO = userService.updateEmail(user.getUsername(), updateEmail.getEmail());
+
     String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
+    
     return ResponseEntity
               .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
               .body(ApiResponse.success(
                 UserSuccessCode.USER_EMAIL_UPDATE, 
                 message, 
-                user.getEmail()));
+                responseDTO));
   }
 
   // 사용자 - password 업데이트
