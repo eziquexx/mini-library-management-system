@@ -32,7 +32,7 @@ public class UserController {
   private final MessageProvider messageProvider;
   private final UserService userService;
 
-  // 사용자 인증 정보
+  // 사용자 - 사용자 인증 정보
   @GetMapping()
   public ResponseEntity<?> getMyInfo(Authentication authentication) {
     User user = (User) authentication.getPrincipal(); // 인증 객체
@@ -51,7 +51,7 @@ public class UserController {
                   null));
     }
 
-    // userInfo에 passowrd 제외한 정보 담기
+    // 사용자 - userInfo에 passowrd 제외한 정보 담기
     UserInfoResponseDTO userInfo = new UserInfoResponseDTO(
       user.getUsername(),
       user.getEmail(),
@@ -67,7 +67,7 @@ public class UserController {
                 userInfo));
   }
 
-  // email 업데이트
+  // 사용자 - email 업데이트
   @PatchMapping("/email")
   public ResponseEntity<?> updateEmail(@RequestBody UpdateEmailDTO updateEmail,
                                       @AuthenticationPrincipal User user) {
@@ -81,7 +81,7 @@ public class UserController {
                 user.getEmail()));
   }
 
-  // password 업데이트
+  // 사용자 - password 업데이트
   @PatchMapping("/password")
   public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDTO updatePassword,
                                           @AuthenticationPrincipal User user) {
@@ -97,7 +97,7 @@ public class UserController {
                 user.getUsername()));
   }
 
-  // 회원 탈퇴 - 계정 삭제
+  // 사용자 - 회원 탈퇴
   @DeleteMapping()
   public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountDTO deleteAccount,
                                         @AuthenticationPrincipal User user) {

@@ -10,6 +10,7 @@ import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.Role;
+import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
@@ -58,6 +59,15 @@ public class AuthService {
     // request와 DB의 password가 동일한지 체크
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new BaseException(UserErrorCode.INVALID_PASSWORD);
+    }
+
+    // 사용자의 상태가 ACTIVE인지 체크
+    if (user.getStatus() == UserStatus.INACTIVE) {
+      throw new BaseException(UserErrorCode.USER_STATUS_INACTIVE);
+    } else if (user.getStatus() == UserStatus.SUSPENDED) {
+      throw new BaseException(UserErrorCode.USER_STATUS_SUSPENDED);
+    } else if (user.getStatus() == UserStatus.DELETED) {
+      throw new BaseException(UserErrorCode.USER_STATUS_DELETED);
     }
 
     // 마지막 로그인 시간 저장
