@@ -1,10 +1,10 @@
 package com.jelee.librarymanagementsystem.domain.user.dto.client;
 
 import jakarta.validation.constraints.Email;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-public class UpdateEmailDTO {
+@Getter
+public class UpdateEmailReqDTO {
   @Email
   private String email;
 }

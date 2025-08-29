@@ -1,18 +1,22 @@
 package com.jelee.librarymanagementsystem.domain.user.controller;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResponseDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
@@ -22,6 +26,7 @@ import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,7 +37,7 @@ public class UserController {
   private final MessageProvider messageProvider;
   private final UserService userService;
 
-  // 사용자 인증 정보
+  // 사용자 - 사용자 인증 정보
   @GetMapping()
   public ResponseEntity<?> getMyInfo(Authentication authentication) {
     User user = (User) authentication.getPrincipal(); // 인증 객체
@@ -51,7 +56,7 @@ public class UserController {
                   null));
     }
 
-    // userInfo에 passowrd 제외한 정보 담기
+    // 사용자 - userInfo에 passowrd 제외한 정보 담기
     UserInfoResponseDTO userInfo = new UserInfoResponseDTO(
       user.getUsername(),
       user.getEmail(),
@@ -67,25 +72,31 @@ public class UserController {
                 userInfo));
   }
 
-  // email 업데이트
+  // 사용자 - email 업데이트
   @PatchMapping("/email")
-  public ResponseEntity<?> updateEmail(@RequestBody UpdateEmailDTO updateEmail,
-                                      @AuthenticationPrincipal User user) {
-    userService.updateEmail(user.getUsername(), updateEmail.getEmail());
+  public ResponseEntity<?> updateEmail(
+    @RequestBody UpdateEmailReqDTO updateEmail, 
+    @AuthenticationPrincipal User user) {
+    
+    UpdateEmailResDTO responseDTO = userService.updateEmail(user.getUsername(), updateEmail.getEmail());
+
     String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
+
     return ResponseEntity
               .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
               .body(ApiResponse.success(
                 UserSuccessCode.USER_EMAIL_UPDATE, 
                 message, 
-                user.getEmail()));
+                responseDTO));
   }
 
-  // password 업데이트
+  // 사용자 - password 업데이트
   @PatchMapping("/password")
-  public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDTO updatePassword,
-                                          @AuthenticationPrincipal User user) {
-    userService.updatePassword(user.getUsername(), updatePassword.getPassword(), updatePassword.getRepassword());
+  public ResponseEntity<?> updatePassword(
+    @RequestBody UpdatePasswordReqDTO updatePassword, 
+    @AuthenticationPrincipal User user) {
+    
+    UpdatePasswordResDTO responseDTO = userService.updatePassword(user.getId(), updatePassword);
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
     
@@ -94,14 +105,27 @@ public class UserController {
               .body(ApiResponse.success(
                 UserSuccessCode.USER_PASSWORD_UPDATE, 
                 message, 
-                user.getUsername()));
+                responseDTO));
   }
 
-  // 회원 탈퇴 - 계정 삭제
-  @DeleteMapping()
-  public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountDTO deleteAccount,
-                                        @AuthenticationPrincipal User user) {
-    userService.deleteAccount(deleteAccount.getPassword(), user.getUsername());
+  // 사용자 - 회원 탈퇴
+  @PostMapping("/withdraw")
+  public ResponseEntity<?> deleteAccount(
+    @RequestBody DeleteAccountReqDTO deleteAccount,
+    @AuthenticationPrincipal User user,
+    HttpServletResponse response) {
+    
+    DeleteAccountResDTO responseDTO = userService.deleteAccount(user.getId(), deleteAccount);
+
+    ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+              
+    response.addHeader("Set-Cookie", deleteCookie.toString());
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_DELETE_ACCOUNT.getMessage());
 
@@ -110,6 +134,6 @@ public class UserController {
               .body(ApiResponse.success(
                 UserSuccessCode.USER_DELETE_ACCOUNT, 
                 message, 
-                user.getUsername()));
+                responseDTO));
   }
 }

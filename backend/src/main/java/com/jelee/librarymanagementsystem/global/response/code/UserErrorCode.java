@@ -11,7 +11,11 @@ public enum UserErrorCode implements ErrorCode {
   USER_EMAIL_SAME(HttpStatus.BAD_REQUEST, "USER_003", "error.user.email_same"),
   USER_PASSWORD_SAME(HttpStatus.BAD_REQUEST, "USER_004", "error.user.password_same"),
   USER_PASSWORD_NOTSAME(HttpStatus.BAD_REQUEST, "USER_005", "error.password.notsame"),
-  USER_SEARCH_TYPE_FAILED(HttpStatus.BAD_REQUEST, "USER_006", "error.user.search.type");
+  USER_SEARCH_TYPE_FAILED(HttpStatus.BAD_REQUEST, "USER_006", "error.user.search.type"),
+  USER_STATUS_INACTIVE(HttpStatus.BAD_REQUEST, "USER_007", "error.user.status_inactive"),
+  USER_STATUS_SUSPENDED(HttpStatus.BAD_REQUEST, "USER_008", "error.user.status_suspended"),
+  USER_STATUS_DELETED(HttpStatus.BAD_REQUEST, "USER_009", "error.user.status_deleted"),
+  USER_DELETE_ACCOUNT_STATUS_DELETED(HttpStatus.BAD_REQUEST, "USER_010", "error.user.deleted.status_deleted");
 
   private final HttpStatus httpStatus;
   private final String code;

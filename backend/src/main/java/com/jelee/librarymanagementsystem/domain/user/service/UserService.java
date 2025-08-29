@@ -11,15 +11,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
@@ -34,7 +41,7 @@ public class UserService {
 
   // email 업데이트
   @Transactional
-  public void updateEmail(String username, String newEmail) {
+  public UpdateEmailResDTO updateEmail(String username, String newEmail) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
@@ -48,16 +55,31 @@ public class UserService {
       throw new BaseException(UserErrorCode.USER_EMAIL_DUPLICATED);
     }
 
-    // 이메일 저장.authController
+    // user객체에 변경할 이메일, 수정된 날짜 저장 후 DB에 user객체 저장.
     user.setEmail(newEmail);
+    user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
+
+    // 응답
+    return UpdateEmailResDTO.builder()
+              .id(user.getId())
+              .username(user.getUsername())
+              .email(user.getEmail())
+              .updatedAt(user.getUpdatedAt())
+              .build();
   }
 
   // password 업데이트
   @Transactional
-  public void updatePassword(String username, String newPassword, String rePassword) {
-    User user = userRepository.findByUsername(username)
+  public UpdatePasswordResDTO updatePassword(Long userId, UpdatePasswordReqDTO updatePassword) {
+
+    // 로그인한 사용자 객체
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    // 기존 비밀번호, 새로운 비밀번호 변수에 저장
+    String rePassword = updatePassword.getPassword();
+    String newPassword = updatePassword.getRepassword();
     
     // 기존 비밀번호와 새로운 비밀번호가 동일한지 체크
     if (passwordEncoder.matches(newPassword, user.getPassword())) {
@@ -69,24 +91,39 @@ public class UserService {
       throw new BaseException(UserErrorCode.USER_PASSWORD_NOTSAME);
     }
 
-    // 새로운 비밀번호 암호화 후 저장.
+    // 새로운 비밀번호 암호화, 수정된 날짜 저장 후 DB에 user 객체 저장.
     String encodedNewPassword = passwordEncoder.encode(newPassword);
     user.setPassword(encodedNewPassword);
+    user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
+
+    return UpdatePasswordResDTO.builder()
+              .id(user.getId())
+              .username(user.getUsername())
+              .updatedAt(user.getUpdatedAt())
+              .build();
   }
 
   // 회원 탈퇴, 삭제
   @Transactional
-  public void deleteAccount(String password, String username) {
-    User user = userRepository.findByUsername(username)
+  public DeleteAccountResDTO deleteAccount(Long userId, DeleteAccountReqDTO deleteAccount) {
+
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
+    String password = deleteAccount.getPassword();
+
     // 비밀번호가 일치하는지 체크
     if (!passwordEncoder.matches(password, user.getPassword())) {
       throw new BaseException(UserErrorCode.INVALID_PASSWORD);
     }
 
-    userRepository.delete(user);
+    // INACTIVE로 상태 변경 + inactiveAt 시각 저장 후 DB에 user 객체 업데이트 
+    user.setStatus(UserStatus.INACTIVE);
+    user.setInactiveAt(LocalDateTime.now());
+    userRepository.save(user);
+
+    return null;
   }
 
 
@@ -198,5 +235,23 @@ public class UserService {
   }
 
   // 관리자 - 회원 삭제
+  public UserDeleteResDTO deleteUserAccount(Long userId) {
+
+    // userId로 사용자 조회
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 사용자 상태가 DELETED 이면 삭제
+    if (user.getStatus() == UserStatus.DELETED) {
+      userRepository.delete(user);
+    } else {
+      throw new BaseException(UserErrorCode.USER_DELETE_ACCOUNT_STATUS_DELETED);
+    }
+    
+    return UserDeleteResDTO.builder()
+              .id(user.getId())
+              .username(user.getUsername())
+              .build();
+  }
 
 }

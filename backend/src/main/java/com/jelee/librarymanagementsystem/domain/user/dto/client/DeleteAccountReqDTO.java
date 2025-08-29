@@ -1,9 +1,8 @@
 package com.jelee.librarymanagementsystem.domain.user.dto.client;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-public class UpdatePasswordDTO {
+@Getter
+public class DeleteAccountReqDTO {
   private String password;
-  private String repassword;
 }

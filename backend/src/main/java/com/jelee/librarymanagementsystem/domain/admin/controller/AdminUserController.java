@@ -2,6 +2,7 @@ package com.jelee.librarymanagementsystem.domain.admin.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
@@ -112,5 +114,19 @@ public class AdminUserController {
 
 
   // 관리자 - 회원 삭제
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<?> deleteUserAccount(@PathVariable Long userId) {
+    
+    UserDeleteResDTO responseDTO = userService.deleteUserAccount(userId);
+    
+    String message = messageProvider.getMessage(UserSuccessCode.USER_DELETE_ACCOUNT.getMessage());
+
+    return ResponseEntity
+              .status(UserSuccessCode.USER_DELETE_ACCOUNT.getHttpStatus())
+              .body(ApiResponse.success(
+                UserSuccessCode.USER_DELETE_ACCOUNT, 
+                message, 
+                responseDTO));
+  }
 
 }
