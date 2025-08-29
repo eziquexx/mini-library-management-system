@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResponseDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
@@ -77,7 +78,7 @@ public class UserController {
     UpdateEmailResDTO responseDTO = userService.updateEmail(user.getUsername(), updateEmail.getEmail());
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
-    
+
     return ResponseEntity
               .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
               .body(ApiResponse.success(
@@ -88,9 +89,11 @@ public class UserController {
 
   // 사용자 - password 업데이트
   @PatchMapping("/password")
-  public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDTO updatePassword,
-                                          @AuthenticationPrincipal User user) {
-    userService.updatePassword(user.getUsername(), updatePassword.getPassword(), updatePassword.getRepassword());
+  public ResponseEntity<?> updatePassword(
+    @RequestBody UpdatePasswordReqDTO updatePassword, 
+    @AuthenticationPrincipal User user) {
+    
+    UpdatePasswordResDTO responseDTO = userService.updatePassword(user.getId(), updatePassword);
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
     
@@ -99,7 +102,7 @@ public class UserController {
               .body(ApiResponse.success(
                 UserSuccessCode.USER_PASSWORD_UPDATE, 
                 message, 
-                user.getUsername()));
+                responseDTO));
   }
 
   // 사용자 - 회원 탈퇴

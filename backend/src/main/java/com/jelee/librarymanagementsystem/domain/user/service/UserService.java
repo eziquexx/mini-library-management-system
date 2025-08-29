@@ -18,6 +18,8 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -65,9 +67,15 @@ public class UserService {
 
   // password 업데이트
   @Transactional
-  public void updatePassword(String username, String newPassword, String rePassword) {
-    User user = userRepository.findByUsername(username)
+  public UpdatePasswordResDTO updatePassword(Long userId, UpdatePasswordReqDTO updatePassword) {
+
+    // 로그인한 사용자 객체
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    // 기존 비밀번호, 새로운 비밀번호 변수에 저장
+    String rePassword = updatePassword.getPassword();
+    String newPassword = updatePassword.getRepassword();
     
     // 기존 비밀번호와 새로운 비밀번호가 동일한지 체크
     if (passwordEncoder.matches(newPassword, user.getPassword())) {
@@ -84,6 +92,12 @@ public class UserService {
     user.setPassword(encodedNewPassword);
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
+
+    return UpdatePasswordResDTO.builder()
+              .id(user.getId())
+              .username(user.getUsername())
+              .updatedAt(user.getUpdatedAt())
+              .build();
   }
 
   // 회원 탈퇴, 삭제
