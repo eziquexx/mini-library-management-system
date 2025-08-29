@@ -1,5 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.user.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -8,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 
 public interface UserRepository extends JpaRepository<User, Long> {
   // 아이디 중복 체크
@@ -28,4 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   // 관리자 - 회원 email 검색 (+페이징)
   Page<User> findByEmailContainingIgnoreCase(String email, Pageable pageable);
+
+  // 사용자 - INACTIVE 상태 변경시 inactiveAt 조회
+  List<User> findByStatusAndInactiveAtBefore(UserStatus status, LocalDateTime inactiveAt);
 }

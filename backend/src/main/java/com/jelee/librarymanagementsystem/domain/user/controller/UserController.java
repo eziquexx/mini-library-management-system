@@ -1,16 +1,18 @@
 package com.jelee.librarymanagementsystem.domain.user.controller;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
@@ -24,6 +26,7 @@ import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -106,10 +109,23 @@ public class UserController {
   }
 
   // 사용자 - 회원 탈퇴
-  @DeleteMapping()
-  public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountDTO deleteAccount,
-                                        @AuthenticationPrincipal User user) {
-    userService.deleteAccount(deleteAccount.getPassword(), user.getUsername());
+  @PostMapping("/withdraw")
+  public ResponseEntity<?> deleteAccount(
+    @RequestBody DeleteAccountReqDTO deleteAccount,
+    @AuthenticationPrincipal User user,
+    HttpServletResponse response) {
+    
+    DeleteAccountResDTO responseDTO = userService.deleteAccount(user.getId(), deleteAccount);
+
+    ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+              
+    response.addHeader("Set-Cookie", deleteCookie.toString());
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_DELETE_ACCOUNT.getMessage());
 
@@ -118,6 +134,6 @@ public class UserController {
               .body(ApiResponse.success(
                 UserSuccessCode.USER_DELETE_ACCOUNT, 
                 message, 
-                user.getUsername()));
+                responseDTO));
   }
 }

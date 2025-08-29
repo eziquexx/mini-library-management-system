@@ -17,12 +17,15 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedRe
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
@@ -102,16 +105,24 @@ public class UserService {
 
   // 회원 탈퇴, 삭제
   @Transactional
-  public void deleteAccount(String password, String username) {
-    User user = userRepository.findByUsername(username)
+  public DeleteAccountResDTO deleteAccount(Long userId, DeleteAccountReqDTO deleteAccount) {
+
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
+    String password = deleteAccount.getPassword();
+
     // 비밀번호가 일치하는지 체크
     if (!passwordEncoder.matches(password, user.getPassword())) {
       throw new BaseException(UserErrorCode.INVALID_PASSWORD);
     }
 
-    userRepository.delete(user);
+    // INACTIVE로 상태 변경 + inactiveAt 시각 저장 후 DB에 user 객체 업데이트 
+    user.setStatus(UserStatus.INACTIVE);
+    user.setInactiveAt(LocalDateTime.now());
+    userRepository.save(user);
+
+    return null;
   }
 
 
