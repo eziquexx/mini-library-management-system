@@ -84,10 +84,10 @@ public class AuthService {
     
     // 토큰을 구한 다음 토큰으로 userId 가져오기
     String accessToken = jwtTokenProvider.resolveTokenFromCookie(request);
-    Long userId = jwtTokenProvider.getUserIdFromToken(accessToken);
+    String username = jwtTokenProvider.getUsernameFromToken(accessToken);
 
     // id로 사용자 정보 가져오기
-    User user = userRepository.findById(userId)
+    User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
     return LogoutResDTO.builder()
