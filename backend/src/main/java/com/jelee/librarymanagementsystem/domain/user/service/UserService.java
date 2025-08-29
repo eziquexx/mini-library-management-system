@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
@@ -234,5 +235,23 @@ public class UserService {
   }
 
   // 관리자 - 회원 삭제
+  public UserDeleteResDTO deleteUserAccount(Long userId) {
+
+    // userId로 사용자 조회
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 사용자 상태가 DELETED 이면 삭제
+    if (user.getStatus() == UserStatus.DELETED) {
+      userRepository.delete(user);
+    } else {
+      throw new BaseException(UserErrorCode.USER_DELETE_ACCOUNT_STATUS_DELETED);
+    }
+    
+    return UserDeleteResDTO.builder()
+              .id(user.getId())
+              .username(user.getUsername())
+              .build();
+  }
 
 }

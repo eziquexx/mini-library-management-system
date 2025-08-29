@@ -14,7 +14,8 @@ public enum UserErrorCode implements ErrorCode {
   USER_SEARCH_TYPE_FAILED(HttpStatus.BAD_REQUEST, "USER_006", "error.user.search.type"),
   USER_STATUS_INACTIVE(HttpStatus.BAD_REQUEST, "USER_007", "error.user.status_inactive"),
   USER_STATUS_SUSPENDED(HttpStatus.BAD_REQUEST, "USER_008", "error.user.status_suspended"),
-  USER_STATUS_DELETED(HttpStatus.BAD_REQUEST, "USER_009", "error.user.status_deleted");
+  USER_STATUS_DELETED(HttpStatus.BAD_REQUEST, "USER_009", "error.user.status_deleted"),
+  USER_DELETE_ACCOUNT_STATUS_DELETED(HttpStatus.BAD_REQUEST, "USER_010", "error.user.deleted.status_deleted");
 
   private final HttpStatus httpStatus;
   private final String code;
