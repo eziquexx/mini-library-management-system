@@ -7,14 +7,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.auth.dto.JoinRequest;
-import com.jelee.librarymanagementsystem.domain.auth.dto.LoginRequest;
+import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +30,7 @@ public class AuthController {
 
   // 회원가입 api
   @PostMapping("/signup")
-  public ResponseEntity<ApiResponse<Long>> singUp(@RequestBody JoinRequest request) {
+  public ResponseEntity<ApiResponse<Long>> singUp(@RequestBody JoinReqDTO request) {
     Long userId = authService.signUp(request);
 
     String message = messageProvider.getMessage(UserSuccessCode.USER_CREATED.getMessage());
@@ -43,7 +45,9 @@ public class AuthController {
 
   // 로그인 api
   @PostMapping("/signin")
-  public ResponseEntity<?> signIn(@RequestBody LoginRequest request, HttpServletResponse response) {
+  public ResponseEntity<?> signIn(
+    @RequestBody LoginReqDTO request, 
+    HttpServletResponse response) {
     String token = authService.signIn(request);
 
     // Jwt를 HttpOnly 쿠키에 저장
@@ -69,7 +73,10 @@ public class AuthController {
 
   // 로그아웃 api
   @PostMapping("/logout")
-  public ResponseEntity<?> logout(HttpServletResponse response) {
+  public ResponseEntity<?> logout(
+    HttpServletRequest request, 
+    HttpServletResponse response) {
+    
     // Jwt 제거
     ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
                 .httpOnly(true)
@@ -81,6 +88,8 @@ public class AuthController {
     
     response.addHeader("Set-Cookie", deleteCookie.toString());
 
+    LogoutResDTO responseDTO = authService.logout(request);
+
     String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getMessage());
 
     return ResponseEntity
@@ -88,6 +97,6 @@ public class AuthController {
               .body(ApiResponse.success(
                 AuthSuccessCode.AUTH_LOGOUT_SUCCESS, 
                 message, 
-                null));
+                responseDTO));
   }
 }
