@@ -74,16 +74,6 @@ public class JwtTokenProvider {
               .getSubject();
   }
 
-  // 토큰으로 사용자 ID 얻기
-  public Long getUserIdFromToken(String token) {
-    String subject = Jwts.parserBuilder()
-              .setSigningKey(key).build()
-              .parseClaimsJws(token)
-              .getBody()
-              .getSubject();
-    return Long.valueOf(subject);
-  }
-
   // Cookie에서 토큰을 추출
   public String resolveTokenFromCookie(HttpServletRequest request) {
     if (request.getCookies() == null) return null;
