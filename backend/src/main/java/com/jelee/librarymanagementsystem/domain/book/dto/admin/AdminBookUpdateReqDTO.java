@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.book.dto;
+package com.jelee.librarymanagementsystem.domain.book.dto.admin;
 
 import java.time.LocalDate;
 
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class BookUpdateReqDTO {
+public class AdminBookUpdateReqDTO {
 
   @NotBlank
   private String title;
