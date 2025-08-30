@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateReqDTO;
@@ -205,5 +206,15 @@ public class AdminBookService {
         .toList();
     
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 도서 상세 조회
+  public AdminBookDetailResDTO detailBook(Long bookId) {
+    
+    // bookId로 도서 조회
+    Book book = bookRepository.findById(bookId)
+        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
+
+    return new AdminBookDetailResDTO(book);
   }
 }
