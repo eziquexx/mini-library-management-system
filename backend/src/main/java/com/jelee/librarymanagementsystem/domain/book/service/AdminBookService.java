@@ -9,11 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.jelee.librarymanagementsystem.domain.book.dto.BookListResDTO;
-import com.jelee.librarymanagementsystem.domain.book.dto.BookRequestDTO;
-import com.jelee.librarymanagementsystem.domain.book.dto.BookResponseDTO;
-import com.jelee.librarymanagementsystem.domain.book.dto.BookSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.book.dto.BookUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.enums.BookSearchType;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
@@ -26,13 +26,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BookService {
+public class AdminBookService {
 
   private final BookRepository bookRepository;
   
   // 도서 등록
   @Transactional
-  public BookResponseDTO createBook(BookRequestDTO request) {
+  public AdminBookCreateResDTO createBook(AdminBookCreateReqDTO request) {
     
     // 필수 필드 Null 체크(title, isbn, author, publisher, publishedDate, location)
     if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
@@ -73,12 +73,12 @@ public class BookService {
 
     Book saveBook = bookRepository.save(book);
 
-    return new BookResponseDTO(saveBook);
+    return new AdminBookCreateResDTO(saveBook);
   }
 
   // 도서 수정
   @Transactional
-  public BookResponseDTO updateBook(Long bookId, BookUpdateReqDTO request) {
+  public AdminBookCreateResDTO updateBook(Long bookId, AdminBookUpdateReqDTO request) {
 
     Book book = bookRepository.findById(bookId)
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
@@ -112,7 +112,7 @@ public class BookService {
     
     book.update(request);
 
-    return new BookResponseDTO(book);
+    return new AdminBookCreateResDTO(book);
   }
 
   // 도서 삭제
@@ -153,7 +153,7 @@ public class BookService {
 
   // 도서 검색 - 페이징
   @Transactional
-  public Page<BookSearchResDTO> searchBooks(String typeStr, String keyword, int page, int size) {
+  public Page<AdminBookSearchResDTO> searchBooks(String typeStr, String keyword, int page, int size) {
 
     Pageable pageable = PageRequest.of(page, size);
 
@@ -185,23 +185,23 @@ public class BookService {
       throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
     }
 
-    List<BookSearchResDTO> dtoList = result.getContent()
+    List<AdminBookSearchResDTO> dtoList = result.getContent()
         .stream()
-        .map(BookSearchResDTO::new)
+        .map(AdminBookSearchResDTO::new)
         .toList();
 
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 
   // 도서 전체 목록 조회
-  public Page<BookListResDTO> allListBooks(int page, int size) {
+  public Page<AdminBookListResDTO> allListBooks(int page, int size) {
 
     Pageable pageable = PageRequest.of(page, size);
 
     Page<Book> result = bookRepository.findAll(pageable);
-    List<BookListResDTO> dtoList = result.getContent()
+    List<AdminBookListResDTO> dtoList = result.getContent()
         .stream()
-        .map(BookListResDTO::new)
+        .map(AdminBookListResDTO::new)
         .toList();
     
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());

@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.book.dto;
+package com.jelee.librarymanagementsystem.domain.book.dto.admin;
 
 import java.time.LocalDate;
 
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookListResDTO {
+public class AdminBookListResDTO {
   private Long id;
   private String title;
   private String author;
@@ -19,7 +19,7 @@ public class BookListResDTO {
   private LocalDate publishedDate;
   private String location;
 
-  public BookListResDTO(Book book) {
+  public AdminBookListResDTO(Book book) {
     this.id = book.getId();
     this.title = book.getTitle();
     this.author = book.getAuthor();
