@@ -8,9 +8,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
+import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +41,14 @@ public class UserBookService {
   }
 
   // 도서 상세 조회
+  public UserBookDetailResDTO detailBook(Long bookId) {
+
+    // bookId로 도서 데이터 가져오기
+    Book book = bookRepository.findById(bookId)
+        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
+    
+    return new UserBookDetailResDTO(book);
+  }
 
   // 도서 검색 - 페이징
 }
