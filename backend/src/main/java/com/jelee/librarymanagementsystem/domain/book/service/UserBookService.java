@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookListResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
+import com.jelee.librarymanagementsystem.domain.book.enums.BookSearchType;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -51,4 +54,50 @@ public class UserBookService {
   }
 
   // 도서 검색 - 페이징
+  @Transactional
+  public Page<UserBookSearchResDTO> searchBooks(String typeStr, String keyword, int page, int size) {
+
+    // Pageable
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 타입 예외처리
+    BookSearchType type;
+    try {
+      type = BookSearchType.valueOf(typeStr.toUpperCase());
+    } catch(IllegalArgumentException e) {
+      throw new BaseException(BookErrorCode.BOOK_SEARCH_TYPE_FAILED);
+    }
+
+    // 결과 담을 번수
+    Page<Book> result;
+
+    // 타입 switch문으로 case 실행
+    switch(type) {
+      case ALL:
+        result = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, pageable);
+        break;
+      case TITLE:
+        result = bookRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        break;
+      case AUTHOR:
+        result = bookRepository.findByAuthorContainingIgnoreCase(keyword, pageable);
+        break;
+      default:
+        throw new IllegalArgumentException("Unexpected search type: " + type);
+    }
+
+    // result 비어있는지 체크
+    if (result.isEmpty()) {
+      throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
+    }
+
+    // List 타입 형태로 변형
+    List<UserBookSearchResDTO> dtoList = result.getContent()
+        .stream()
+        .map(UserBookSearchResDTO::new)
+        .toList();
+
+    // Page 형태로 반환
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
 }
