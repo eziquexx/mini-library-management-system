@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.admin.controller;
+package com.jelee.librarymanagementsystem.domain.user.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

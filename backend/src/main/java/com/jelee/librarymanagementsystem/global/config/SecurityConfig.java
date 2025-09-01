@@ -41,7 +41,8 @@ public class SecurityConfig {
             "/api/v1/auth/**", 
             "/api/v1/books/**",
             "/api/v1/admin/books/**",
-            "/api/v1/admin/users/**").permitAll()
+            "/api/v1/admin/users/**",
+            "/api/v1/admin/notices/**").permitAll()
           .anyRequest().authenticated())
       .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class)
       ;
