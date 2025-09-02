@@ -98,4 +98,22 @@ public class AdminNoticeService {
     // 반환
     return new AdminNoticeUpdateResDTO(notice);
   }
+
+  // 공지사항 삭제
+  @Transactional
+  public void deleteNotice(Long noticeId, User user) {
+
+    // notice 조회
+    Notice notice = noticeRepository.findById(noticeId)
+        .orElseThrow(() -> new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND));
+
+    // 권한 체크
+    Role userRole = user.getRole();
+    if (!(userRole.equals(Role.ROLE_MANAGER) || userRole.equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+    
+    // 삭제
+    noticeRepository.delete(notice);
+  }
 }
