@@ -1,9 +1,16 @@
 package com.jelee.librarymanagementsystem.domain.notice.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.WriterDTO;
@@ -115,5 +122,25 @@ public class AdminNoticeService {
     
     // 삭제
     noticeRepository.delete(notice);
+  }
+
+  // 공지사항 전체 목록 조회
+  @Transactional
+  public Page<AdminNoticeListResDTO> allListNotices(int page, int size) {
+    
+    // 페이징 정보 생성
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 결과를 Page<Notice> 타입으로 저장
+    Page<Notice> result = noticeRepository.findAll(pageable);
+
+    // 엔티티 리스트를 DTO 리스트로 변환
+    List<AdminNoticeListResDTO> dtoList = result.getContent()
+        .stream()
+        .map(AdminNoticeListResDTO::new)
+        .toList();
+    
+    // 반환할때 DTO 리스트를 Page 형식으로 래핑하여 반환
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 }
