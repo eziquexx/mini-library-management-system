@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.service.AdminNoticeService;
@@ -115,6 +116,26 @@ public class AdminNoticeController {
   }
 
   // 공지사항 키워드 검색 조회(페이징)
+  @GetMapping("/search")
+  public ResponseEntity<?> searchNotices(
+    @RequestParam String keyword,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+    
+    // 서비스로직
+    Page<AdminNoticeSearchResDTO> responseDTO = adminNoticeService.searchNotices(keyword, page, size);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
+
+    // 반환
+    return ResponseEntity
+              .status(NoticeSuccessCode.NOTICE_FETCHED.getHttpStatus())
+              .body(ApiResponse.success(
+                NoticeSuccessCode.NOTICE_FETCHED, 
+                message, 
+                responseDTO));
+  }
 
   // 공지사항 상세
 }

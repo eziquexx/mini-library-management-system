@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.WriterDTO;
@@ -140,6 +141,31 @@ public class AdminNoticeService {
         .map(AdminNoticeListResDTO::new)
         .toList();
     
+    // 반환할때 DTO 리스트를 Page 형식으로 래핑하여 반환
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 공지사항 검색
+  @Transactional
+  public Page<AdminNoticeSearchResDTO> searchNotices(String keyword, int page, int size) {
+
+    // 페이징 정보 생성
+    Pageable pageable = PageRequest.of(page, size);
+    
+    // 결과를 Page<Notice> 타입으로 저장
+    Page<Notice> result = noticeRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+
+    // 결과 없는 경우 예외
+    if (result.isEmpty()) {
+      throw new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND);
+    }
+
+    // 엔티티 리스트를 DTO 리스트로 변환
+    List<AdminNoticeSearchResDTO> dtoList = result.getContent()
+          .stream()
+          .map(AdminNoticeSearchResDTO::new)
+          .toList();
+
     // 반환할때 DTO 리스트를 Page 형식으로 래핑하여 반환
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
