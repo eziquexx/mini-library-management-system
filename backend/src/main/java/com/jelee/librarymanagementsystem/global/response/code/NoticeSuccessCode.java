@@ -6,7 +6,9 @@ public enum NoticeSuccessCode implements SuccessCode {
   
   NOTICE_CREATED(HttpStatus.CREATED, "NOTICE_201", "success.notice.created"),
   NOTICE_UPDATED(HttpStatus.OK, "NOTICE_202", "success.notice.updated"),
-  NOTICE_DELETED(HttpStatus.OK, "NOTICE_203", "success.notice.deleted");
+  NOTICE_DELETED(HttpStatus.OK, "NOTICE_203", "success.notice.deleted"),
+  NOTICE_LIST_FETCHED(HttpStatus.OK, "NOTICE_204", "success.notice.list_fetched"),
+  NOTICE_FETCHED(HttpStatus.OK, "NOTICE_205", "success.notice.fetched");
 
   private final HttpStatus httpStatus;
   private final String code;
