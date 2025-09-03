@@ -94,7 +94,7 @@ public class AdminNoticeController {
   }
 
   // 공지사항 전체 목록 조회(페이징)
-  @GetMapping("/search")
+  @GetMapping()
   public ResponseEntity<?> allListNotices(
     @RequestParam(defaultValue = "0") int page,
     @RequestParam(defaultValue = "10") int size) {
