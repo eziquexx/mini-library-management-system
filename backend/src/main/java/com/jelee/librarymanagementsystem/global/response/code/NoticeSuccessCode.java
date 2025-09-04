@@ -8,7 +8,8 @@ public enum NoticeSuccessCode implements SuccessCode {
   NOTICE_UPDATED(HttpStatus.OK, "NOTICE_202", "success.notice.updated"),
   NOTICE_DELETED(HttpStatus.OK, "NOTICE_203", "success.notice.deleted"),
   NOTICE_LIST_FETCHED(HttpStatus.OK, "NOTICE_204", "success.notice.list_fetched"),
-  NOTICE_FETCHED(HttpStatus.OK, "NOTICE_205", "success.notice.fetched");
+  NOTICE_FETCHED(HttpStatus.OK, "NOTICE_205", "success.notice.fetched"),
+  NOTICE_DETAIL(HttpStatus.OK, "NOTICE_206", "success.notice.detail");
 
   private final HttpStatus httpStatus;
   private final String code;

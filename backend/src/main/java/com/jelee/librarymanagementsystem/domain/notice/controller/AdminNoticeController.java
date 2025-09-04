@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateReqDTO;
@@ -138,4 +139,21 @@ public class AdminNoticeController {
   }
 
   // 공지사항 상세
+  @GetMapping("/{noticeId}")
+  public ResponseEntity<?> detailNotice(@PathVariable("noticeId") Long noticeId) {
+
+    // 서비스로직
+    AdminNoticeDetailResDTO responseDTO = adminNoticeService.detailNotice(noticeId);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_DETAIL.getMessage());
+
+    // 반환
+    return ResponseEntity
+              .status(NoticeSuccessCode.NOTICE_DETAIL.getHttpStatus())
+              .body(ApiResponse.success(
+                NoticeSuccessCode.NOTICE_DELETED, 
+                message, 
+                responseDTO));
+  }
 }
