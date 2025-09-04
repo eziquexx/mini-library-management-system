@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateReqDTO;
@@ -168,5 +169,16 @@ public class AdminNoticeService {
 
     // 반환할때 DTO 리스트를 Page 형식으로 래핑하여 반환
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 공지사항 상세보기
+  public AdminNoticeDetailResDTO detailNotice(Long noticeId) {
+    
+    // noticeId로 조회후 Notice 객체 생성
+    Notice notice = noticeRepository.findById(noticeId)
+        .orElseThrow(() -> new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND));
+
+    // notice 반환
+    return new AdminNoticeDetailResDTO(notice);
   }
 }
