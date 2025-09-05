@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.entity.Notice;
 import com.jelee.librarymanagementsystem.domain.notice.repository.NoticeRepository;
@@ -46,4 +47,14 @@ public class UserNoticeService {
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 
+  // 공지사항 상세보기
+  public UserNoticeDetailResDTO detailNotice(Long noticeId) {
+    
+    // noticeId로 해당 데이터 조회
+    Notice notice = noticeRepository.findById(noticeId)
+        .orElseThrow(() -> new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND));
+    
+    // Notice 반환
+    return new UserNoticeDetailResDTO(notice);
+  }
 }
