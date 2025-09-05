@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeListResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.entity.Notice;
 import com.jelee.librarymanagementsystem.domain.notice.repository.NoticeRepository;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -57,4 +58,29 @@ public class UserNoticeService {
     // Notice 반환
     return new UserNoticeDetailResDTO(notice);
   }
+
+  // 공지사항 검색 목록 보기 (페이징)
+  public Page<UserNoticeSearchResDTO> searchNotices(String keyword, int page, int size) {
+
+    // 페이징 준비
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 레포지토리 로직
+    // 결과를 Page<Notice> 타입으로 저장
+    Page<Notice> result = noticeRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+
+    // 결과 없을 시 예외처리
+    if (result.isEmpty()) {
+      throw new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND);
+    }
+
+    // 엔티티 리스트를 DTO 리스트로 변환
+    List<UserNoticeSearchResDTO> dtoList = result.getContent()
+        .stream()
+        .map(UserNoticeSearchResDTO::new)
+        .toList();
+
+    // 반환할 때 DTO 리스트를 Page 형식으로 랩핑하여 반환
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  } 
 }

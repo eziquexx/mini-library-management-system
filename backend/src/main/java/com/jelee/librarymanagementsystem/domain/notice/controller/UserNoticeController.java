@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeListResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.service.UserNoticeService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.NoticeSuccessCode;
@@ -65,5 +66,24 @@ public class UserNoticeController {
                 responseDTO));
   }
 
-  // 공지사항 검색 목록 보기
+  // 공지사항 검색 목록 보기 (페이징)
+  @GetMapping("/search")
+  public ResponseEntity<?> searchNotices(
+    @RequestParam String keyword, 
+    @RequestParam(defaultValue = "0") int page, 
+    @RequestParam(defaultValue = "10") int size) {
+
+    // 서비스로직
+    Page<UserNoticeSearchResDTO> responseDTO = userNoticeService.searchNotices(keyword, page, size);
+    
+    // 성공메시지
+    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
+
+    return ResponseEntity
+              .status(NoticeSuccessCode.NOTICE_FETCHED.getHttpStatus())
+              .body(ApiResponse.success(
+                NoticeSuccessCode.NOTICE_FETCHED, 
+                message, 
+                responseDTO));
+  }
 }
