@@ -12,6 +12,7 @@ import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.LoanErrorCode;
@@ -43,6 +44,11 @@ public class AdminLoanService {
     // 도서 대출 가능 여부 확인
     if (book.getStatus() != BookStatus.AVAILABLE) {
       throw new BaseException(LoanErrorCode.LOAN_ALREADY_BORROWED);
+    }
+
+    // 사용자의 상태가 ACTIVE만 대출 가능
+    if (user.getStatus() != UserStatus.ACTIVE) {
+      throw new BaseException(LoanErrorCode.USER_NOT_ELIGIBLE_FOR_LOAN);
     }
 
     // 사용자 대출 3건이상은 대출 불가
