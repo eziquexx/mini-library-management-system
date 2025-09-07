@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public enum LoanSuccessCode implements SuccessCode {
   
-  LOAN_CRATED_SUCCESS(HttpStatus.CREATED, "LOAN_200", "success.loan.created");
+  LOAN_CRATED_SUCCESS(HttpStatus.CREATED, "LOAN_200", "success.loan.created"),
+  LOAN_LIST_FETCHED(HttpStatus.OK, "LOAN_205", "success.loan.list_fetched");
 
   private final HttpStatus httpStatus;
   private final String code;

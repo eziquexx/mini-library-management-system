@@ -1,13 +1,18 @@
 package com.jelee.librarymanagementsystem.domain.loan.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.service.AdminLoanService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.LoanSuccessCode;
@@ -43,6 +48,25 @@ public class AdminLoanController {
   }
 
   // 전체 대출 목록 조회
+  @GetMapping()
+  public ResponseEntity<?> allListLoans(
+    @RequestParam(required = false) LoanStatus status,
+    @RequestParam(defaultValue = "0") int page, 
+    @RequestParam(defaultValue = "10") int size) {
+    
+    // 서비스로직
+    Page<AdminLoanListResDTO> responseDTO = adminLoanService.allListLoans(status, page, size);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_LIST_FETCHED.getMessage());
+    
+    return ResponseEntity
+              .status(LoanSuccessCode.LOAN_LIST_FETCHED.getHttpStatus())
+              .body(ApiResponse.success(
+                LoanSuccessCode.LOAN_LIST_FETCHED, 
+                message, 
+                responseDTO));
+  }
 
   // 대출 상세 조회
 
