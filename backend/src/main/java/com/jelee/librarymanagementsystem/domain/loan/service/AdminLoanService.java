@@ -13,6 +13,7 @@ import com.jelee.librarymanagementsystem.domain.book.enums.BookStatus;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.entity.Loan;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
@@ -107,5 +108,16 @@ public class AdminLoanService {
 
     // 반환시 DTO 리스트를 Page 형식으로 랩핑하여 반환
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  // 도서 대출 상세 조회
+  public AdminLoanDetailResDTO detailLoan(Long loanId) {
+
+    // loan 유효 검사
+    Loan loan = loanRepository.findById(loanId)
+        .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
+    
+    // loan 데이터를 가지고 응답 DTO 객체 생성하여 반환
+    return new AdminLoanDetailResDTO(loan);
   }
 }

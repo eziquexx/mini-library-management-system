@@ -3,6 +3,7 @@ package com.jelee.librarymanagementsystem.domain.loan.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.service.AdminLoanService;
@@ -69,6 +71,23 @@ public class AdminLoanController {
   }
 
   // 대출 상세 조회
+  @GetMapping("/{loanId}")
+  public ResponseEntity<?> detailLoan(@PathVariable("loanId") Long loanId) {
+    
+    // 서비스로직
+    AdminLoanDetailResDTO responseDTO = adminLoanService.detailLoan(loanId);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_DETAIL_FETCHED_SUCCESS.getMessage());
+
+    // 응답
+    return ResponseEntity
+              .status(LoanSuccessCode.LOAN_DETAIL_FETCHED_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                LoanSuccessCode.LOAN_DETAIL_FETCHED_SUCCESS, 
+                message, 
+                responseDTO));
+  }
 
   // 대출 타입별 키워드 검색
 
