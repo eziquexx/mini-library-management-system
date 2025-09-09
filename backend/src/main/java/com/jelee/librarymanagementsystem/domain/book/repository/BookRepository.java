@@ -1,5 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.book.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +37,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
   // 도서 전체 목록 조회
   @NonNull
   Page<Book> findAll(Pageable pageable);
+
+  Optional<Book> findByTitle(String keyword);
 }
