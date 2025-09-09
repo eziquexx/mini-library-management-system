@@ -15,7 +15,9 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateRe
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.entity.Loan;
+import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -81,6 +83,7 @@ public class AdminLoanService {
   }
 
   // 전체 대출 목록 조회
+  @Transactional
   public Page<AdminLoanListResDTO> allListLoans(LoanStatus status, int page, int size) {
 
     // 페이징 준비
@@ -111,6 +114,7 @@ public class AdminLoanService {
   }
 
   // 도서 대출 상세 조회
+  @Transactional
   public AdminLoanDetailResDTO detailLoan(Long loanId) {
 
     // loan 유효 검사
@@ -119,5 +123,63 @@ public class AdminLoanService {
     
     // loan 데이터를 가지고 응답 DTO 객체 생성하여 반환
     return new AdminLoanDetailResDTO(loan);
+  }
+
+  // 도서 대출 조건별 검색
+  @Transactional
+  public Page<AdminLoanSearchResDTO> searchLoan(LoanSearchType typeStr, String keyword, LoanStatus status, int page, int size) {
+
+    // 값 체크
+    System.out.println(typeStr);
+    System.out.println(keyword);
+    System.out.println(status);
+
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
+
+    // type 예외처리
+    LoanSearchType type;
+    try {
+      type = LoanSearchType.valueOf(typeStr.toString().toUpperCase());
+    } catch(IllegalArgumentException e) {
+      throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_FAILED);
+    }
+    
+    // type별 검색 - BOOKTITLE, USERID
+    Page<Loan> result;
+    
+    switch (type) {
+      case BOOKTITLE:
+        // 도서 대출 상태가 null이면 도서명으로만 검색
+        // 도서 대출 상태가 null이 아니면, 도서명 + 대출 상태로 검색
+        result = (status != null)
+            ? loanRepository.findByBook_TitleContainingIgnoreCaseAndStatus(keyword, status, pageable)
+            : loanRepository.findByBook_TitleContainingIgnoreCase(keyword, pageable);
+        break;
+      
+      case USERID:
+        // 사용자 유효검사
+        User user = userRepository.findByUsername(keyword)
+            .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+            
+        // 도서 대출 상태가 null이면 사용자명으로만 검색
+        // 도서 대출 상태가 null이 아니면 사옹자명 + 대출 상태로 검색
+        result = (status != null)
+            ? loanRepository.findByUser_UsernameContainingIgnoreCaseAndStatus(user.getUsername(), status, pageable)
+            : loanRepository.findByUser_UsernameContainingIgnoreCase(user.getUsername(), pageable);
+        break;
+
+      default:
+        throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_FAILED);
+    }
+
+    // Page dto를 List 형태로 변환
+    List<AdminLoanSearchResDTO> dtoList = result.getContent()
+        .stream()
+        .map(AdminLoanSearchResDTO::new)
+        .toList();
+
+    // 반환시 dtoList를 PageImpl로 감싸서 반환
+    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 }

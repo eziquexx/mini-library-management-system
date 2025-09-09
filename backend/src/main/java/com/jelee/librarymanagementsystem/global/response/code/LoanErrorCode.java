@@ -7,7 +7,8 @@ public enum LoanErrorCode implements ErrorCode {
   LOAN_NOT_FOUND(HttpStatus.NOT_FOUND, "LOAN_404", "error.loan.not_found"),
   LOAN_ALREADY_BORROWED(HttpStatus.CONFLICT, "LOAN_407", "error.loan.already_borrowed"),
   LOAN_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "LOAN_406", "error.loan.limit_exceeded"),
-  USER_NOT_ELIGIBLE_FOR_LOAN(HttpStatus.FORBIDDEN, "LOAN_408", "error.loan.user_not_eligible");
+  USER_NOT_ELIGIBLE_FOR_LOAN(HttpStatus.FORBIDDEN, "LOAN_408", "error.loan.user_not_eligible"),
+  LOAN_SEARCH_TYPE_FAILED(HttpStatus.BAD_REQUEST, "LOAN_409", "error.loan.search.type");
 
   private final HttpStatus httpStatus;
   private final String code;
