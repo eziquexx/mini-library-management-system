@@ -150,11 +150,15 @@ public class AdminLoanService {
     
     switch (type) {
       case BOOKTITLE:
+        // 도서 유효검사
+        Book book = bookRepository.findByTitle(keyword)
+            .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
+        
         // 도서 대출 상태가 null이면 도서명으로만 검색
         // 도서 대출 상태가 null이 아니면, 도서명 + 대출 상태로 검색
         result = (status != null)
-            ? loanRepository.findByBook_TitleContainingIgnoreCaseAndStatus(keyword, status, pageable)
-            : loanRepository.findByBook_TitleContainingIgnoreCase(keyword, pageable);
+            ? loanRepository.findByBook_TitleContainingIgnoreCaseAndStatus(book.getTitle(), status, pageable)
+            : loanRepository.findByBook_TitleContainingIgnoreCase(book.getTitle(), pageable);
         break;
       
       case USERID:
