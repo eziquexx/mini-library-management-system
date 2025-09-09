@@ -14,6 +14,8 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateRe
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.service.AdminLoanService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
@@ -89,7 +91,28 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 대출 타입별 키워드 검색
+  // 도서 대출 조건별 검색
+  @GetMapping("/search")
+  public ResponseEntity<?> searchLoan(
+    @RequestParam(required = false) LoanSearchType type, 
+    @RequestParam String keyword, 
+    @RequestParam(required = false) LoanStatus status,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+
+    // 서비스로직
+    Page<AdminLoanSearchResDTO> responseDTO = adminLoanService.searchLoan(type, keyword, status, page, size);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
+
+    return ResponseEntity
+              .status(LoanSuccessCode.LOAN_FETCHED.getHttpStatus())
+              .body(ApiResponse.success(
+                LoanSuccessCode.LOAN_FETCHED, 
+                message, 
+                responseDTO));
+  }
 
   // 도서 반납 처리
 
