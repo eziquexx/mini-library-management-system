@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +24,13 @@ import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountRes
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,22 @@ public class UserService {
   
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+
+  // 사용자 인증 정보
+  @Transactional
+  public UserInfoResDTO getMyInfo(Authentication authentication) {
+
+    // User 인증 객체
+    User user = (User) authentication.getPrincipal();
+
+    // User에 인증 정보 체크
+    if (user == null) {
+      throw new BaseException(AuthErrorCode.AUTH_UNAUTHORIZED);
+    }
+
+    // 반환
+    return new UserInfoResDTO(user);
+  }
 
   // email 업데이트
   @Transactional
