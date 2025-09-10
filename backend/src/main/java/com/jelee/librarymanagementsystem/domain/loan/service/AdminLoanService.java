@@ -196,14 +196,23 @@ public class AdminLoanService {
     // Loan 엔티티 조회 + 예외 처리
     Loan loan = loanRepository.findById(loanId)
         .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
+    
+    // Book 엔티티 조회
+    Book book = bookRepository.findById(loan.getBook().getId())
+        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
 
+    // loan 상태 체크 (반납이 된 상태인지)
     if (loan.getStatus() == LoanStatus.RETURNED) {
       throw new BaseException(LoanErrorCode.LOAN_ALREADY_RETURNED);
     }
 
-    // 반납 시간과 상태 변경
+    // 대출 내역 반납 시간과 상태 변경
     loan.setReturnDate(LocalDateTime.now());
     loan.setStatus(LoanStatus.RETURNED);
+
+    // 도서 상태와 수정 시간 변경
+    book.setStatus(BookStatus.AVAILABLE);
+    book.setUpdatedAt(LocalDateTime.now());
 
     // 변경된 loan 반환
     return new AdminLoanReturnResDTO(loan);
