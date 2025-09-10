@@ -17,11 +17,10 @@ import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDT
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResponseDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.service.UserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
-import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -40,36 +39,20 @@ public class UserController {
   // 사용자 - 사용자 인증 정보
   @GetMapping()
   public ResponseEntity<?> getMyInfo(Authentication authentication) {
-    User user = (User) authentication.getPrincipal(); // 인증 객체
 
+    // 서비스 로직
+    UserInfoResDTO responseDTO = userService.getMyInfo(authentication);
+
+    // 성공메시지
     String message = messageProvider.getMessage(AuthSuccessCode.AUTH_USER_VERIFIED.getMessage());
 
-    // user에 인증 정보가 없으면
-    if (user == null) {
-      message = messageProvider.getMessage(AuthErrorCode.AUTH_UNAUTHORIZED.getMessage());
-
-      return ResponseEntity
-                .status(AuthErrorCode.AUTH_UNAUTHORIZED.getHttpStatus())
-                .body(ApiResponse.error(
-                  AuthErrorCode.AUTH_UNAUTHORIZED, 
-                  message, 
-                  null));
-    }
-
-    // 사용자 - userInfo에 passowrd 제외한 정보 담기
-    UserInfoResponseDTO userInfo = new UserInfoResponseDTO(
-      user.getUsername(),
-      user.getEmail(),
-      user.getJoinDate(),
-      user.getLastLoginDate()
-    );
-
+    // 반환
     return ResponseEntity
               .status(AuthSuccessCode.AUTH_USER_VERIFIED.getHttpStatus())
               .body(ApiResponse.success(
                 AuthSuccessCode.AUTH_USER_VERIFIED, 
                 message, 
-                userInfo));
+                responseDTO));
   }
 
   // 사용자 - email 업데이트
