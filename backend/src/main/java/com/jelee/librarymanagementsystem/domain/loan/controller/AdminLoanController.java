@@ -3,6 +3,7 @@ package com.jelee.librarymanagementsystem.domain.loan.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateRe
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanReturnResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
@@ -115,6 +117,22 @@ public class AdminLoanController {
   }
 
   // 도서 반납 처리
+  @PatchMapping("/{loanId}/return")
+  public ResponseEntity<?> returnLoan(@PathVariable("loanId") Long loanId) {
+    
+    // 서비스로직
+    AdminLoanReturnResDTO responseDTO = adminLoanService.returnLoan(loanId);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_RETURNED_SUCCESS.getMessage());
+
+    return ResponseEntity
+              .status(LoanSuccessCode.LOAN_RETURNED_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                LoanSuccessCode.LOAN_RETURNED_SUCCESS, 
+                message, 
+                responseDTO));
+  }
 
   // 대출 연장 처리
 

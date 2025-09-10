@@ -1,5 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.loan.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateRe
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanReturnResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.entity.Loan;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
@@ -185,5 +187,25 @@ public class AdminLoanService {
 
     // 반환시 dtoList를 PageImpl로 감싸서 반환
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+  }
+
+  //도서 반납 처리
+  @Transactional
+  public AdminLoanReturnResDTO returnLoan(Long loanId) {
+
+    // Loan 엔티티 조회 + 예외 처리
+    Loan loan = loanRepository.findById(loanId)
+        .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
+
+    if (loan.getStatus() == LoanStatus.RETURNED) {
+      throw new BaseException(LoanErrorCode.LOAN_ALREADY_RETURNED);
+    }
+
+    // 반납 시간과 상태 변경
+    loan.setReturnDate(LocalDateTime.now());
+    loan.setStatus(LoanStatus.RETURNED);
+
+    // 변경된 loan 반환
+    return new AdminLoanReturnResDTO(loan);
   }
 }
