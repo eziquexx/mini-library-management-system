@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanExtendedResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanReturnResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
@@ -134,7 +135,24 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 대출 연장 처리
+  // 도서 대출 연장 처리
+  @PatchMapping("/{loanId}/extend")
+  public ResponseEntity<?> extendLoan(@PathVariable("loanId") Long loanId) {
+    
+    // 서비스로직
+    AdminLoanExtendedResDTO responseDTO = adminLoanService.extendLoan(loanId);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_EXTENDED_SUCCESS.getMessage());
+
+    // 응답
+    return ResponseEntity
+              .status(LoanSuccessCode.LOAN_EXTENDED_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                LoanSuccessCode.LOAN_EXTENDED_SUCCESS, 
+                message, 
+                responseDTO));
+  }
 
   // 도서 분실 처리
 }

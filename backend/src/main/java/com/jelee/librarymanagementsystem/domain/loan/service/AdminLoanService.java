@@ -15,6 +15,7 @@ import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanExtendedResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanReturnResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
@@ -216,5 +217,33 @@ public class AdminLoanService {
 
     // 변경된 loan 반환
     return new AdminLoanReturnResDTO(loan);
+  }
+
+  // 도서 대출 연장 처리
+  @Transactional
+  public AdminLoanExtendedResDTO extendLoan(Long loanId) {
+    
+    // loanId로 조회 및 예외처리
+    Loan loan = loanRepository.findById(loanId)
+        .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
+    
+    // loan 상태가 대출중인 것만 가능
+    // 연체, 반납, 분실 상태는 불가
+    if (loan.getStatus() != LoanStatus.LOANED) {
+      throw new BaseException(LoanErrorCode.LOAN_CANNOT_BE_EXTENDED);
+    }
+
+    // loan 대출 여부 체크 및 예외처리
+    if (loan.isExtended() != false) {
+      throw new BaseException(LoanErrorCode.LOAN_ALREADY_EXTENDED);
+    }
+
+    // 대출 연장 및 반납 기간 업데이트
+    // 대출 연장은 1회 가능, 7일 추가
+    loan.setExtended(true);
+    loan.setDueDate(loan.getDueDate().plusDays(7));
+
+    // 반환
+    return new AdminLoanExtendedResDTO(loan);
   }
 }
