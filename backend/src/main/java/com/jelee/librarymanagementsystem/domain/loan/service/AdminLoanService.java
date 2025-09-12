@@ -154,7 +154,7 @@ public class AdminLoanService {
     switch (type) {
       case BOOKTITLE:
         // 도서 유효검사
-        Book book = bookRepository.findByTitle(keyword)
+        Book book = bookRepository.findByTitleContainingIgnoreCase(keyword)
             .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
         
         // 도서 대출 상태가 null이면 도서명으로만 검색

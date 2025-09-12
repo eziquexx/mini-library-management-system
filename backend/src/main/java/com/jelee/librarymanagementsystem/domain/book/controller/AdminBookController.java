@@ -97,10 +97,10 @@ public class AdminBookController {
   // Page 기능 사용
   @GetMapping("/search")
   public ResponseEntity<?> searchBooks(
-      @RequestParam String type,
-      @RequestParam String keyword,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+      @RequestParam(name = "type") String type,
+      @RequestParam(name = "keyword") String keyword,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "10") int size) {
 
     Page<AdminBookSearchResDTO> books = adminBookService.searchBooks(type, keyword, page, size);
 
@@ -117,8 +117,8 @@ public class AdminBookController {
   // 도저 전체 목록 조회
   @GetMapping()
   public ResponseEntity<?> allListBooks(
-    @RequestParam(defaultValue = "0") int page, 
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name = "size", defaultValue = "10") int size) {
 
     Page<AdminBookListResDTO> listBooks = adminBookService.allListBooks(page, size);
 

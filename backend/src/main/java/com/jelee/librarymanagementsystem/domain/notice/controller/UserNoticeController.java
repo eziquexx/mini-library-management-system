@@ -29,8 +29,8 @@ public class UserNoticeController {
   // 공지사항 전체 목록 보기
   @GetMapping()
   public ResponseEntity<?> allListNotices(
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
 
     // 서비스로직
     Page<UserNoticeListResDTO> responseDTO = userNoticeService.allListNotices(page, size);
@@ -69,9 +69,9 @@ public class UserNoticeController {
   // 공지사항 검색 목록 보기 (페이징)
   @GetMapping("/search")
   public ResponseEntity<?> searchNotices(
-    @RequestParam String keyword, 
-    @RequestParam(defaultValue = "0") int page, 
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "keyword") String keyword, 
+    @RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name = "size", defaultValue = "10") int size) {
 
     // 서비스로직
     Page<UserNoticeSearchResDTO> responseDTO = userNoticeService.searchNotices(keyword, page, size);
