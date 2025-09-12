@@ -57,9 +57,9 @@ public class AdminLoanController {
   // 전체 대출 목록 조회
   @GetMapping()
   public ResponseEntity<?> allListLoans(
-    @RequestParam(required = false) LoanStatus status,
-    @RequestParam(defaultValue = "0") int page, 
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "status", required = false) LoanStatus status,
+    @RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name = "size", defaultValue = "10") int size) {
     
     // 서비스로직
     Page<AdminLoanListResDTO> responseDTO = adminLoanService.allListLoans(status, page, size);
@@ -97,11 +97,11 @@ public class AdminLoanController {
   // 도서 대출 조건별 검색
   @GetMapping("/search")
   public ResponseEntity<?> searchLoan(
-    @RequestParam(required = false) LoanSearchType type, 
-    @RequestParam String keyword, 
-    @RequestParam(required = false) LoanStatus status,
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "type", required = false) LoanSearchType type, 
+    @RequestParam(name = "keyword") String keyword, 
+    @RequestParam(name = "status", required = false) LoanStatus status,
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
 
     // 서비스로직
     Page<AdminLoanSearchResDTO> responseDTO = adminLoanService.searchLoan(type, keyword, status, page, size);
