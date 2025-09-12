@@ -29,8 +29,8 @@ public class UserBookController {
   // 도서 전체 목록 조회 - 페이징
   @GetMapping()
   public ResponseEntity<?> allListBooks(
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
     
     Page<UserBookListResDTO> listBooks = userBookService.allListBooks(page, size);
 
@@ -66,10 +66,10 @@ public class UserBookController {
   // 도서 검색 - 페이징
   @GetMapping("/search")
   public ResponseEntity<?> searchBooks(
-    @RequestParam String type,
-    @RequestParam String keyword,
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "type") String type,
+    @RequestParam(name = "keyword") String keyword,
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
 
     // 서비스 로직
     Page<UserBookSearchResDTO> responseDTO = userBookService.searchBooks(type, keyword, page, size);
