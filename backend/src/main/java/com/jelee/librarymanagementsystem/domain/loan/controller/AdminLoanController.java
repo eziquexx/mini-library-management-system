@@ -16,6 +16,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateRe
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanExtendedResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanLostResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanReturnResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
@@ -155,4 +156,21 @@ public class AdminLoanController {
   }
 
   // 도서 분실 처리
+  @PatchMapping("/{loanId}/lost")
+  public ResponseEntity<?> loanLostBook(@PathVariable("loanId") Long loanId) {
+
+    // 서비스로직
+    AdminLoanLostResDTO responseDTO = adminLoanService.loanLostBook(loanId);
+
+    // 성공메시지
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_RETURNED_SUCCESS.getMessage());
+
+    // 응답
+    return ResponseEntity
+              .status(LoanSuccessCode.LOAN_MARKED_LOST_SUCCESS.getHttpStatus())
+              .body(ApiResponse.success(
+                LoanSuccessCode.LOAN_MARKED_LOST_SUCCESS, 
+                message, 
+                responseDTO));
+  }
 }

@@ -17,6 +17,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanCreateRe
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanExtendedResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanListResDTO;
+import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanLostResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanReturnResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.entity.Loan;
@@ -245,5 +246,43 @@ public class AdminLoanService {
 
     // 반환
     return new AdminLoanExtendedResDTO(loan);
+  }
+
+  // 도서 분실 처리
+  @Transactional
+  public AdminLoanLostResDTO loanLostBook(Long loanId) {
+
+    // loanId 조회 + 예외 처리
+    Loan loan = loanRepository.findById(loanId)
+        .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
+
+    // bookId 조회 + 예외 처리
+    Book book = bookRepository.findById(loan.getBook().getId())
+        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
+    
+    // Loan 엔티티 LOST 상태 여부 체크 + 예외 처리
+    if (loan.getStatus() == LoanStatus.LOST) {
+      throw new BaseException(LoanErrorCode.LOAN_ALREADY_LOSTED);
+    }
+
+    // Loan 상태가 LOANED, OVERDUE만 LOST 처리 가능
+    LoanStatus current = loan.getStatus();
+    if (current != LoanStatus.LOANED && current != LoanStatus.OVERDUE) {
+      throw new BaseException(LoanErrorCode.LOAN_INVALID_STATUS_FOR_LOST);
+    }
+    
+    // Book 엔티티 상태 체크 후 분실 처리
+    if (book.getStatus() == BookStatus.LOST) {
+      throw new BaseException(BookErrorCode.BOOK_ALREADY_LOSTED);
+    }
+
+    // 도서 대출 내역과 도서 상태 분실 처리
+    loan.setStatus(LoanStatus.LOST);
+    loan.setLostDate(LocalDateTime.now());
+    book.setStatus(BookStatus.LOST);
+    book.setLostedAt(LocalDateTime.now());
+  
+    // 응답
+    return new AdminLoanLostResDTO(loan);
   }
 }
