@@ -33,5 +33,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
   // 키워드 타입별 검색 - author
   Page<Book> findByAuthorContainingIgnoreCase(String author, Pageable pageable);
 
-  Optional<Book> findByTitle(String keyword);
+  Optional<Book> findByTitleContainingIgnoreCase(String keyword);
 }
