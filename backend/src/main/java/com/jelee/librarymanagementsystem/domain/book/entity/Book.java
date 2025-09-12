@@ -49,6 +49,7 @@ public class Book {
 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private LocalDateTime lostedAt;
 
   @PrePersist
   public void prePersist() {
