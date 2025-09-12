@@ -36,8 +36,8 @@ public class AdminUserController {
   // 관리자 - 회원 전체 조회 (+페이징)
   @GetMapping()
   public ResponseEntity<?> allListUsers(
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
     
     // Page 기능
     Page<UserListResDTO> ListUsers = userService.allListUsers(page, size);
@@ -59,8 +59,8 @@ public class AdminUserController {
   public ResponseEntity<?> searchUser(
     @RequestParam String type,
     @RequestParam String keyword,
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
 
     // Page 기능 + User 조회
     Page<UserSearchResDTO> user = userService.searchUser(type, keyword, page, size);
