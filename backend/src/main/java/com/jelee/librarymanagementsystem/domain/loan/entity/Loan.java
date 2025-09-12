@@ -44,6 +44,7 @@ public class Loan {
   private LocalDateTime loanDate;
   private LocalDateTime dueDate;
   private LocalDateTime returnDate;
+  private LocalDateTime lostDate;
   private boolean extended;
 
   @Enumerated(EnumType.STRING)
