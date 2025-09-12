@@ -49,7 +49,7 @@ public class AdminBookController {
   }
   // 도서 수정
   @PutMapping("/{bookId}")
-  public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody AdminBookUpdateReqDTO bookDTO) {
+  public ResponseEntity<?> updateBook(@PathVariable("bookId") Long bookId, @RequestBody AdminBookUpdateReqDTO bookDTO) {
     AdminBookCreateResDTO responseDTO = adminBookService.updateBook(bookId, bookDTO);
     
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_UPDATED.getMessage());
