@@ -27,4 +27,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
   // 검색 기능: 사용자명만
   Page<Loan> findByUser_UsernameContainingIgnoreCase(String username, Pageable pageable);
+
+  // 사용자 도서 대출 내역 조회: userId로 조회
+  Page<Loan> findByUser_Id(Long userId, Pageable pageable);
 }
