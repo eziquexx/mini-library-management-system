@@ -9,7 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReviewErrorCode implements ErrorCode {
   
-  REVIEW_ALREADY_CREATED(HttpStatus.BAD_REQUEST, "REVIEW_401", "error.review.already_created");
+  REVIEW_ALREADY_CREATED(HttpStatus.BAD_REQUEST, "REVIEW_401", "error.review.already_created"),
+  REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_404", "error.review.not_found");
 
   private final HttpStatus httpStatus;
   private final String code;

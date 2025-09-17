@@ -1,15 +1,19 @@
 package com.jelee.librarymanagementsystem.domain.review.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.service.UserReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
@@ -45,6 +49,27 @@ public class UserReviewController {
               .status(ReviewSuccessCode.REVIEW_CREATED.getHttpStatus())
               .body(ApiResponse.success(
                 ReviewSuccessCode.REVIEW_CREATED, 
+                message, 
+                responseDTO));
+  }
+
+  // 사용자: 책 리뷰 전체 목록 조회 (페이징)
+  @GetMapping("/me/reviews")
+  public ResponseEntity<?> allListReview(
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+    
+    // 서비스로직
+    Page<UserReviewListResDTO> responseDTO = userReviewService.allListReview(page, size, user.getId());
+
+    // 성공메시지
+    String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
+    
+    return ResponseEntity
+              .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
+              .body(ApiResponse.success(
+                ReviewSuccessCode.REVIEW_LIST_FETCHED, 
                 message, 
                 responseDTO));
   }
