@@ -9,7 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReviewSuccessCode implements SuccessCode  {
  
-  REVIEW_CREATED(HttpStatus.CREATED, "REVIEW_200", "success.review.created");
+  REVIEW_CREATED(HttpStatus.CREATED, "REVIEW_200", "success.review.created"),
+  REVIEW_LIST_FETCHED(HttpStatus.OK, "REVIEW_201", "success.review.list_fetched");
 
   private final HttpStatus httpStatus;
   private final String code;
