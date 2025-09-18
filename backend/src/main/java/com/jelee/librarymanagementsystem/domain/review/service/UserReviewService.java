@@ -12,6 +12,7 @@ import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
@@ -87,5 +88,25 @@ public class UserReviewService {
 
     // List DTO를 PageImpl로 감싸서 페이징 형태로 반환.
     return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+  }
+
+  // 사용자: 책 리뷰 상세 조회
+  public UserReviewDetailResDTO detailReview(Long reviewId, Long userId) {
+
+    // 사용자 조회 + 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 리뷰 조회 + 예외 처리
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new BaseException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+    // 로그인한 사용자와 리뷰 작성자 검증 (본인 리뷰만 조회 가능)
+    if (!user.getId().equals(review.getUser().getId())) {
+      throw new BaseException(ReviewErrorCode.REVIEW_USER_NOT_SAME);
+    }
+
+    // UserReviewDetailResDTO 객체로 반환
+    return new UserReviewDetailResDTO(review);
   }
 }

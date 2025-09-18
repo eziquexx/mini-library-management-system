@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.service.UserReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -72,5 +73,26 @@ public class UserReviewController {
                 ReviewSuccessCode.REVIEW_LIST_FETCHED, 
                 message, 
                 responseDTO));
+  }
+
+  // 사용자: 책 리뷰 상세 조회
+  @GetMapping("/me/reviews/{reviewId}")
+  public ResponseEntity<?> detailReview(
+    @PathVariable("reviewId") Long reviewId, 
+    @AuthenticationPrincipal User user) {
+    
+      // 서비스로직
+      UserReviewDetailResDTO responseDTO = userReviewService.detailReview(reviewId, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_DETAIL.getMessage());
+
+      // 반환
+      return ResponseEntity
+          .status(ReviewSuccessCode.REVIEW_DETAIL.getHttpStatus())
+          .body(ApiResponse.success(
+            ReviewSuccessCode.REVIEW_DETAIL, 
+            message, 
+            responseDTO));
   }
 }
