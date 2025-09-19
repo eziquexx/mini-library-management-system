@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.response.code.ReviewErrorCode;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,5 +49,14 @@ public class Review {
   @PrePersist
   public void prePersist() {
     this.createdDate = LocalDateTime.now();
+  }
+
+  public void updateReview(String content) {
+    if (content.isBlank() || content == null) {
+      throw new BaseException(ReviewErrorCode.REVIEW_CONENT_NOT_BLANK);
+    }
+
+    this.content = content;
+    this.updatedDate = LocalDateTime.now();
   }
 }

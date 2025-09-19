@@ -14,6 +14,8 @@ import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreate
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreateResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewListResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -68,6 +70,7 @@ public class UserReviewService {
 
 
   // 사용자: 책 리뷰 전체 목록 조회 (페이징)
+  @Transactional
   public Page<UserReviewListResDTO> allListReview(int page, int size, Long userId) {
 
     // 사용자 조회, 유효성 검사
@@ -91,6 +94,7 @@ public class UserReviewService {
   }
 
   // 사용자: 책 리뷰 상세 조회
+  @Transactional
   public UserReviewDetailResDTO detailReview(Long reviewId, Long userId) {
 
     // 사용자 조회 + 예외 처리
@@ -108,5 +112,29 @@ public class UserReviewService {
 
     // UserReviewDetailResDTO 객체로 반환
     return new UserReviewDetailResDTO(review);
+  }
+
+  // 사용자: 책 리뷰 수정
+  @Transactional
+  public UserReviewUpdateResDTO updateReview(Long reviewId, UserReviewUpdateReqDTO requestDTO, Long userId) {
+    
+    // 사용자 조회 + 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 리뷰 조회 + 예외 처리
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new BaseException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+    // 로그인한 사용자와 리뷰 작성자 검증 (본인 리뷰만 수정 가능)
+    if (!user.getId().equals(review.getUser().getId())) {
+      throw new BaseException(ReviewErrorCode.REVIEW_USER_NOT_SAME);
+    }
+
+    // 리뷰 내용 업데이트
+    review.updateReview(requestDTO.getContent());
+    
+    // 반환
+    return new UserReviewUpdateResDTO(review);
   }
 }
