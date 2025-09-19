@@ -16,4 +16,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
   // 사용자: 책 리뷰 전체 목록 조회 (페이징)
   // userId로 책 리뷰 조회하여 페이징 처리
   Page<Review> findByUser_Id(Long userId, Pageable pageable);
+
+  // 사용자: 책 리뷰 검색 (페이징)
+  // keyword로 책 리뷰 조회하여 페이징 처리
+  Page<Review> findByUser_IdAndBook_TitleContainingIgnoreCase(Long userId, String keyword, Pageable pageable);
 }

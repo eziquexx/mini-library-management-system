@@ -15,6 +15,7 @@ import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreate
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewListResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.review.entity.Review;
@@ -163,5 +164,28 @@ public class UserReviewService {
     reviewRepository.delete(review);
 
     return resopnseDTO;
+  }
+
+  // 사용자: 책 리뷰 검색
+  public Page<UserReviewSearchResDTO> searchReview(String keyword, int page, int size, Long userId) {
+
+    // 사용자 조회 + 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 검색어 조회 + 페이지 처리
+    Page<Review> result = keyword != null ? result = reviewRepository.findByUser_IdAndBook_TitleContainingIgnoreCase(user.getId(), keyword, pageable) : reviewRepository.findAll(pageable);
+
+    // Page -> List 맵핑하여 변환
+    List<UserReviewSearchResDTO> listDTO = result.getContent()
+        .stream()
+        .map(UserReviewSearchResDTO::new)
+        .toList();
+
+    // PageImpl로 감싸 Page 형태로 변환하여 반환
+    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
   }
 }
