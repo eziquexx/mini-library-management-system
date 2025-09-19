@@ -18,6 +18,7 @@ import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewCreate
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewListResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.review.service.UserReviewService;
@@ -143,4 +144,26 @@ public class UserReviewController {
                   responseDTO));
   }
 
+  // 사용자: 책 리뷰 검색
+  @GetMapping("/me/reviews/search")
+  public ResponseEntity<?> searchReview(
+    @RequestParam(name = "keyword", required = false) String keyword,
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      Page<UserReviewSearchResDTO> responseDTO = userReviewService.searchReview(keyword, page, size, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_FETCHED.getMessage());
+
+      // 반환
+      return ResponseEntity
+                .status(ReviewSuccessCode.REVIEW_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  ReviewSuccessCode.REVIEW_FETCHED, 
+                  message, 
+                  responseDTO));
+  }
 }

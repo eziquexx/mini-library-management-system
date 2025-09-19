@@ -1,0 +1,20 @@
+package com.jelee.librarymanagementsystem.domain.review.dto.user;
+
+import java.time.LocalDateTime;
+
+import com.jelee.librarymanagementsystem.domain.review.entity.Review;
+
+import lombok.Getter;
+
+@Getter
+public class UserReviewSearchResDTO {
+  private String bookTitle;
+  private String content;
+  private LocalDateTime createdDate;
+
+  public UserReviewSearchResDTO(Review review) {
+    this.bookTitle = review.getBook().getTitle();
+    this.content = review.getContent();
+    this.createdDate = review.getCreatedDate();
+  }
+}
