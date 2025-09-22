@@ -9,13 +9,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewListResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.review.entity.Review;
+import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
+import com.jelee.librarymanagementsystem.global.response.code.ReviewErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -51,6 +54,59 @@ public class AdminReviewService {
         .toList();
 
     // PageImpl을 사용하여 Page 형태로 감싸서 반환
+    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+  }
+
+  // 관리자: 책 리뷰 타입별 검색 (페이징)
+  public Page<AdminReviewSearchResDTO> typeSearchReview(ReviewSearchType type, String keyword, int page, int size, Long userId) {
+
+    // 관리자 조회 및 권한 확인
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 결과 담을 변수
+    Page<Review> result;
+
+    // 검색 타입
+    String searchType = type.name();
+
+    // 타입별 검색
+    switch(searchType) {
+      case "ALL":
+        // 전체
+        result = reviewRepository.findByBook_TitleContainingIgnoreCaseOrUser_UsernameContainingIgnoreCase(keyword, keyword, pageable);
+        break;
+      case "BOOKTITLE":
+        // 책 제목
+        result = reviewRepository.findByBook_TitleContainingIgnoreCase(keyword, pageable);
+        break;
+      case "USERNAME":
+        // 사용자 이름
+        result = reviewRepository.findByUser_UsernameContainingIgnoreCase(keyword, pageable);
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid search type: " + type);
+    }
+
+    // 값 없는 경우
+    if (result.isEmpty()) {
+      throw new BaseException(ReviewErrorCode.REVIEW_NOT_FOUND);
+    }
+
+    // Page 형태를 List로 변환
+    List<AdminReviewSearchResDTO> listDTO = result.getContent()
+        .stream()
+        .map(AdminReviewSearchResDTO::new)
+        .toList();
+
+    // PageImpl을 사용하여 ListDTO를 Pageable로 감싸서 반환
     return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
   }
 }

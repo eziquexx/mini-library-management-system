@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewListResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
 import com.jelee.librarymanagementsystem.domain.review.service.AdminReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
@@ -44,6 +46,30 @@ public class AdminReviewController {
                 .body(ApiResponse.success(
                   ReviewSuccessCode.REVIEW_LIST_FETCHED, 
                   message, 
+                  responseDTO));
+  }
+
+  // 관리자: 책 리뷰 타입별 검색 (페이징)
+  @GetMapping("/reviews/search")
+  public ResponseEntity<?> typeSearchReview(
+    @RequestParam(name = "type", defaultValue = "ALL") ReviewSearchType type, 
+    @RequestParam(name = "keyword") String keyword,
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      Page<AdminReviewSearchResDTO> responseDTO = adminReviewService.typeSearchReview(type, keyword, page, size, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
+
+      // 응답
+      return ResponseEntity
+                .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  ReviewSuccessCode.REVIEW_LIST_FETCHED,
+                  message,
                   responseDTO));
   }
 }
