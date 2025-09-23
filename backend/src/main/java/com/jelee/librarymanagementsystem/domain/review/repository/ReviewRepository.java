@@ -26,7 +26,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
   Page<Review> findByBook_TitleContainingIgnoreCaseOrUser_UsernameContainingIgnoreCase(String bookTitle, String username, Pageable pageable);
   // 책 제목
   Page<Review> findByBook_TitleContainingIgnoreCase(String bookTitle, Pageable pageable);
-
   // 사용자 이름
   Page<Review> findByUser_UsernameContainingIgnoreCase(String username, Pageable pageable);
+
+  // 관리자: 특정 도서 리뷰 목록 (페이징)
+  Page<Review> findByBook_Id(Long bookId, Pageable pageable);
 }
