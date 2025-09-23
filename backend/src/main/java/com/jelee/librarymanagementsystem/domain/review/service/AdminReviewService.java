@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewBookIdResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewUserIdResDTO;
 import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
@@ -132,6 +133,33 @@ public class AdminReviewService {
     List<AdminReviewBookIdResDTO> listDTO = result.getContent()
         .stream()
         .map(AdminReviewBookIdResDTO::new)
+        .toList();
+
+    // PageImpl을 사용하여 ListDTO를 pageable로 랩핑하여 반환
+    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+  }
+
+  // 관리자: 특정 도서 리뷰 목록
+  public Page<AdminReviewUserIdResDTO> userIdListReview(Long userId, int page, int size, Long userGetId) {
+
+    // 관리자 조회 및 권한 확인
+    User user = userRepository.findById(userGetId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
+
+    // Page형태로 결과 가져오기
+    Page<Review> result = reviewRepository.findByUser_Id(userId, pageable);
+
+    // PageDTO를 List 형태로 변환
+    List<AdminReviewUserIdResDTO> listDTO = result.getContent()
+        .stream()
+        .map(AdminReviewUserIdResDTO::new)
         .toList();
 
     // PageImpl을 사용하여 ListDTO를 pageable로 랩핑하여 반환
