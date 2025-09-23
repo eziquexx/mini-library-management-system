@@ -4,10 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewBookIdResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
@@ -70,6 +72,29 @@ public class AdminReviewController {
                 .body(ApiResponse.success(
                   ReviewSuccessCode.REVIEW_LIST_FETCHED,
                   message,
+                  responseDTO));
+  }
+
+  // 관리자: 특정 도서 리뷰 목록
+  @GetMapping("/books/{bookId}/reviews")
+  public ResponseEntity<?> bookIdListReview(
+    @PathVariable("bookId") Long bookId, 
+    @RequestParam(name = "page", defaultValue = "0") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      Page<AdminReviewBookIdResDTO> responseDTO = adminReviewService.bookIdListReview(bookId, page, size, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
+
+      // 반환
+      return ResponseEntity
+                .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  ReviewSuccessCode.REVIEW_LIST_FETCHED, 
+                  message, 
                   responseDTO));
   }
 }
