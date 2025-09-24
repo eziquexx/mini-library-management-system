@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewBookIdResDTO;
+import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewSearchResDTO;
@@ -24,6 +25,7 @@ import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -61,6 +63,7 @@ public class AdminReviewService {
   }
 
   // 관리자: 책 리뷰 타입별 검색 (페이징)
+  @Transactional
   public Page<AdminReviewSearchResDTO> typeSearchReview(ReviewSearchType type, String keyword, int page, int size, Long userId) {
 
     // 관리자 조회 및 권한 확인
@@ -114,6 +117,7 @@ public class AdminReviewService {
   }
 
   // 관리자: 특정 도서 리뷰 목록
+  @Transactional
   public Page<AdminReviewBookIdResDTO> bookIdListReview(Long bookId, int page, int size, Long userId) {
 
     // 관리자 조회 및 권한 확인
@@ -141,6 +145,7 @@ public class AdminReviewService {
   }
 
   // 관리자: 특정 사용자 리뷰 목록
+  @Transactional
   public Page<AdminReviewUserIdResDTO> userIdListReview(Long userId, int page, int size, Long userGetId) {
 
     // 관리자 조회 및 권한 확인
@@ -168,6 +173,7 @@ public class AdminReviewService {
   }
 
   // 관리자: 리뷰 상세
+  @Transactional
   public AdminReviewDetailResDTO detailReview(Long reviewId, Long userId) {
 
     // 관리자 조회 및 권한 확인
@@ -183,5 +189,30 @@ public class AdminReviewService {
 
     // 반환
     return new AdminReviewDetailResDTO(result);
+  }
+
+  // 관리자: 리뷰 삭제
+  @Transactional
+  public AdminReviewDeleteResDTO deleteReview(Long reviewId, Long usreId) {
+
+    // 관리자 조회 및 권한 확인
+    User user = userRepository.findById(usreId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 리뷰 조회
+    Review delReview = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new BaseException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+    Review tempReview = delReview;
+    
+    // 리뷰 삭제
+    reviewRepository.delete(delReview);
+    
+    // 반환
+    return new AdminReviewDeleteResDTO(tempReview);
   }
 }
