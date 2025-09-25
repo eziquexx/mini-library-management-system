@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.LoginResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -61,10 +62,13 @@ public class AuthService {
     return new JoinResDTO(user);
   }
 
-  // 로그인
-  public String signIn(LoginReqDTO request) {
+  /*
+   * 공용: 로그인
+   */
+  @Transactional
+  public LoginResDTO signIn(LoginReqDTO request) {
 
-    // DB에 있는 유저 정보 가져오기
+    // 사용자 유효 검사
     User user = userRepository.findByUsername(request.getUsername())
       .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
@@ -86,7 +90,11 @@ public class AuthService {
     user.setLastLoginDate(LocalDateTime.now());
     userRepository.save(user);
 
-    return jwtTokenProvider.generateToken(user);
+    // 토큰 생성
+    String token = jwtTokenProvider.generateToken(user);
+
+    // 반환
+    return new LoginResDTO(user, token);
   }
 
   // 로그아웃

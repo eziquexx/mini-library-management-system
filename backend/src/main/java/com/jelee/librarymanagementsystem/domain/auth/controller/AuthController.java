@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.LoginResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
@@ -50,32 +51,39 @@ public class AuthController {
                 resonseDTO));
   }
 
-  // 공용: 로그인
+  /*
+   * 공용: 로그인
+   */
   @PostMapping("/signin")
   public ResponseEntity<?> signIn(
     @RequestBody LoginReqDTO request, 
     HttpServletResponse response) {
-    String token = authService.signIn(request);
+      
+      // 서비스로직
+      LoginResDTO responseDTO = authService.signIn(request);
+      // String token = authService.signIn(request);
 
-    // Jwt를 HttpOnly 쿠키에 저장
-    ResponseCookie cookie = ResponseCookie.from("JWT", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(24 * 60 * 60)
-                .sameSite("Strict")
-                .build();
+      // Jwt를 HttpOnly 쿠키에 저장
+      ResponseCookie cookie = ResponseCookie.from("JWT", responseDTO.getToken())
+                  .httpOnly(true)
+                  .secure(true)
+                  .path("/")
+                  .maxAge(24 * 60 * 60)
+                  .sameSite("Strict")
+                  .build();
 
-    response.addHeader("Set-Cookie", cookie.toString());
+      response.addHeader("Set-Cookie", cookie.toString());
 
-    String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getMessage());
 
-    return ResponseEntity
-              .status(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getHttpStatus())
-              .body(ApiResponse.success(
-                AuthSuccessCode.AUTH_LOGIN_SUCCESS,
-                message, 
-                request.getUsername()));
+      // 응답
+      return ResponseEntity
+                .status(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getHttpStatus())
+                .body(ApiResponse.success(
+                  AuthSuccessCode.AUTH_LOGIN_SUCCESS,
+                  message, 
+                  responseDTO.getUsername()));
   }
 
   // 공용: 로그아웃
