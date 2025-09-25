@@ -29,7 +29,9 @@ public class AuthController {
   private final AuthService authService;
   private final MessageProvider messageProvider;
 
-  // 공용: 회원가입
+  /*
+   * 공용: 회원가입
+   */
   @PostMapping("/signup")
   public ResponseEntity<?> singUp(@RequestBody JoinReqDTO request) {
     
