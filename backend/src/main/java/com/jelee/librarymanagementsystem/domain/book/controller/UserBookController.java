@@ -52,12 +52,12 @@ public class UserBookController {
     UserBookDetailResDTO responseDTO = userBookService.detailBook(bookId);
 
     // 성공 메시지
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_DETAIL.getMessage());
+    String message = messageProvider.getMessage(BookSuccessCode.BOOK_FETCHED.getMessage());
     
     return ResponseEntity
-              .status(BookSuccessCode.BOOK_DETAIL.getHttpStatus())
+              .status(BookSuccessCode.BOOK_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
-                BookSuccessCode.BOOK_DETAIL, 
+                BookSuccessCode.BOOK_FETCHED, 
                 message, 
                 responseDTO));
   }

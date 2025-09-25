@@ -91,13 +91,13 @@ public class UserReviewController {
       UserReviewDetailResDTO responseDTO = userReviewService.detailReview(reviewId, user.getId());
 
       // 성공메시지
-      String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_DETAIL.getMessage());
+      String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_FETCHED.getMessage());
 
       // 반환
       return ResponseEntity
-          .status(ReviewSuccessCode.REVIEW_DETAIL.getHttpStatus())
+          .status(ReviewSuccessCode.REVIEW_FETCHED.getHttpStatus())
           .body(ApiResponse.success(
-            ReviewSuccessCode.REVIEW_DETAIL, 
+            ReviewSuccessCode.REVIEW_FETCHED, 
             message, 
             responseDTO));
   }

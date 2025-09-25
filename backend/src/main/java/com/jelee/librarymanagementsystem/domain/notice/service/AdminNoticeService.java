@@ -46,17 +46,17 @@ public class AdminNoticeService {
 
     // 필수 필드 Null 체크(title, content)
     if (requestDTO.getTitle() == null || requestDTO.getTitle().trim().isEmpty()) {
-      throw new BaseException(NoticeErrorCode.NOTICE_TITLE_BLANK);
+      throw new BaseException(NoticeErrorCode.NOTICE_TITLE_REQUIRED);
     }
     if (requestDTO.getContent() == null || requestDTO.getContent().trim().isEmpty()) {
-      throw new BaseException(NoticeErrorCode.NOTICE_CONTENT_BLANK);
+      throw new BaseException(NoticeErrorCode.NOTICE_CONTENT_REQUIRED);
     }
 
     System.out.println(writer.getRole());
 
     // 권한 체크(ROLE_MANAGER, ROLE_ADMIN 만 가능)
     if (!(writer.getRole().equals(Role.ROLE_MANAGER) || writer.getRole().equals(Role.ROLE_ADMIN))) {
-      throw new BaseException(NoticeErrorCode.NOTICE_CREATE_WRITER);
+      throw new BaseException(NoticeErrorCode.NOTICE_CREATE_AUTHORIZED);
     }
 
     // Notice 객체 생성
@@ -95,10 +95,10 @@ public class AdminNoticeService {
 
     // 필수 필드 Null 체크(title, content)
     if (requestDTO.getTitle() == null || requestDTO.getTitle().trim().isEmpty()) {
-      throw new BaseException(NoticeErrorCode.NOTICE_TITLE_BLANK);
+      throw new BaseException(NoticeErrorCode.NOTICE_TITLE_REQUIRED);
     }
     if (requestDTO.getContent() == null || requestDTO.getContent().trim().isEmpty()) {
-      throw new BaseException(NoticeErrorCode.NOTICE_CONTENT_BLANK);
+      throw new BaseException(NoticeErrorCode.NOTICE_CONTENT_REQUIRED);
     }
 
     // 내용 업데이트(title, content, writer, updatedAt)

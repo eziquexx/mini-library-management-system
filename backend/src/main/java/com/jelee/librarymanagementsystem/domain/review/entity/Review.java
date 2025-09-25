@@ -53,7 +53,7 @@ public class Review {
 
   public void updateReview(String content) {
     if (content.isBlank() || content == null) {
-      throw new BaseException(ReviewErrorCode.REVIEW_CONENT_NOT_BLANK);
+      throw new BaseException(ReviewErrorCode.REVIEW_CONTENT_REQUIRED);
     }
 
     this.content = content;

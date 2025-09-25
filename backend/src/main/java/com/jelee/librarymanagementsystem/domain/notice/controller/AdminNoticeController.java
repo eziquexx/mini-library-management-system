@@ -146,11 +146,11 @@ public class AdminNoticeController {
     AdminNoticeDetailResDTO responseDTO = adminNoticeService.detailNotice(noticeId);
 
     // 성공메시지
-    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_DETAIL.getMessage());
+    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
 
     // 반환
     return ResponseEntity
-              .status(NoticeSuccessCode.NOTICE_DETAIL.getHttpStatus())
+              .status(NoticeSuccessCode.NOTICE_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
                 NoticeSuccessCode.NOTICE_DELETED, 
                 message, 
