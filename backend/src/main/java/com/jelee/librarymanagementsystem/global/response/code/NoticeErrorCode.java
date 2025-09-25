@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 
 public enum NoticeErrorCode implements ErrorCode {
   
-  NOTICE_TITLE_BLANK(HttpStatus.BAD_REQUEST, "NOTICE_001", "error.notice.title.blank"),
-  NOTICE_CONTENT_BLANK(HttpStatus.BAD_REQUEST, "NOTICE_002", "error.notice.content.blank"),
-  NOTICE_CREATE_WRITER(HttpStatus.BAD_REQUEST, "NOTICE_003", "error.notice.create.writer"),
-  NOTICE_UPDATE_FAILED(HttpStatus.BAD_REQUEST, "NOTICE_004", "error.notice.update_failed"),
-  NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE_005", "error.notice.not_found");
+  NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE_4000", "error.notice.not_found"),
+  NOTICE_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "NOTICE_4001", "error.notice.title.required"),
+  NOTICE_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, "NOTICE_4002", "error.notice.content.required"),
+  NOTICE_CREATE_AUTHORIZED(HttpStatus.BAD_REQUEST, "NOTICE_4003", "error.notice.create.unauthorized"),
+  NOTICE_UPDATE_FAILED(HttpStatus.BAD_REQUEST, "NOTICE_4004", "error.notice.update_failed");
 
   private final HttpStatus httpStatus;
   private final String code;
