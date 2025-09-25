@@ -1,13 +1,16 @@
 package com.jelee.librarymanagementsystem.domain.auth.dto;
 
-import lombok.Builder;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
+
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-@Builder
 public class LogoutResDTO {
   private Long id;
   private String username;
+
+  public LogoutResDTO(User user) {
+    this.id = user.getId();
+    this.username = user.getUsername();
+  }
 }

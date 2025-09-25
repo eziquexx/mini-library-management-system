@@ -2,6 +2,7 @@ package com.jelee.librarymanagementsystem.domain.auth.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,12 +14,12 @@ import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -86,11 +87,13 @@ public class AuthController {
                   responseDTO.getUsername()));
   }
 
-  // 공용: 로그아웃
+  /*
+   * 공용: 로그아웃
+   */
   @PostMapping("/logout")
   public ResponseEntity<?> logout(
-    HttpServletRequest request, 
-    HttpServletResponse response) {
+    HttpServletResponse response,
+    @AuthenticationPrincipal User user) {
     
     // Jwt 제거
     ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
@@ -103,10 +106,13 @@ public class AuthController {
     
     response.addHeader("Set-Cookie", deleteCookie.toString());
 
-    LogoutResDTO responseDTO = authService.logout(request);
+    // 서비스로직
+    LogoutResDTO responseDTO = authService.logout(user.getId());
 
+    // 성공메시지
     String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getHttpStatus())
               .body(ApiResponse.success(

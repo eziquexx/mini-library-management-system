@@ -18,7 +18,6 @@ import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -97,20 +96,16 @@ public class AuthService {
     return new LoginResDTO(user, token);
   }
 
-  // 로그아웃
-  public LogoutResDTO logout(HttpServletRequest request) {
+  /*
+   * 공용: 로그아웃
+   */
+  public LogoutResDTO logout(Long userId) {
     
-    // 토큰을 구한 다음 토큰으로 userId 가져오기
-    String accessToken = jwtTokenProvider.resolveTokenFromCookie(request);
-    String username = jwtTokenProvider.getUsernameFromToken(accessToken);
-
-    // id로 사용자 정보 가져오기
-    User user = userRepository.findByUsername(username)
+    // userId로 사용자 정보 조회
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
-    return LogoutResDTO.builder()
-            .id(user.getId())
-            .username(user.getUsername())
-            .build();
+    // 반환    
+    return new LogoutResDTO(user);
   }
 }
