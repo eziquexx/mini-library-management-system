@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.JoinResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -17,6 +18,7 @@ import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,8 +29,11 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
   
-  // 회원가입
-  public Long signUp(JoinReqDTO request) {
+  /*
+   * 공용: 회원가입
+   */
+  @Transactional
+  public JoinResDTO signUp(JoinReqDTO request) {
 
     // 아이디 중복 체크
     if (userRepository.existsByUsername(request.getUsername())) {
@@ -40,6 +45,7 @@ public class AuthService {
       throw new BaseException(UserErrorCode.USER_EMAIL_DUPLICATED);
     }
 
+    // User 엔티티 생성
     User user = User.builder()
               .username(request.getUsername())
               .password(passwordEncoder.encode(request.getPassword()))
@@ -48,7 +54,11 @@ public class AuthService {
               .joinDate(LocalDateTime.now())
               .build();
     
-    return userRepository.save(user).getId();
+    // user 저장
+    userRepository.save(user);
+    
+    // 반환
+    return new JoinResDTO(user);
   }
 
   // 로그인

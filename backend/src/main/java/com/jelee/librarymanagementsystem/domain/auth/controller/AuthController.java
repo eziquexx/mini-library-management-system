@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.JoinResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
@@ -28,22 +29,26 @@ public class AuthController {
   private final AuthService authService;
   private final MessageProvider messageProvider;
 
-  // 회원가입 api
+  // 공용: 회원가입
   @PostMapping("/signup")
-  public ResponseEntity<ApiResponse<Long>> singUp(@RequestBody JoinReqDTO request) {
-    Long userId = authService.signUp(request);
+  public ResponseEntity<?> singUp(@RequestBody JoinReqDTO request) {
+    
+    // 서비스로직
+    JoinResDTO resonseDTO = authService.signUp(request);
 
+    // 성공메시지
     String message = messageProvider.getMessage(UserSuccessCode.USER_CREATED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(UserSuccessCode.USER_CREATED.getHttpStatus())
               .body(ApiResponse.success(
                 UserSuccessCode.USER_CREATED, 
                 message, 
-                userId));
+                resonseDTO));
   }
 
-  // 로그인 api
+  // 공용: 로그인
   @PostMapping("/signin")
   public ResponseEntity<?> signIn(
     @RequestBody LoginReqDTO request, 
@@ -71,7 +76,7 @@ public class AuthController {
                 request.getUsername()));
   }
 
-  // 로그아웃 api
+  // 공용: 로그아웃
   @PostMapping("/logout")
   public ResponseEntity<?> logout(
     HttpServletRequest request, 
