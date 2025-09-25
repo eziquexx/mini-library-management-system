@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 
 public enum AuthSuccessCode implements SuccessCode {
 
-  AUTH_LOGIN_SUCCESS(HttpStatus.OK, "AUTH_200", "success.auth.login"),
-  AUTH_LOGOUT_SUCCESS(HttpStatus.OK, "AUTH_201", "success.auth.logout"),
-  AUTH_USER_VERIFIED(HttpStatus.OK, "AUTH_202", "success.auth.verified");
+  AUTH_LOGIN_SUCCESS(HttpStatus.OK, "AUTH_1101", "success.auth.login"),
+  AUTH_LOGOUT_SUCCESS(HttpStatus.OK, "AUTH_1102", "success.auth.logout"),
+  AUTH_USER_VERIFIED(HttpStatus.OK, "AUTH_1103", "success.auth.verified");
 
   private final HttpStatus httpStatus;
   private final String code;

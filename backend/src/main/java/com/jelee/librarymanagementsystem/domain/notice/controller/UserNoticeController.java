@@ -55,13 +55,13 @@ public class UserNoticeController {
     UserNoticeDetailResDTO responseDTO = userNoticeService.detailNotice(noticeId);
 
     // 성공메시지
-    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_DETAIL.getMessage());
+    String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
 
     // 반환
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_DELETED.getHttpStatus())
               .body(ApiResponse.success(
-                NoticeSuccessCode.NOTICE_DETAIL, 
+                NoticeSuccessCode.NOTICE_FETCHED, 
                 message, 
                 responseDTO));
   }

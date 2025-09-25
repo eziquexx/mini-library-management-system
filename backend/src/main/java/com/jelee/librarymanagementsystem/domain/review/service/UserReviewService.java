@@ -109,7 +109,7 @@ public class UserReviewService {
 
     // 로그인한 사용자와 리뷰 작성자 검증 (본인 리뷰만 조회 가능)
     if (!user.getId().equals(review.getUser().getId())) {
-      throw new BaseException(ReviewErrorCode.REVIEW_USER_NOT_SAME);
+      throw new BaseException(ReviewErrorCode.REVIEW_USER_MISMATCH);
     }
 
     // UserReviewDetailResDTO 객체로 반환
@@ -130,7 +130,7 @@ public class UserReviewService {
 
     // 로그인한 사용자와 리뷰 작성자 검증 (본인 리뷰만 수정 가능)
     if (!user.getId().equals(review.getUser().getId())) {
-      throw new BaseException(ReviewErrorCode.REVIEW_USER_NOT_SAME);
+      throw new BaseException(ReviewErrorCode.REVIEW_USER_MISMATCH);
     }
 
     // 리뷰 내용 업데이트
@@ -154,7 +154,7 @@ public class UserReviewService {
 
     // 로그인한 사용자와 리뷰 작성자 검증 (본인 리뷰만 삭제 가능)
     if (!user.getId().equals(review.getUser().getId())) {
-      throw new BaseException(ReviewErrorCode.REVIEW_USER_NOT_SAME);
+      throw new BaseException(ReviewErrorCode.REVIEW_USER_MISMATCH);
     }
 
     // 반환할 데이터 미리 저장

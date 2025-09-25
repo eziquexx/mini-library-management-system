@@ -107,7 +107,7 @@ public class UserService {
 
     // 새 비밀번호와 다시 입력 새 비밀번호가 동일한지 체크
     if (!newPassword.equals(rePassword)) {
-      throw new BaseException(UserErrorCode.USER_PASSWORD_NOTSAME);
+      throw new BaseException(UserErrorCode.USER_PASSWORD_MISMATCH);
     }
 
     // 새로운 비밀번호 암호화, 수정된 날짜 저장 후 DB에 user 객체 저장.
@@ -179,7 +179,7 @@ public class UserService {
     try {
       type = UserSearchType.valueOf(typeStr.toUpperCase());
     } catch(IllegalArgumentException e) {
-      throw new BaseException(UserErrorCode.USER_SEARCH_TYPE_FAILED);
+      throw new BaseException(UserErrorCode.USER_SEARCH_TYPE_INVALID);
     }
 
     // 검색 결과 Page<User> 타입으로 저장
@@ -264,7 +264,7 @@ public class UserService {
     if (user.getStatus() == UserStatus.DELETED) {
       userRepository.delete(user);
     } else {
-      throw new BaseException(UserErrorCode.USER_DELETE_ACCOUNT_STATUS_DELETED);
+      throw new BaseException(UserErrorCode.USER_STATUS_NOT_DELETED);
     }
     
     return UserDeleteResDTO.builder()

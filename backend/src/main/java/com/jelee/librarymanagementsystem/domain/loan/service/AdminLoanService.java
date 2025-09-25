@@ -62,7 +62,7 @@ public class AdminLoanService {
 
     // 사용자의 상태가 ACTIVE만 대출 가능
     if (user.getStatus() != UserStatus.ACTIVE) {
-      throw new BaseException(LoanErrorCode.USER_NOT_ELIGIBLE_FOR_LOAN);
+      throw new BaseException(LoanErrorCode.LOAN_USER_INELIGIBLE);
     }
 
     // 사용자 대출 3건이상은 대출 불가
@@ -146,7 +146,7 @@ public class AdminLoanService {
     try {
       type = LoanSearchType.valueOf(typeStr.toString().toUpperCase());
     } catch(IllegalArgumentException e) {
-      throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_FAILED);
+      throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_INVALID);
     }
     
     // type별 검색 - BOOKTITLE, USERID
@@ -178,7 +178,7 @@ public class AdminLoanService {
         break;
 
       default:
-        throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_FAILED);
+        throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_INVALID);
     }
 
     // Page dto를 List 형태로 변환
@@ -231,7 +231,7 @@ public class AdminLoanService {
     // loan 상태가 대출중인 것만 가능
     // 연체, 반납, 분실 상태는 불가
     if (loan.getStatus() != LoanStatus.LOANED) {
-      throw new BaseException(LoanErrorCode.LOAN_CANNOT_BE_EXTENDED);
+      throw new BaseException(LoanErrorCode.LOAN_CANNOT_EXTEND);
     }
 
     // loan 대출 여부 체크 및 예외처리
@@ -262,18 +262,18 @@ public class AdminLoanService {
     
     // Loan 엔티티 LOST 상태 여부 체크 + 예외 처리
     if (loan.getStatus() == LoanStatus.LOST) {
-      throw new BaseException(LoanErrorCode.LOAN_ALREADY_LOSTED);
+      throw new BaseException(LoanErrorCode.LOAN_ALREADY_LOST);
     }
 
     // Loan 상태가 LOANED, OVERDUE만 LOST 처리 가능
     LoanStatus current = loan.getStatus();
     if (current != LoanStatus.LOANED && current != LoanStatus.OVERDUE) {
-      throw new BaseException(LoanErrorCode.LOAN_INVALID_STATUS_FOR_LOST);
+      throw new BaseException(LoanErrorCode.LOAN_STATUS_INVALID_FOR_LOST);
     }
     
     // Book 엔티티 상태 체크 후 분실 처리
     if (book.getStatus() == BookStatus.LOST) {
-      throw new BaseException(BookErrorCode.BOOK_ALREADY_LOSTED);
+      throw new BaseException(BookErrorCode.BOOK_ALREADY_LOST);
     }
 
     // 도서 대출 내역과 도서 상태 분실 처리

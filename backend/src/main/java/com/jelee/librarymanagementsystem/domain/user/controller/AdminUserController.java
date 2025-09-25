@@ -66,12 +66,12 @@ public class AdminUserController {
     Page<UserSearchResDTO> user = userService.searchUser(type, keyword, page, size);
     
     // 성공 메시지
-    String message = messageProvider.getMessage(UserSuccessCode.USER_SEARCH.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
 
     return ResponseEntity
-              .status(UserSuccessCode.USER_SEARCH.getHttpStatus())
+              .status(UserSuccessCode.USER_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
-                UserSuccessCode.USER_SEARCH, 
+                UserSuccessCode.USER_FETCHED, 
                 message, 
                 user));
   }
@@ -84,12 +84,12 @@ public class AdminUserController {
     
     UserRoleUpdatedResDTO responseDTO = userService.updateUserRole(userId, roleUpdateDTO);
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATE.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATED.getMessage());
 
     return ResponseEntity
-              .status(UserSuccessCode.USER_ROLE_UPDATE.getHttpStatus())
+              .status(UserSuccessCode.USER_ROLE_UPDATED.getHttpStatus())
               .body(ApiResponse.success(
-                UserSuccessCode.USER_ROLE_UPDATE, 
+                UserSuccessCode.USER_ROLE_UPDATED, 
                 message, 
                 responseDTO));
   }
@@ -102,12 +102,12 @@ public class AdminUserController {
     
     UserStatusUpdateResDTO responseDTO = userService.updateUserStatus(userId, statusUpdateDTO);
     
-    String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATE.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATED.getMessage());
 
     return ResponseEntity
-              .status(UserSuccessCode.USER_STATUS_UPDATE.getHttpStatus())
+              .status(UserSuccessCode.USER_STATUS_UPDATED.getHttpStatus())
               .body(ApiResponse.success(
-                UserSuccessCode.USER_STATUS_UPDATE, 
+                UserSuccessCode.USER_STATUS_UPDATED, 
                 message, 
                 responseDTO));
   }
@@ -119,12 +119,12 @@ public class AdminUserController {
     
     UserDeleteResDTO responseDTO = userService.deleteUserAccount(userId);
     
-    String message = messageProvider.getMessage(UserSuccessCode.USER_DELETE_ACCOUNT.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
 
     return ResponseEntity
-              .status(UserSuccessCode.USER_DELETE_ACCOUNT.getHttpStatus())
+              .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
               .body(ApiResponse.success(
-                UserSuccessCode.USER_DELETE_ACCOUNT, 
+                UserSuccessCode.USER_ACCOUNT_DELETED, 
                 message, 
                 responseDTO));
   }

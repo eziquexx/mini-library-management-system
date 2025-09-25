@@ -110,12 +110,12 @@ public class UserController {
               
     response.addHeader("Set-Cookie", deleteCookie.toString());
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_DELETE_ACCOUNT.getMessage());
+    String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
 
     return ResponseEntity
-              .status(UserSuccessCode.USER_DELETE_ACCOUNT.getHttpStatus())
+              .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
               .body(ApiResponse.success(
-                UserSuccessCode.USER_DELETE_ACCOUNT, 
+                UserSuccessCode.USER_ACCOUNT_DELETED, 
                 message, 
                 responseDTO));
   }

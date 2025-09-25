@@ -2,21 +2,24 @@ package com.jelee.librarymanagementsystem.domain.auth.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.JoinResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.LoginResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.service.AuthService;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.AuthSuccessCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -28,54 +31,69 @@ public class AuthController {
   private final AuthService authService;
   private final MessageProvider messageProvider;
 
-  // 회원가입 api
+  /*
+   * 공용: 회원가입
+   */
   @PostMapping("/signup")
-  public ResponseEntity<ApiResponse<Long>> singUp(@RequestBody JoinReqDTO request) {
-    Long userId = authService.signUp(request);
+  public ResponseEntity<?> singUp(@RequestBody JoinReqDTO request) {
+    
+    // 서비스로직
+    JoinResDTO resonseDTO = authService.signUp(request);
 
+    // 성공메시지
     String message = messageProvider.getMessage(UserSuccessCode.USER_CREATED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(UserSuccessCode.USER_CREATED.getHttpStatus())
               .body(ApiResponse.success(
                 UserSuccessCode.USER_CREATED, 
                 message, 
-                userId));
+                resonseDTO));
   }
 
-  // 로그인 api
+  /*
+   * 공용: 로그인
+   */
   @PostMapping("/signin")
   public ResponseEntity<?> signIn(
     @RequestBody LoginReqDTO request, 
     HttpServletResponse response) {
-    String token = authService.signIn(request);
+      
+      // 서비스로직
+      LoginResDTO responseDTO = authService.signIn(request);
+      // String token = authService.signIn(request);
 
-    // Jwt를 HttpOnly 쿠키에 저장
-    ResponseCookie cookie = ResponseCookie.from("JWT", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(24 * 60 * 60)
-                .sameSite("Strict")
-                .build();
+      // Jwt를 HttpOnly 쿠키에 저장
+      ResponseCookie cookie = ResponseCookie.from("JWT", responseDTO.getToken())
+                  .httpOnly(true)
+                  .secure(true)
+                  .path("/")
+                  .maxAge(24 * 60 * 60)
+                  .sameSite("Strict")
+                  .build();
 
-    response.addHeader("Set-Cookie", cookie.toString());
+      response.addHeader("Set-Cookie", cookie.toString());
 
-    String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getMessage());
 
-    return ResponseEntity
-              .status(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getHttpStatus())
-              .body(ApiResponse.success(
-                AuthSuccessCode.AUTH_LOGIN_SUCCESS,
-                message, 
-                request.getUsername()));
+      // 응답
+      return ResponseEntity
+                .status(AuthSuccessCode.AUTH_LOGIN_SUCCESS.getHttpStatus())
+                .body(ApiResponse.success(
+                  AuthSuccessCode.AUTH_LOGIN_SUCCESS,
+                  message, 
+                  responseDTO.getUsername()));
   }
 
-  // 로그아웃 api
+  /*
+   * 공용: 로그아웃
+   */
   @PostMapping("/logout")
   public ResponseEntity<?> logout(
-    HttpServletRequest request, 
-    HttpServletResponse response) {
+    HttpServletResponse response,
+    @AuthenticationPrincipal User user) {
     
     // Jwt 제거
     ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
@@ -88,10 +106,13 @@ public class AuthController {
     
     response.addHeader("Set-Cookie", deleteCookie.toString());
 
-    LogoutResDTO responseDTO = authService.logout(request);
+    // 서비스로직
+    LogoutResDTO responseDTO = authService.logout(user.getId());
 
+    // 성공메시지
     String message = messageProvider.getMessage(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(AuthSuccessCode.AUTH_LOGOUT_SUCCESS.getHttpStatus())
               .body(ApiResponse.success(

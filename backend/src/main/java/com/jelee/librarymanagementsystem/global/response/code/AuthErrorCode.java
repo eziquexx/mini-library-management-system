@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public enum AuthErrorCode implements ErrorCode {
   
-  AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"AUTH_401", "error.auth.unauthorized"),
-  AUTH_FORBIDDEN(HttpStatus.FORBIDDEN,"AUTH_402", "error.auth.forbidden");
+  AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"AUTH_1000", "error.auth.unauthorized"),
+  AUTH_FORBIDDEN(HttpStatus.FORBIDDEN,"AUTH_1001", "error.auth.forbidden");
 
   private final HttpStatus httpStatus;
   private final String code;

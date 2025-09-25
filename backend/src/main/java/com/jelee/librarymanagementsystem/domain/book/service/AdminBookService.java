@@ -37,22 +37,22 @@ public class AdminBookService {
     
     // 필수 필드 Null 체크(title, isbn, author, publisher, publishedDate, location)
     if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_TITLE_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_TITLE_REQUIRED);
     }
     if (request.getIsbn() == null || request.getIsbn().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_ISBN_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_ISBN_REQUIRED);
     }
     if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_AUTHOR_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_AUTHOR_REQUIRED);
     }
     if (request.getPublisher() == null || request.getPublisher().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_PUBLISHER_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_PUBLISHER_REQUIRED);
     }
     if (request.getPublishedDate() == null) {
-      throw new BaseException(BookErrorCode.BOOK_PUBLISHERDATE_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_PUBLISHERDATE_REQUIRED);
     }
     if (request.getLocation() == null || request.getLocation().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_LOCATION_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_LOCATION_REQUIRED);
     }
 
     // location 중복 체크
@@ -86,22 +86,22 @@ public class AdminBookService {
 
     // 필수 필드 Null 체크(title, isbn, author, publisher, publishedDate, location)
     if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_TITLE_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_TITLE_REQUIRED);
     }
     if (request.getIsbn() == null || request.getIsbn().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_ISBN_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_ISBN_REQUIRED);
     }
     if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_AUTHOR_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_AUTHOR_REQUIRED);
     }
     if (request.getPublisher() == null || request.getPublisher().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_PUBLISHER_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_PUBLISHER_REQUIRED);
     }
     if (request.getPublishedDate() == null) {
-      throw new BaseException(BookErrorCode.BOOK_PUBLISHERDATE_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_PUBLISHERDATE_REQUIRED);
     }
     if (request.getLocation() == null || request.getLocation().trim().isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_LOCATION_BLANK);
+      throw new BaseException(BookErrorCode.BOOK_LOCATION_REQUIRED);
     }
 
     // location 중복 체크

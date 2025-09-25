@@ -5,12 +5,12 @@ import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter
-public class LogoutResDTO {
-  private Long id;
+public class LoginResDTO {
   private String username;
+  private String token;
 
-  public LogoutResDTO(User user) {
-    this.id = user.getId();
+  public LoginResDTO(User user, String token) {
     this.username = user.getUsername();
+    this.token = token;
   }
 }

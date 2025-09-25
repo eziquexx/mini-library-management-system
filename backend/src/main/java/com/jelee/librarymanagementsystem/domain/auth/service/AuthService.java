@@ -6,7 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.auth.dto.JoinReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.JoinResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LoginReqDTO;
+import com.jelee.librarymanagementsystem.domain.auth.dto.LoginResDTO;
 import com.jelee.librarymanagementsystem.domain.auth.dto.LogoutResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -16,7 +18,7 @@ import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.jwt.JwtTokenProvider;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,8 +29,11 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
   
-  // 회원가입
-  public Long signUp(JoinReqDTO request) {
+  /*
+   * 공용: 회원가입
+   */
+  @Transactional
+  public JoinResDTO signUp(JoinReqDTO request) {
 
     // 아이디 중복 체크
     if (userRepository.existsByUsername(request.getUsername())) {
@@ -40,6 +45,7 @@ public class AuthService {
       throw new BaseException(UserErrorCode.USER_EMAIL_DUPLICATED);
     }
 
+    // User 엔티티 생성
     User user = User.builder()
               .username(request.getUsername())
               .password(passwordEncoder.encode(request.getPassword()))
@@ -48,13 +54,20 @@ public class AuthService {
               .joinDate(LocalDateTime.now())
               .build();
     
-    return userRepository.save(user).getId();
+    // user 저장
+    userRepository.save(user);
+    
+    // 반환
+    return new JoinResDTO(user);
   }
 
-  // 로그인
-  public String signIn(LoginReqDTO request) {
+  /*
+   * 공용: 로그인
+   */
+  @Transactional
+  public LoginResDTO signIn(LoginReqDTO request) {
 
-    // DB에 있는 유저 정보 가져오기
+    // 사용자 유효 검사
     User user = userRepository.findByUsername(request.getUsername())
       .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
@@ -76,23 +89,23 @@ public class AuthService {
     user.setLastLoginDate(LocalDateTime.now());
     userRepository.save(user);
 
-    return jwtTokenProvider.generateToken(user);
+    // 토큰 생성
+    String token = jwtTokenProvider.generateToken(user);
+
+    // 반환
+    return new LoginResDTO(user, token);
   }
 
-  // 로그아웃
-  public LogoutResDTO logout(HttpServletRequest request) {
+  /*
+   * 공용: 로그아웃
+   */
+  public LogoutResDTO logout(Long userId) {
     
-    // 토큰을 구한 다음 토큰으로 userId 가져오기
-    String accessToken = jwtTokenProvider.resolveTokenFromCookie(request);
-    String username = jwtTokenProvider.getUsernameFromToken(accessToken);
-
-    // id로 사용자 정보 가져오기
-    User user = userRepository.findByUsername(username)
+    // userId로 사용자 정보 조회
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
-    return LogoutResDTO.builder()
-            .id(user.getId())
-            .username(user.getUsername())
-            .build();
+    // 반환    
+    return new LogoutResDTO(user);
   }
 }

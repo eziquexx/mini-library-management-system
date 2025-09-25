@@ -44,13 +44,13 @@ public class AdminLoanController {
     AdminLoanCreateResDTO responseDTO = adminLoanService.createLoan(requestDTO);
 
     // 성공메시지
-    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_CRATED_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_CREATED.getMessage());
 
     // 응답
     return ResponseEntity
-              .status(LoanSuccessCode.LOAN_CRATED_SUCCESS.getHttpStatus())
+              .status(LoanSuccessCode.LOAN_CREATED.getHttpStatus())
               .body(ApiResponse.success(
-                LoanSuccessCode.LOAN_CRATED_SUCCESS, 
+                LoanSuccessCode.LOAN_CREATED, 
                 message, 
                 responseDTO));
   }
@@ -84,13 +84,13 @@ public class AdminLoanController {
     AdminLoanDetailResDTO responseDTO = adminLoanService.detailLoan(loanId);
 
     // 성공메시지
-    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_DETAIL_FETCHED_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
 
     // 응답
     return ResponseEntity
-              .status(LoanSuccessCode.LOAN_DETAIL_FETCHED_SUCCESS.getHttpStatus())
+              .status(LoanSuccessCode.LOAN_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
-                LoanSuccessCode.LOAN_DETAIL_FETCHED_SUCCESS, 
+                LoanSuccessCode.LOAN_FETCHED, 
                 message, 
                 responseDTO));
   }
@@ -126,12 +126,12 @@ public class AdminLoanController {
     AdminLoanReturnResDTO responseDTO = adminLoanService.returnLoan(loanId);
 
     // 성공메시지
-    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_RETURNED_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_RETURNED.getMessage());
 
     return ResponseEntity
-              .status(LoanSuccessCode.LOAN_RETURNED_SUCCESS.getHttpStatus())
+              .status(LoanSuccessCode.LOAN_RETURNED.getHttpStatus())
               .body(ApiResponse.success(
-                LoanSuccessCode.LOAN_RETURNED_SUCCESS, 
+                LoanSuccessCode.LOAN_RETURNED, 
                 message, 
                 responseDTO));
   }
@@ -144,13 +144,13 @@ public class AdminLoanController {
     AdminLoanExtendedResDTO responseDTO = adminLoanService.extendLoan(loanId);
 
     // 성공메시지
-    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_EXTENDED_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_EXTENDED.getMessage());
 
     // 응답
     return ResponseEntity
-              .status(LoanSuccessCode.LOAN_EXTENDED_SUCCESS.getHttpStatus())
+              .status(LoanSuccessCode.LOAN_EXTENDED.getHttpStatus())
               .body(ApiResponse.success(
-                LoanSuccessCode.LOAN_EXTENDED_SUCCESS, 
+                LoanSuccessCode.LOAN_EXTENDED, 
                 message, 
                 responseDTO));
   }
@@ -163,13 +163,13 @@ public class AdminLoanController {
     AdminLoanLostResDTO responseDTO = adminLoanService.loanLostBook(loanId);
 
     // 성공메시지
-    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_RETURNED_SUCCESS.getMessage());
+    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_MARKED_AS_LOST.getMessage());
 
     // 응답
     return ResponseEntity
-              .status(LoanSuccessCode.LOAN_MARKED_LOST_SUCCESS.getHttpStatus())
+              .status(LoanSuccessCode.LOAN_MARKED_AS_LOST.getHttpStatus())
               .body(ApiResponse.success(
-                LoanSuccessCode.LOAN_MARKED_LOST_SUCCESS, 
+                LoanSuccessCode.LOAN_MARKED_AS_LOST, 
                 message, 
                 responseDTO));
   }

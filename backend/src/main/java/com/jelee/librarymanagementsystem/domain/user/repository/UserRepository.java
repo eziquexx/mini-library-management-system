@@ -12,6 +12,7 @@ import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+  
   // 아이디 중복 체크
   boolean existsByUsername(String username);
 
