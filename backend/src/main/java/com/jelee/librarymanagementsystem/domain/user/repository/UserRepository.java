@@ -22,6 +22,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   // username으로 사용자 전체 엔티티 조회
   Optional<User> findByUsername(String username);
 
+  // INACTIVE 상태 변경시 inactiveAt 조회
+  List<User> findByStatusAndInactiveAtBefore(UserStatus status, LocalDateTime inactiveAt);
+
   // 관리자 - 사용자 전체 목록 조회 (+페이징)
   // Page<User> findAll(Pageable pageable);
 
@@ -30,7 +33,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   // 관리자 - 회원 email 검색 (+페이징)
   Page<User> findByEmailContainingIgnoreCase(String email, Pageable pageable);
-
-  // 사용자 - INACTIVE 상태 변경시 inactiveAt 조회
-  List<User> findByStatusAndInactiveAtBefore(UserStatus status, LocalDateTime inactiveAt);
 }

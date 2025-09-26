@@ -119,16 +119,20 @@ public class UserService {
     return new UpdatePasswordResDTO(user);
   }
 
-  // 회원 탈퇴, 삭제
+  /*
+   * 사용자: 회원 탈퇴
+   * INACTIVE 상태 변경(비활성화), 30일 후 자동으로 DELETED 상태 변경(UserStatusScheduler)
+   */
   @Transactional
-  public DeleteAccountResDTO deleteAccount(Long userId, DeleteAccountReqDTO deleteAccount) {
+  public DeleteAccountResDTO deleteAccount(Long userId, DeleteAccountReqDTO requestDTO) {
 
+    // 사용자 조회 및 예외 처리
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-    String password = deleteAccount.getPassword();
-
+        
     // 비밀번호가 일치하는지 체크
+    String password = requestDTO.getPassword();
     if (!passwordEncoder.matches(password, user.getPassword())) {
       throw new BaseException(UserErrorCode.INVALID_PASSWORD);
     }
@@ -138,7 +142,8 @@ public class UserService {
     user.setInactiveAt(LocalDateTime.now());
     userRepository.save(user);
 
-    return null;
+    // 반환
+    return new DeleteAccountResDTO(user);
   }
 
 

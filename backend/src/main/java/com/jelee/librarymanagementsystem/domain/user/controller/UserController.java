@@ -102,32 +102,39 @@ public class UserController {
                   responseDTO));
   }
 
-  // 사용자 - 회원 탈퇴
+  /*
+   * 사용자: 회원 탈퇴
+   */
   @PostMapping("/withdraw")
   public ResponseEntity<?> deleteAccount(
-    @RequestBody DeleteAccountReqDTO deleteAccount,
+    @RequestBody DeleteAccountReqDTO requestDTO,
     @AuthenticationPrincipal User user,
     HttpServletResponse response) {
     
-    DeleteAccountResDTO responseDTO = userService.deleteAccount(user.getId(), deleteAccount);
+      // 서비스로직
+      DeleteAccountResDTO responseDTO = userService.deleteAccount(user.getId(), requestDTO);
 
-    ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
+      // 쿠키 삭제
+      ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Strict")
                 .build();
-              
-    response.addHeader("Set-Cookie", deleteCookie.toString());
+      
+      // 응답시 전달할 쿠키
+      response.addHeader("Set-Cookie", deleteCookie.toString());
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_ACCOUNT_DELETED, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_ACCOUNT_DELETED, 
+                  message, 
+                  responseDTO));
   }
 }
