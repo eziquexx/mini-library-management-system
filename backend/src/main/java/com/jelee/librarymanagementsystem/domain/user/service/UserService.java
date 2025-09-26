@@ -20,6 +20,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateR
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
@@ -54,13 +55,18 @@ public class UserService {
     return new UserInfoResDTO(user);
   }
 
-  // email 업데이트
+  /*
+   * 사용자: 이메일 변경
+   */
   @Transactional
-  public UpdateEmailResDTO updateEmail(String username, String newEmail) {
-    User user = userRepository.findByUsername(username)
+  public UpdateEmailResDTO updateEmail(Long userId, UpdateEmailReqDTO requestDTO) {
+
+    // 사용자 조회 및 예외 처리
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-    // 동일 이메일인지 체크
+    // 기존과 변경 이메일이 동일한지 체크
+    String newEmail = requestDTO.getEmail();
     if (user.getEmail().equals(newEmail)) {
       throw new BaseException(UserErrorCode.USER_EMAIL_SAME);
     }
@@ -75,13 +81,8 @@ public class UserService {
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
 
-    // 응답
-    return UpdateEmailResDTO.builder()
-              .id(user.getId())
-              .username(user.getUsername())
-              .email(user.getEmail())
-              .updatedAt(user.getUpdatedAt())
-              .build();
+    // 반환
+    return new UpdateEmailResDTO(user);
   }
 
   // password 업데이트

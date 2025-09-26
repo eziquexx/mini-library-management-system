@@ -56,22 +56,27 @@ public class UserController {
                 responseDTO));
   }
 
-  // 사용자 - email 업데이트
+  /*
+   * 사용자: 이메일 변경
+   */
   @PatchMapping("/email")
   public ResponseEntity<?> updateEmail(
-    @RequestBody UpdateEmailReqDTO updateEmail, 
+    @RequestBody UpdateEmailReqDTO requestDTO, 
     @AuthenticationPrincipal User user) {
     
-    UpdateEmailResDTO responseDTO = userService.updateEmail(user.getUsername(), updateEmail.getEmail());
+      // 서비스로직
+      UpdateEmailResDTO responseDTO = userService.updateEmail(user.getId(), requestDTO);
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_EMAIL_UPDATE, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_EMAIL_UPDATE, 
+                  message, 
+                  responseDTO));
   }
 
   // 사용자 - password 업데이트
