@@ -93,12 +93,13 @@ public class UserController {
       // 성공메시지
       String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
     
-    return ResponseEntity
-              .status(UserSuccessCode.USER_PASSWORD_UPDATE.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_PASSWORD_UPDATE, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_PASSWORD_UPDATE.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_PASSWORD_UPDATE, 
+                  message, 
+                  responseDTO));
   }
 
   // 사용자 - 회원 탈퇴
