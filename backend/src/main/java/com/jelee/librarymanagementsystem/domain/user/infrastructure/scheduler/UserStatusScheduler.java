@@ -28,7 +28,7 @@ public class UserStatusScheduler {
 
     LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
 
-    // INACTIVE 상태면서 inactivveAt이 cutoffDate 이전이 유저 찾기
+    // INACTIVE 상태면서 inactiveAt이 30일 지난 유저 찾기
     var usersToDelete = userRepository.findByStatusAndInactiveAtBefore(UserStatus.INACTIVE, cutoffDate);
 
     for (User user : usersToDelete) {

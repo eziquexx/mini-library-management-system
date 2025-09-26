@@ -2,7 +2,6 @@ package com.jelee.librarymanagementsystem.domain.user.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,12 +35,14 @@ public class UserController {
   private final MessageProvider messageProvider;
   private final UserService userService;
 
-  // 사용자 - 사용자 인증 정보
+  /*
+   * 사용자: 본인 인증 정보
+   */
   @GetMapping()
-  public ResponseEntity<?> getMyInfo(Authentication authentication) {
+  public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user) {
 
     // 서비스 로직
-    UserInfoResDTO responseDTO = userService.getMyInfo(authentication);
+    UserInfoResDTO responseDTO = userService.getMyInfo(user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(AuthSuccessCode.AUTH_USER_VERIFIED.getMessage());
@@ -55,68 +56,85 @@ public class UserController {
                 responseDTO));
   }
 
-  // 사용자 - email 업데이트
+  /*
+   * 사용자: 이메일 변경
+   */
   @PatchMapping("/email")
   public ResponseEntity<?> updateEmail(
-    @RequestBody UpdateEmailReqDTO updateEmail, 
+    @RequestBody UpdateEmailReqDTO requestDTO, 
     @AuthenticationPrincipal User user) {
     
-    UpdateEmailResDTO responseDTO = userService.updateEmail(user.getUsername(), updateEmail.getEmail());
+      // 서비스로직
+      UpdateEmailResDTO responseDTO = userService.updateEmail(user.getId(), requestDTO);
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_EMAIL_UPDATE.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_EMAIL_UPDATE, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_EMAIL_UPDATE.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_EMAIL_UPDATE, 
+                  message, 
+                  responseDTO));
   }
 
-  // 사용자 - password 업데이트
+  /*
+   * 사용자: 비밀번호 변경
+   */
   @PatchMapping("/password")
   public ResponseEntity<?> updatePassword(
-    @RequestBody UpdatePasswordReqDTO updatePassword, 
+    @RequestBody UpdatePasswordReqDTO requestDTO, 
     @AuthenticationPrincipal User user) {
     
-    UpdatePasswordResDTO responseDTO = userService.updatePassword(user.getId(), updatePassword);
+      // 서비스로직
+      UpdatePasswordResDTO responseDTO = userService.updatePassword(user.getId(), requestDTO);
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
     
-    return ResponseEntity
-              .status(UserSuccessCode.USER_PASSWORD_UPDATE.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_PASSWORD_UPDATE, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_PASSWORD_UPDATE.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_PASSWORD_UPDATE, 
+                  message, 
+                  responseDTO));
   }
 
-  // 사용자 - 회원 탈퇴
+  /*
+   * 사용자: 회원 탈퇴
+   */
   @PostMapping("/withdraw")
   public ResponseEntity<?> deleteAccount(
-    @RequestBody DeleteAccountReqDTO deleteAccount,
+    @RequestBody DeleteAccountReqDTO requestDTO,
     @AuthenticationPrincipal User user,
     HttpServletResponse response) {
     
-    DeleteAccountResDTO responseDTO = userService.deleteAccount(user.getId(), deleteAccount);
+      // 서비스로직
+      DeleteAccountResDTO responseDTO = userService.deleteAccount(user.getId(), requestDTO);
 
-    ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
+      // 쿠키 삭제
+      ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Strict")
                 .build();
-              
-    response.addHeader("Set-Cookie", deleteCookie.toString());
+      
+      // 응답시 전달할 쿠키
+      response.addHeader("Set-Cookie", deleteCookie.toString());
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_ACCOUNT_DELETED, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_ACCOUNT_DELETED, 
+                  message, 
+                  responseDTO));
   }
 }

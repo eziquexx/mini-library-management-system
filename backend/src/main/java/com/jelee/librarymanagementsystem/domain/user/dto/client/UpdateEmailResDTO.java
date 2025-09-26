@@ -2,16 +2,21 @@ package com.jelee.librarymanagementsystem.domain.user.dto.client;
 
 import java.time.LocalDateTime;
 
-import lombok.Builder;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
+
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-@Builder
 public class UpdateEmailResDTO {
   private Long id;
   private String username;
   private String email;
   private LocalDateTime updatedAt;
+
+  public UpdateEmailResDTO(User user) {
+    this.id = user.getId();
+    this.username = user.getUsername();
+    this.email = user.getEmail();
+    this.updatedAt = user.getUpdatedAt();
+  }
 }

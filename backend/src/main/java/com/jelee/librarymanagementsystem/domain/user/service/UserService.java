@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateR
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
@@ -30,7 +30,6 @@ import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
-import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -42,29 +41,32 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  // 사용자 인증 정보
-  @Transactional
-  public UserInfoResDTO getMyInfo(Authentication authentication) {
+  /*
+   * 사용자: 본인 인증 정보
+   */
+  @Transactional(readOnly = true)
+  public UserInfoResDTO getMyInfo(Long userId) {
 
-    // User 인증 객체
-    User user = (User) authentication.getPrincipal();
-
-    // User에 인증 정보 체크
-    if (user == null) {
-      throw new BaseException(AuthErrorCode.AUTH_UNAUTHORIZED);
-    }
+    // User 조회 및 객체 생성, 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
     // 반환
     return new UserInfoResDTO(user);
   }
 
-  // email 업데이트
+  /*
+   * 사용자: 이메일 변경
+   */
   @Transactional
-  public UpdateEmailResDTO updateEmail(String username, String newEmail) {
-    User user = userRepository.findByUsername(username)
+  public UpdateEmailResDTO updateEmail(Long userId, UpdateEmailReqDTO requestDTO) {
+
+    // 사용자 조회 및 예외 처리
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-    // 동일 이메일인지 체크
+    // 기존과 변경 이메일이 동일한지 체크
+    String newEmail = requestDTO.getEmail();
     if (user.getEmail().equals(newEmail)) {
       throw new BaseException(UserErrorCode.USER_EMAIL_SAME);
     }
@@ -79,33 +81,30 @@ public class UserService {
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
 
-    // 응답
-    return UpdateEmailResDTO.builder()
-              .id(user.getId())
-              .username(user.getUsername())
-              .email(user.getEmail())
-              .updatedAt(user.getUpdatedAt())
-              .build();
+    // 반환
+    return new UpdateEmailResDTO(user);
   }
 
-  // password 업데이트
+  /*
+   * 사용자: 비밀번호 변경
+   */
   @Transactional
-  public UpdatePasswordResDTO updatePassword(Long userId, UpdatePasswordReqDTO updatePassword) {
+  public UpdatePasswordResDTO updatePassword(Long userId, UpdatePasswordReqDTO requestDTO) {
 
-    // 로그인한 사용자 객체
+    // 사용자 조회 및 예외 처리
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-    // 기존 비밀번호, 새로운 비밀번호 변수에 저장
-    String rePassword = updatePassword.getPassword();
-    String newPassword = updatePassword.getRepassword();
+    // 새로운 비밀번호, 확인용 새로운 비밀번호를 변수에 저장
+    String newPassword = requestDTO.getPassword();
+    String rePassword = requestDTO.getRepassword();
     
     // 기존 비밀번호와 새로운 비밀번호가 동일한지 체크
     if (passwordEncoder.matches(newPassword, user.getPassword())) {
       throw new BaseException(UserErrorCode.USER_PASSWORD_SAME);
     }
 
-    // 새 비밀번호와 다시 입력 새 비밀번호가 동일한지 체크
+    // 새 비밀번호와 확인용 새 비밀번호가 동일한지 체크
     if (!newPassword.equals(rePassword)) {
       throw new BaseException(UserErrorCode.USER_PASSWORD_MISMATCH);
     }
@@ -116,23 +115,24 @@ public class UserService {
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
 
-    return UpdatePasswordResDTO.builder()
-              .id(user.getId())
-              .username(user.getUsername())
-              .updatedAt(user.getUpdatedAt())
-              .build();
+    // 반환
+    return new UpdatePasswordResDTO(user);
   }
 
-  // 회원 탈퇴, 삭제
+  /*
+   * 사용자: 회원 탈퇴
+   * INACTIVE 상태 변경(비활성화), 30일 후 자동으로 DELETED 상태 변경(UserStatusScheduler)
+   */
   @Transactional
-  public DeleteAccountResDTO deleteAccount(Long userId, DeleteAccountReqDTO deleteAccount) {
+  public DeleteAccountResDTO deleteAccount(Long userId, DeleteAccountReqDTO requestDTO) {
 
+    // 사용자 조회 및 예외 처리
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-    String password = deleteAccount.getPassword();
-
+        
     // 비밀번호가 일치하는지 체크
+    String password = requestDTO.getPassword();
     if (!passwordEncoder.matches(password, user.getPassword())) {
       throw new BaseException(UserErrorCode.INVALID_PASSWORD);
     }
@@ -142,7 +142,8 @@ public class UserService {
     user.setInactiveAt(LocalDateTime.now());
     userRepository.save(user);
 
-    return null;
+    // 반환
+    return new DeleteAccountResDTO(user);
   }
 
 
