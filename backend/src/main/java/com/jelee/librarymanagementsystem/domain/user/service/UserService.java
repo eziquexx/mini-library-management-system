@@ -85,24 +85,26 @@ public class UserService {
     return new UpdateEmailResDTO(user);
   }
 
-  // password 업데이트
+  /*
+   * 사용자: 비밀번호 변경
+   */
   @Transactional
-  public UpdatePasswordResDTO updatePassword(Long userId, UpdatePasswordReqDTO updatePassword) {
+  public UpdatePasswordResDTO updatePassword(Long userId, UpdatePasswordReqDTO requestDTO) {
 
-    // 로그인한 사용자 객체
+    // 사용자 조회 및 예외 처리
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-    // 기존 비밀번호, 새로운 비밀번호 변수에 저장
-    String rePassword = updatePassword.getPassword();
-    String newPassword = updatePassword.getRepassword();
+    // 새로운 비밀번호, 확인용 새로운 비밀번호를 변수에 저장
+    String newPassword = requestDTO.getPassword();
+    String rePassword = requestDTO.getRepassword();
     
     // 기존 비밀번호와 새로운 비밀번호가 동일한지 체크
     if (passwordEncoder.matches(newPassword, user.getPassword())) {
       throw new BaseException(UserErrorCode.USER_PASSWORD_SAME);
     }
 
-    // 새 비밀번호와 다시 입력 새 비밀번호가 동일한지 체크
+    // 새 비밀번호와 확인용 새 비밀번호가 동일한지 체크
     if (!newPassword.equals(rePassword)) {
       throw new BaseException(UserErrorCode.USER_PASSWORD_MISMATCH);
     }
@@ -113,11 +115,8 @@ public class UserService {
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
 
-    return UpdatePasswordResDTO.builder()
-              .id(user.getId())
-              .username(user.getUsername())
-              .updatedAt(user.getUpdatedAt())
-              .build();
+    // 반환
+    return new UpdatePasswordResDTO(user);
   }
 
   // 회원 탈퇴, 삭제

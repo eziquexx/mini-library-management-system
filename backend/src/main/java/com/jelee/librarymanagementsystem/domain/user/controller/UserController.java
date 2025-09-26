@@ -79,15 +79,19 @@ public class UserController {
                   responseDTO));
   }
 
-  // 사용자 - password 업데이트
+  /*
+   * 사용자: 비밀번호 변경
+   */
   @PatchMapping("/password")
   public ResponseEntity<?> updatePassword(
-    @RequestBody UpdatePasswordReqDTO updatePassword, 
+    @RequestBody UpdatePasswordReqDTO requestDTO, 
     @AuthenticationPrincipal User user) {
     
-    UpdatePasswordResDTO responseDTO = userService.updatePassword(user.getId(), updatePassword);
+      // 서비스로직
+      UpdatePasswordResDTO responseDTO = userService.updatePassword(user.getId(), requestDTO);
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_PASSWORD_UPDATE.getMessage());
     
     return ResponseEntity
               .status(UserSuccessCode.USER_PASSWORD_UPDATE.getHttpStatus())
