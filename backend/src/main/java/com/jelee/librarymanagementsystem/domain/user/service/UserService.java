@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
-import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -42,17 +40,15 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  // 사용자 인증 정보
-  @Transactional
-  public UserInfoResDTO getMyInfo(Authentication authentication) {
+  /*
+   * 사용자: 본인 인증 정보
+   */
+  @Transactional(readOnly = true)
+  public UserInfoResDTO getMyInfo(Long userId) {
 
-    // User 인증 객체
-    User user = (User) authentication.getPrincipal();
-
-    // User에 인증 정보 체크
-    if (user == null) {
-      throw new BaseException(AuthErrorCode.AUTH_UNAUTHORIZED);
-    }
+    // User 조회 및 객체 생성, 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
     // 반환
     return new UserInfoResDTO(user);

@@ -2,7 +2,6 @@ package com.jelee.librarymanagementsystem.domain.user.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,12 +35,14 @@ public class UserController {
   private final MessageProvider messageProvider;
   private final UserService userService;
 
-  // 사용자 - 사용자 인증 정보
+  /*
+   * 사용자: 본인 인증 정보
+   */
   @GetMapping()
-  public ResponseEntity<?> getMyInfo(Authentication authentication) {
+  public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user) {
 
     // 서비스 로직
-    UserInfoResDTO responseDTO = userService.getMyInfo(authentication);
+    UserInfoResDTO responseDTO = userService.getMyInfo(user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(AuthSuccessCode.AUTH_USER_VERIFIED.getMessage());
