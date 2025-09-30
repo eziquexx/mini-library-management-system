@@ -98,7 +98,7 @@ public class AdminUserService {
    * 관리자: 회원 권한 수정
    */
   @Transactional
-  public AdminUserRoleUpdatedResDTO updateUserRole(Long userId, AdminUserRoleUpdateReqDTO roleUpdateDTO, Long adminUserId) {
+  public AdminUserRoleUpdatedResDTO updateUserRole(Long userId, AdminUserRoleUpdateReqDTO requestDTO, Long adminUserId) {
 
     // 관리자 권한 조회 및 예외 처리
     User userAdmin = userRepository.findById(adminUserId)
@@ -113,7 +113,7 @@ public class AdminUserService {
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
     
     // 권한 변경 및 저장
-    user.setRole(roleUpdateDTO.getRole());
+    user.setRole(requestDTO.getRole());
     user.setUpdatedAt(LocalDateTime.now());
     userRepository.save(user);
 
