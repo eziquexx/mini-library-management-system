@@ -12,6 +12,8 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResD
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -119,26 +121,32 @@ public class AdminUserService {
     return new AdminUserRoleUpdatedResDTO(user);
   }
 
-  // 관리자 - 회원 상태 수정
-  // public UserStatusUpdateResDTO updateUserStatus(Long userId, UserStatusUpdateReqDTO statusUpdateDTO) {
+  /*
+   * 관리자: 회원 상태 수정
+   */
+  @Transactional
+  public AdminUserStatusUpdateResDTO updateUserStatus(Long userId, AdminUserStatusUpdateReqDTO requestDTO, Long adminUserId) {
 
-  //   // 사용자 정보 확인 + 예외 처리
-  //   User user = userRepository.findById(userId)
-  //       .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
+    // 관리자 권한 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
-  //   // 상태 변경 및 저장
-  //   user.setStatus(statusUpdateDTO.getStatus());
-  //   user.setUpdatedAt(LocalDateTime.now());
-  //   userRepository.save(user);
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
-  //   // 응답 반환
-  //   return UserStatusUpdateResDTO.builder()
-  //       .id(user.getId())
-  //       .username(user.getUsername())
-  //       .status(user.getStatus())
-  //       .updatedAt(user.getUpdatedAt())
-  //       .build();
-  // }
+    // 사용자 정보 확인 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
+    
+    // 상태 변경 및 저장
+    user.setStatus(requestDTO.getStatus());
+    user.setUpdatedAt(LocalDateTime.now());
+    userRepository.save(user);
+
+    // 반환
+    return new AdminUserStatusUpdateResDTO(user);
+  }
 
   // 관리자 - 회원 삭제
   // public UserDeleteResDTO deleteUserAccount(Long userId) {

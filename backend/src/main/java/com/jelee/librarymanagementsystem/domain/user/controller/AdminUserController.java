@@ -15,6 +15,8 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResD
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.service.AdminUserService;
@@ -106,23 +108,29 @@ public class AdminUserController {
                   responseDTO));
   }
 
-  // 관리자 - 회원 상태 수정
-  // @PatchMapping("/{userId}/status")
-  // public ResponseEntity<?> updateUserStatus(
-  //   @PathVariable Long userId, 
-  //   @RequestBody UserStatusUpdateReqDTO statusUpdateDTO) {
+  /*
+   * 관리자: 회원 상태 수정
+   */
+  @PatchMapping("/{userId}/status")
+  public ResponseEntity<?> updateUserStatus(
+    @PathVariable("userId") Long userId, 
+    @RequestBody AdminUserStatusUpdateReqDTO requestDTO,
+    @AuthenticationPrincipal User user) {
     
-  //   UserStatusUpdateResDTO responseDTO = userService.updateUserStatus(userId, statusUpdateDTO);
-    
-  //   String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATED.getMessage());
+      // 서비스로직
+      AdminUserStatusUpdateResDTO responseDTO = adminUserService.updateUserStatus(userId, requestDTO, user.getId());
+      
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATED.getMessage());
 
-  //   return ResponseEntity
-  //             .status(UserSuccessCode.USER_STATUS_UPDATED.getHttpStatus())
-  //             .body(ApiResponse.success(
-  //               UserSuccessCode.USER_STATUS_UPDATED, 
-  //               message, 
-  //               responseDTO));
-  // }
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_STATUS_UPDATED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_STATUS_UPDATED, 
+                  message, 
+                  responseDTO));
+  }
 
 
   // 관리자 - 회원 삭제
