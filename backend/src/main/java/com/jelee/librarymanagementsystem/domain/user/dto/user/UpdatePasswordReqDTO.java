@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.user.dto.client;
+package com.jelee.librarymanagementsystem.domain.user.dto.user;
 
 import lombok.Getter;
 
