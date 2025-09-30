@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.service.AdminUserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
@@ -49,27 +51,31 @@ public class AdminUserController {
                 responseDTO));
   }
 
-  // 관리자 - 회원 검색
-  // @GetMapping("search")
-  // public ResponseEntity<?> searchUser(
-  //   @RequestParam String type,
-  //   @RequestParam String keyword,
-  //   @RequestParam(name = "page", defaultValue = "0") int page,
-  //   @RequestParam(name = "size", defaultValue = "10") int size) {
+  /*
+   * 관리자: 회원 검색 (페이징)
+   */
+  @GetMapping("search")
+  public ResponseEntity<?> searchUser(
+    @RequestParam("type") UserSearchType type,
+    @RequestParam("keyword") String keyword,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+      
+      // 서비스로직
+      Page<AdminUserSearchResDTO> responseDTO = adminUserService.searchUser(type, keyword, page, size, user.getId());
 
-  //   // Page 기능 + User 조회
-  //   Page<UserSearchResDTO> user = userService.searchUser(type, keyword, page, size);
-    
-  //   // 성공 메시지
-  //   String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
 
-  //   return ResponseEntity
-  //             .status(UserSuccessCode.USER_FETCHED.getHttpStatus())
-  //             .body(ApiResponse.success(
-  //               UserSuccessCode.USER_FETCHED, 
-  //               message, 
-  //               user));
-  // }
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_LIST_FETCHED, 
+                  message, 
+                  responseDTO));    
+  }
 
   // 관리자 - 회원 권한 수정
   // @PatchMapping("/{userId}/role")

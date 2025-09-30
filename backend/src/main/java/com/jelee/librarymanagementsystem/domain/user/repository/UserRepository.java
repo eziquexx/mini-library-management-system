@@ -25,9 +25,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   // INACTIVE 상태 변경시 inactiveAt 조회
   List<User> findByStatusAndInactiveAtBefore(UserStatus status, LocalDateTime inactiveAt);
 
-  // 관리자 - 회원 username 검색 (+페이징)
+  // 관리자: 회원 username 검색 (페이징)
   Page<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 
-  // 관리자 - 회원 email 검색 (+페이징)
+  // 관리자: 회원 email 검색 (페이징)
   Page<User> findByEmailContainingIgnoreCase(String email, Pageable pageable);
 }

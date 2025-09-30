@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -47,48 +49,43 @@ public class AdminUserService {
     return pageDTO;
   }
 
-  // 관리자 - 회원 검색 (+페이징)
-  // public Page<UserSearchResDTO> searchUser(String typeStr, String keyword, int page, int size) {
+  /*
+   * 관리자: 회원 검색 (페이징)
+   */
+  public Page<AdminUserSearchResDTO> searchUser(UserSearchType typeStr, String keyword, int page, int size, Long userId) { 
+    
+    // 관리자 권한 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
-  //   // Pageable 기능
-  //   Pageable pageable = PageRequest.of(page, size);
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
-  //   // 타입 예외처리
-  //   UserSearchType type;
-  //   try {
-  //     type = UserSearchType.valueOf(typeStr.toUpperCase());
-  //   } catch(IllegalArgumentException e) {
-  //     throw new BaseException(UserErrorCode.USER_SEARCH_TYPE_INVALID);
-  //   }
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
 
-  //   // 검색 결과 Page<User> 타입으로 저장
-  //   Page<User> result;
+    // 타입별 Page형태로 사용자 검색 조회
+    UserSearchType type = typeStr;
+    Page<User> result;
 
-  //   // Switch문 - type별 조건 실행
-  //   switch (type) {
-  //     case USERNAME:
-  //       result = userRepository.findByUsernameContainingIgnoreCase(keyword, pageable);
-  //       break;
-  //     case EMAIL:
-  //       result = userRepository.findByEmailContainingIgnoreCase(keyword, pageable);
-  //       break;
-  //     default:
-  //       throw new IllegalArgumentException("Unexpected search type: " + type);
-  //   }
+    switch(type) {
+      case USERNAME:
+        result = userRepository.findByUsernameContainingIgnoreCase(keyword, pageable);
+        break;
+      case EMAIL:
+        result = userRepository.findByEmailContainingIgnoreCase(keyword, pageable);
+        break;
+      default:
+        throw new IllegalArgumentException("올바른 타입을 선택해주세요 (USERNAME, EMAIL): " + type);
+    }
 
-  //   // 검색 결과 예외 처리
-  //   if (result.isEmpty()) {
-  //     throw new BaseException(UserErrorCode.USER_NOT_FOUND);
-  //   }
+    // User -> AdminUserSearchResDTO로 맵핑
+    Page<AdminUserSearchResDTO> pageDTO = result.map(AdminUserSearchResDTO::new);
 
-  //   // Page -> List 형변환
-  //   List<UserSearchResDTO> dtoList = result.getContent()
-  //       .stream()
-  //       .map(UserSearchResDTO::new)
-  //       .toList();
-
-  //   return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
-  // }
+    // 반환
+    return pageDTO;
+  }
 
   // 관리자 - 회원 권한 수정
   // public UserRoleUpdatedResDTO updateUserRole(Long userId, UserRoleUpdateReqDTO roleUpdateDTO) {

@@ -9,7 +9,7 @@ import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import lombok.Getter;
 
 @Getter
-public class UserSearchResDTO {
+public class AdminUserSearchResDTO {
   private long id;
   private String username;
   private String email;
@@ -18,7 +18,7 @@ public class UserSearchResDTO {
   private LocalDateTime lastLoginDate;
   private UserStatus status;
 
-  public UserSearchResDTO(User user) {
+  public AdminUserSearchResDTO(User user) {
     this.id = user.getId();
     this.username = user.getUsername();
     this.email = user.getEmail();
