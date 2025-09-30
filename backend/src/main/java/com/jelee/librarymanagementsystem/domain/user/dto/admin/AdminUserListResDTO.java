@@ -7,10 +7,8 @@ import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class AdminUserListResDTO {
   private long id;
   private String username;
