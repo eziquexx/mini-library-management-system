@@ -1,32 +1,19 @@
 package com.jelee.librarymanagementsystem.domain.user.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserDeleteResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.DeleteAccountResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdateEmailResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UpdatePasswordResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.client.UserInfoResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.DeleteAccountReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.DeleteAccountResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.UpdateEmailReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.UpdateEmailResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.UpdatePasswordReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.UpdatePasswordResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.user.UserInfoResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
-import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -144,134 +131,6 @@ public class UserService {
 
     // 반환
     return new DeleteAccountResDTO(user);
-  }
-
-
-  /*
-   * 관리자 - 회원 관리
-   */
-
-  // 관리자 - 회원 전체 조회 (+페이징)
-  public Page<UserListResDTO> allListUsers(int page, int size) {
-
-    // Pageable 기능
-    Pageable pageable = PageRequest.of(page, size);
-
-    // User 전체 조회 가져와서 Page로 변경
-    Page<User> result = userRepository.findAll(pageable);
-
-    // Page -> List로 변경
-    List<UserListResDTO> dtoList = result.getContent()
-        .stream()
-        .map(UserListResDTO::new)
-        .toList();
-
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
-  }
-
-  // 관리자 - 회원 검색 (+페이징)
-  public Page<UserSearchResDTO> searchUser(String typeStr, String keyword, int page, int size) {
-
-    // Pageable 기능
-    Pageable pageable = PageRequest.of(page, size);
-
-    // 타입 예외처리
-    UserSearchType type;
-    try {
-      type = UserSearchType.valueOf(typeStr.toUpperCase());
-    } catch(IllegalArgumentException e) {
-      throw new BaseException(UserErrorCode.USER_SEARCH_TYPE_INVALID);
-    }
-
-    // 검색 결과 Page<User> 타입으로 저장
-    Page<User> result;
-
-    // Switch문 - type별 조건 실행
-    switch (type) {
-      case USERNAME:
-        result = userRepository.findByUsernameContainingIgnoreCase(keyword, pageable);
-        break;
-      case EMAIL:
-        result = userRepository.findByEmailContainingIgnoreCase(keyword, pageable);
-        break;
-      default:
-        throw new IllegalArgumentException("Unexpected search type: " + type);
-    }
-
-    // 검색 결과 예외 처리
-    if (result.isEmpty()) {
-      throw new BaseException(UserErrorCode.USER_NOT_FOUND);
-    }
-
-    // Page -> List 형변환
-    List<UserSearchResDTO> dtoList = result.getContent()
-        .stream()
-        .map(UserSearchResDTO::new)
-        .toList();
-
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
-  }
-
-  // 관리자 - 회원 권한 수정
-  public UserRoleUpdatedResDTO updateUserRole(Long userId, UserRoleUpdateReqDTO roleUpdateDTO) {
-
-    // 사용자 정보 확인 + 예외 처리
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
-    
-    // 권한 변경 및 저장
-    user.setRole(roleUpdateDTO.getRole());
-    user.setUpdatedAt(LocalDateTime.now());
-    userRepository.save(user);
-
-    // 응답 반환
-    return UserRoleUpdatedResDTO.builder()
-      .id(user.getId())
-      .username(user.getUsername())
-      .role(user.getRole())
-      .updatedAt(user.getUpdatedAt())
-      .build();
-  }
-
-  // 관리자 - 회원 상태 수정
-  public UserStatusUpdateResDTO updateUserStatus(Long userId, UserStatusUpdateReqDTO statusUpdateDTO) {
-
-    // 사용자 정보 확인 + 예외 처리
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
-    
-    // 상태 변경 및 저장
-    user.setStatus(statusUpdateDTO.getStatus());
-    user.setUpdatedAt(LocalDateTime.now());
-    userRepository.save(user);
-
-    // 응답 반환
-    return UserStatusUpdateResDTO.builder()
-        .id(user.getId())
-        .username(user.getUsername())
-        .status(user.getStatus())
-        .updatedAt(user.getUpdatedAt())
-        .build();
-  }
-
-  // 관리자 - 회원 삭제
-  public UserDeleteResDTO deleteUserAccount(Long userId) {
-
-    // userId로 사용자 조회
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
-
-    // 사용자 상태가 DELETED 이면 삭제
-    if (user.getStatus() == UserStatus.DELETED) {
-      userRepository.delete(user);
-    } else {
-      throw new BaseException(UserErrorCode.USER_STATUS_NOT_DELETED);
-    }
-    
-    return UserDeleteResDTO.builder()
-              .id(user.getId())
-              .username(user.getUsername())
-              .build();
   }
 
 }
