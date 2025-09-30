@@ -4,11 +4,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
@@ -77,23 +82,29 @@ public class AdminUserController {
                   responseDTO));    
   }
 
-  // 관리자 - 회원 권한 수정
-  // @PatchMapping("/{userId}/role")
-  // public ResponseEntity<?> updateUserRole(
-  //   @PathVariable Long userId,
-  //   @RequestBody UserRoleUpdateReqDTO roleUpdateDTO) {
+  /*
+   * 관리자: 회원 권한 수정
+   */
+  @PatchMapping("/{userId}/role")
+  public ResponseEntity<?> updateUserRole(
+    @PathVariable("userId") Long userId,
+    @RequestBody AdminUserRoleUpdateReqDTO requestDTO,
+    @AuthenticationPrincipal User user) {
     
-  //   UserRoleUpdatedResDTO responseDTO = userService.updateUserRole(userId, roleUpdateDTO);
+      // 서비스로직
+      AdminUserRoleUpdatedResDTO responseDTO = adminUserService.updateUserRole(userId, requestDTO, user.getId());
 
-  //   String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATED.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATED.getMessage());
 
-  //   return ResponseEntity
-  //             .status(UserSuccessCode.USER_ROLE_UPDATED.getHttpStatus())
-  //             .body(ApiResponse.success(
-  //               UserSuccessCode.USER_ROLE_UPDATED, 
-  //               message, 
-  //               responseDTO));
-  // }
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_ROLE_UPDATED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_ROLE_UPDATED, 
+                  message, 
+                  responseDTO));
+  }
 
   // 관리자 - 회원 상태 수정
   // @PatchMapping("/{userId}/status")
