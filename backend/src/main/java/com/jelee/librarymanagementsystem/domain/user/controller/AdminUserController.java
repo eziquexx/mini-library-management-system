@@ -2,23 +2,15 @@ package com.jelee.librarymanagementsystem.domain.user.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserDeleteResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserListResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserRoleUpdatedResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateReqDTO;
-import com.jelee.librarymanagementsystem.domain.user.dto.admin.UserStatusUpdateResDTO;
-import com.jelee.librarymanagementsystem.domain.user.service.UserService;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.domain.user.service.AdminUserService;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -30,17 +22,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminUserController {
   
-  private final UserService userService;
+  private final AdminUserService adminUserService;
   private final MessageProvider messageProvider;
 
-  // 관리자 - 회원 전체 조회 (+페이징)
+  /*
+   * 관리자: 회원 전체 목록 조회 (페이징)
+   */
   @GetMapping()
   public ResponseEntity<?> allListUsers(
     @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(name = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
     
-    // Page 기능
-    Page<UserListResDTO> ListUsers = userService.allListUsers(page, size);
+    // 서비스로직
+    Page<AdminUserListResDTO> responseDTO = adminUserService.allListUsers(page, size, user.getId());
 
     // 성공 메시지
     String message = messageProvider.getMessage(UserSuccessCode.USER_LIST_FETCHED.getMessage());
@@ -51,82 +46,82 @@ public class AdminUserController {
               .body(ApiResponse.success(
                 UserSuccessCode.USER_LIST_FETCHED, 
                 message, 
-                ListUsers));
+                responseDTO));
   }
 
   // 관리자 - 회원 검색
-  @GetMapping("search")
-  public ResponseEntity<?> searchUser(
-    @RequestParam String type,
-    @RequestParam String keyword,
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+  // @GetMapping("search")
+  // public ResponseEntity<?> searchUser(
+  //   @RequestParam String type,
+  //   @RequestParam String keyword,
+  //   @RequestParam(name = "page", defaultValue = "0") int page,
+  //   @RequestParam(name = "size", defaultValue = "10") int size) {
 
-    // Page 기능 + User 조회
-    Page<UserSearchResDTO> user = userService.searchUser(type, keyword, page, size);
+  //   // Page 기능 + User 조회
+  //   Page<UserSearchResDTO> user = userService.searchUser(type, keyword, page, size);
     
-    // 성공 메시지
-    String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
+  //   // 성공 메시지
+  //   String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_FETCHED.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_FETCHED, 
-                message, 
-                user));
-  }
+  //   return ResponseEntity
+  //             .status(UserSuccessCode.USER_FETCHED.getHttpStatus())
+  //             .body(ApiResponse.success(
+  //               UserSuccessCode.USER_FETCHED, 
+  //               message, 
+  //               user));
+  // }
 
   // 관리자 - 회원 권한 수정
-  @PatchMapping("/{userId}/role")
-  public ResponseEntity<?> updateUserRole(
-    @PathVariable Long userId,
-    @RequestBody UserRoleUpdateReqDTO roleUpdateDTO) {
+  // @PatchMapping("/{userId}/role")
+  // public ResponseEntity<?> updateUserRole(
+  //   @PathVariable Long userId,
+  //   @RequestBody UserRoleUpdateReqDTO roleUpdateDTO) {
     
-    UserRoleUpdatedResDTO responseDTO = userService.updateUserRole(userId, roleUpdateDTO);
+  //   UserRoleUpdatedResDTO responseDTO = userService.updateUserRole(userId, roleUpdateDTO);
 
-    String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATED.getMessage());
+  //   String message = messageProvider.getMessage(UserSuccessCode.USER_ROLE_UPDATED.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_ROLE_UPDATED.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_ROLE_UPDATED, 
-                message, 
-                responseDTO));
-  }
+  //   return ResponseEntity
+  //             .status(UserSuccessCode.USER_ROLE_UPDATED.getHttpStatus())
+  //             .body(ApiResponse.success(
+  //               UserSuccessCode.USER_ROLE_UPDATED, 
+  //               message, 
+  //               responseDTO));
+  // }
 
   // 관리자 - 회원 상태 수정
-  @PatchMapping("/{userId}/status")
-  public ResponseEntity<?> updateUserStatus(
-    @PathVariable Long userId, 
-    @RequestBody UserStatusUpdateReqDTO statusUpdateDTO) {
+  // @PatchMapping("/{userId}/status")
+  // public ResponseEntity<?> updateUserStatus(
+  //   @PathVariable Long userId, 
+  //   @RequestBody UserStatusUpdateReqDTO statusUpdateDTO) {
     
-    UserStatusUpdateResDTO responseDTO = userService.updateUserStatus(userId, statusUpdateDTO);
+  //   UserStatusUpdateResDTO responseDTO = userService.updateUserStatus(userId, statusUpdateDTO);
     
-    String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATED.getMessage());
+  //   String message = messageProvider.getMessage(UserSuccessCode.USER_STATUS_UPDATED.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_STATUS_UPDATED.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_STATUS_UPDATED, 
-                message, 
-                responseDTO));
-  }
+  //   return ResponseEntity
+  //             .status(UserSuccessCode.USER_STATUS_UPDATED.getHttpStatus())
+  //             .body(ApiResponse.success(
+  //               UserSuccessCode.USER_STATUS_UPDATED, 
+  //               message, 
+  //               responseDTO));
+  // }
 
 
   // 관리자 - 회원 삭제
-  @DeleteMapping("/{userId}")
-  public ResponseEntity<?> deleteUserAccount(@PathVariable Long userId) {
+  // @DeleteMapping("/{userId}")
+  // public ResponseEntity<?> deleteUserAccount(@PathVariable Long userId) {
     
-    UserDeleteResDTO responseDTO = userService.deleteUserAccount(userId);
+  //   UserDeleteResDTO responseDTO = userService.deleteUserAccount(userId);
     
-    String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
+  //   String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
 
-    return ResponseEntity
-              .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
-              .body(ApiResponse.success(
-                UserSuccessCode.USER_ACCOUNT_DELETED, 
-                message, 
-                responseDTO));
-  }
+  //   return ResponseEntity
+  //             .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
+  //             .body(ApiResponse.success(
+  //               UserSuccessCode.USER_ACCOUNT_DELETED, 
+  //               message, 
+  //               responseDTO));
+  // }
 
 }
