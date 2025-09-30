@@ -1,6 +1,8 @@
 package com.jelee.librarymanagementsystem.domain.user.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
@@ -18,6 +21,7 @@ import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.enums.Role;
+import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
@@ -148,24 +152,37 @@ public class AdminUserService {
     return new AdminUserStatusUpdateResDTO(user);
   }
 
-  // 관리자 - 회원 삭제
-  // public UserDeleteResDTO deleteUserAccount(Long userId) {
+  /*
+   * 관리자: 회원 탈퇴 처리
+   */
+  @Transactional
+  public AdminUserDeleteResDTO deleteUserAccount(Long userId, Long adminUserId) {
 
-  //   // userId로 사용자 조회
-  //   User user = userRepository.findById(userId)
-  //       .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
-
-  //   // 사용자 상태가 DELETED 이면 삭제
-  //   if (user.getStatus() == UserStatus.DELETED) {
-  //     userRepository.delete(user);
-  //   } else {
-  //     throw new BaseException(UserErrorCode.USER_STATUS_NOT_DELETED);
-  //   }
+    // 관리자 권한 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
     
-  //   return UserDeleteResDTO.builder()
-  //             .id(user.getId())
-  //             .username(user.getUsername())
-  //             .build();
-  // }
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 사용자 정보 확인 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 사용자 상태가 DELETED 이면 username, email 수정 (_deleted_+삭제날짜)
+    if (user.getStatus() == UserStatus.DELETED) {
+      String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE); // e.g., 20250930
+      String userEmail = user.getEmail();
+      user.setUsername(user.getUsername() + "_deleted_" + today);
+      user.setEmail(userEmail.substring(0, userEmail.indexOf("@")) + "_deleted_" + today + "@deleted.local");
+      userRepository.save(user);
+    } else {
+      throw new BaseException(UserErrorCode.USER_STATUS_NOT_DELETED);
+    }
+    
+    // 반환
+    return new AdminUserDeleteResDTO(user);
+  }
 
 }

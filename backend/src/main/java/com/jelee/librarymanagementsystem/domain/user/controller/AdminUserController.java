@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
@@ -132,21 +133,27 @@ public class AdminUserController {
                   responseDTO));
   }
 
-
-  // 관리자 - 회원 삭제
-  // @DeleteMapping("/{userId}")
-  // public ResponseEntity<?> deleteUserAccount(@PathVariable Long userId) {
+  /*
+   * 관리자: 회원 탈퇴 처리
+   */
+  @PatchMapping("/{userId}/deactivate")
+  public ResponseEntity<?> deleteUserAccount(
+    @PathVariable("userId") Long userId, 
+    @AuthenticationPrincipal User user) {
     
-  //   UserDeleteResDTO responseDTO = userService.deleteUserAccount(userId);
-    
-  //   String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
+      // 서비스로직
+      AdminUserDeleteResDTO responseDTO = adminUserService.deleteUserAccount(userId, user.getId());
+      
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_ACCOUNT_DELETED.getMessage());
 
-  //   return ResponseEntity
-  //             .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
-  //             .body(ApiResponse.success(
-  //               UserSuccessCode.USER_ACCOUNT_DELETED, 
-  //               message, 
-  //               responseDTO));
-  // }
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_ACCOUNT_DELETED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_ACCOUNT_DELETED, 
+                  message, 
+                  responseDTO));
+  }
 
 }
