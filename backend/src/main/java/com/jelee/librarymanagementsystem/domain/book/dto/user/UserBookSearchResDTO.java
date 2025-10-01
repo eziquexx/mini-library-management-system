@@ -1,4 +1,4 @@
-package com.jelee.librarymanagementsystem.domain.book.dto.client;
+package com.jelee.librarymanagementsystem.domain.book.dto.user;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,7 @@ import com.jelee.librarymanagementsystem.domain.book.enums.BookStatus;
 import lombok.Getter;
 
 @Getter
-public class UserBookDetailResDTO {
+public class UserBookSearchResDTO {
   private Long id;
   private String title;
   private String isbn;
@@ -17,9 +17,8 @@ public class UserBookDetailResDTO {
   private LocalDate publishedDate;
   private BookStatus status;
   private String location;
-  private String description;
 
-  public UserBookDetailResDTO(Book book) {
+  public UserBookSearchResDTO(Book book) {
     this.id = book.getId();
     this.title = book.getTitle();
     this.isbn = book.getIsbn();
@@ -28,6 +27,5 @@ public class UserBookDetailResDTO {
     this.publishedDate = book.getPublishedDate();
     this.status = book.getStatus();
     this.location = book.getLocation();
-    this.description = book.getDescription();
   }
 }
