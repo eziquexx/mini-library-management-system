@@ -15,7 +15,6 @@ import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
