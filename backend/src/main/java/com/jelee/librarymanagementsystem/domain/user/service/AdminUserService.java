@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserDeleteResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
@@ -20,6 +21,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUp
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -37,7 +39,7 @@ public class AdminUserService {
   /*
    * 관리자: 회원 전체 목록 조회 (페이징)
    */
-  public Page<AdminUserListResDTO> allListUsers(int page, int size, Long userId) {
+  public PageResponse<AdminUserListResDTO> allListUsers(int page, int size, Long userId) {
     
     // 관리자 권환 조회 및 예외 처리
     User user = userRepository.findById(userId)
@@ -57,13 +59,34 @@ public class AdminUserService {
     Page<AdminUserListResDTO> pageDTO = result.map(AdminUserListResDTO::new);
 
     // 반환
-    return pageDTO;
+    return new PageResponse<>(pageDTO);
+  }
+
+  /*
+   * 관리자: 회원 상세 조회
+   */
+  public AdminUserDetailResDTO detailUser(Long userId, Long adminUserId) {
+
+    // 관리자 권한 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 사용자 정보 확인 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND, "userId: " + userId));
+
+    // 반환
+    return new AdminUserDetailResDTO(user);
   }
 
   /*
    * 관리자: 회원 검색 (페이징)
    */
-  public Page<AdminUserSearchResDTO> searchUser(UserSearchType typeStr, String keyword, int page, int size, Long userId) { 
+  public PageResponse<AdminUserSearchResDTO> searchUser(UserSearchType type, String keyword, int page, int size, Long userId) { 
     
     // 관리자 권한 조회 및 예외 처리
     User user = userRepository.findById(userId)
@@ -77,7 +100,6 @@ public class AdminUserService {
     Pageable pageable = PageRequest.of(page, size);
 
     // 타입별 Page형태로 사용자 검색 조회
-    UserSearchType type = typeStr;
     Page<User> result;
 
     switch(type) {
@@ -95,7 +117,7 @@ public class AdminUserService {
     Page<AdminUserSearchResDTO> pageDTO = result.map(AdminUserSearchResDTO::new);
 
     // 반환
-    return pageDTO;
+    return new PageResponse<>(pageDTO);
   }
 
   /*
