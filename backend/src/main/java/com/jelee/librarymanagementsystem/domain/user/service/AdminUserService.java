@@ -64,7 +64,7 @@ public class AdminUserService {
   /*
    * 관리자: 회원 검색 (페이징)
    */
-  public Page<AdminUserSearchResDTO> searchUser(UserSearchType typeStr, String keyword, int page, int size, Long userId) { 
+  public PageResponse<AdminUserSearchResDTO> searchUser(UserSearchType type, String keyword, int page, int size, Long userId) { 
     
     // 관리자 권한 조회 및 예외 처리
     User user = userRepository.findById(userId)
@@ -78,7 +78,6 @@ public class AdminUserService {
     Pageable pageable = PageRequest.of(page, size);
 
     // 타입별 Page형태로 사용자 검색 조회
-    UserSearchType type = typeStr;
     Page<User> result;
 
     switch(type) {
@@ -96,7 +95,7 @@ public class AdminUserService {
     Page<AdminUserSearchResDTO> pageDTO = result.map(AdminUserSearchResDTO::new);
 
     // 반환
-    return pageDTO;
+    return new PageResponse<>(pageDTO);
   }
 
   /*

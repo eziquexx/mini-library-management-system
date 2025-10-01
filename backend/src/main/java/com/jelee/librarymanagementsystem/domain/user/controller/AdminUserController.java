@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.user.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,7 +71,7 @@ public class AdminUserController {
     @AuthenticationPrincipal User user) {
       
       // 서비스로직
-      Page<AdminUserSearchResDTO> responseDTO = adminUserService.searchUser(type, keyword, page, size, user.getId());
+      PageResponse<AdminUserSearchResDTO> responseDTO = adminUserService.searchUser(type, keyword, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
