@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.book.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -56,22 +53,15 @@ public class UserBookService {
     return new UserBookDetailResDTO(book);
   }
 
-  // 도서 검색 - 페이징
-  @Transactional
-  public Page<UserBookSearchResDTO> searchBooks(String typeStr, String keyword, int page, int size) {
+  /*
+   * 공용: 도서 검색 (페이징)
+   */
+  public PageResponse<UserBookSearchResDTO> searchBooks(BookSearchType type, String keyword, int page, int size) {
 
-    // Pageable
+    // 페이징 정의
     Pageable pageable = PageRequest.of(page, size);
 
-    // 타입 예외처리
-    BookSearchType type;
-    try {
-      type = BookSearchType.valueOf(typeStr.toUpperCase());
-    } catch(IllegalArgumentException e) {
-      throw new BaseException(BookErrorCode.BOOK_SEARCH_TYPE_FAILED);
-    }
-
-    // 결과 담을 번수
+    // Page<Book> 타입의 변수 생성
     Page<Book> result;
 
     // 타입 switch문으로 case 실행
@@ -89,18 +79,10 @@ public class UserBookService {
         throw new IllegalArgumentException("Unexpected search type: " + type);
     }
 
-    // result 비어있는지 체크
-    if (result.isEmpty()) {
-      throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
-    }
+    // Book -> UserBookSearchResDTO로 형변환
+    Page<UserBookSearchResDTO> pageDTO = result.map(UserBookSearchResDTO::new);
 
-    // List 타입 형태로 변형
-    List<UserBookSearchResDTO> dtoList = result.getContent()
-        .stream()
-        .map(UserBookSearchResDTO::new)
-        .toList();
-
-    // Page 형태로 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 }
