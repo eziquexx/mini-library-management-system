@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserDeleteResDTO;
+import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserListResDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserRoleUpdatedResDTO;
@@ -57,6 +58,29 @@ public class AdminUserController {
                 UserSuccessCode.USER_LIST_FETCHED, 
                 message, 
                 responseDTO));
+  }
+
+  /*
+   * 관리자: 회원 상세 조회
+   */
+  @GetMapping("/{userId}")
+  public ResponseEntity<?> detailUser(
+    @PathVariable("userId") Long userId, 
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      AdminUserDetailResDTO responseDTO = adminUserService.detailUser(userId, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(UserSuccessCode.USER_FETCHED.getMessage());
+
+      // 응답
+      return ResponseEntity
+                .status(UserSuccessCode.USER_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  UserSuccessCode.USER_FETCHED, 
+                  message, 
+                  responseDTO));
   }
 
   /*
