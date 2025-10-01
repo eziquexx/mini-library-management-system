@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookDetailResDTO;
-import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookListResDTO;
-import com.jelee.librarymanagementsystem.domain.book.dto.client.UserBookSearchResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.user.UserBookDetailResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.user.UserBookListResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.user.UserBookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.book.service.UserBookService;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -26,22 +27,27 @@ public class UserBookController {
   private final UserBookService userBookService;
   private final MessageProvider messageProvider;
 
-  // 도서 전체 목록 조회 - 페이징
+  /*
+   * 공용: 도서 전체 목록 조회 (페이징)
+   */
   @GetMapping()
   public ResponseEntity<?> allListBooks(
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size) {
     
-    Page<UserBookListResDTO> listBooks = userBookService.allListBooks(page, size);
+      // 서비스로직
+      PageResponse<UserBookListResDTO> responseDTO = userBookService.allListBooks(page, size);
 
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
-    
-    return ResponseEntity
-              .status(BookSuccessCode.BOOK_LIST_FETCHED.getHttpStatus())
-              .body(ApiResponse.success(
-                BookSuccessCode.BOOK_LIST_FETCHED, 
-                message, 
-                listBooks));
+      // 성공메시지
+      String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
+      
+      // 응답
+      return ResponseEntity
+                .status(BookSuccessCode.BOOK_LIST_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  BookSuccessCode.BOOK_LIST_FETCHED, 
+                  message, 
+                  responseDTO));
   }
 
   // 도서 상세 조회
