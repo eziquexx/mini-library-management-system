@@ -20,6 +20,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUp
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -37,7 +38,7 @@ public class AdminUserService {
   /*
    * 관리자: 회원 전체 목록 조회 (페이징)
    */
-  public Page<AdminUserListResDTO> allListUsers(int page, int size, Long userId) {
+  public PageResponse<AdminUserListResDTO> allListUsers(int page, int size, Long userId) {
     
     // 관리자 권환 조회 및 예외 처리
     User user = userRepository.findById(userId)
@@ -57,7 +58,7 @@ public class AdminUserService {
     Page<AdminUserListResDTO> pageDTO = result.map(AdminUserListResDTO::new);
 
     // 반환
-    return pageDTO;
+    return new PageResponse<>(pageDTO);
   }
 
   /*

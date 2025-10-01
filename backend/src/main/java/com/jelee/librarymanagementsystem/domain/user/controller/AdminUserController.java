@@ -21,6 +21,7 @@ import com.jelee.librarymanagementsystem.domain.user.dto.admin.AdminUserStatusUp
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.enums.UserSearchType;
 import com.jelee.librarymanagementsystem.domain.user.service.AdminUserService;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.UserSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -45,7 +46,7 @@ public class AdminUserController {
     @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    Page<AdminUserListResDTO> responseDTO = adminUserService.allListUsers(page, size, user.getId());
+    PageResponse<AdminUserListResDTO> responseDTO = adminUserService.allListUsers(page, size, user.getId());
 
     // 성공 메시지
     String message = messageProvider.getMessage(UserSuccessCode.USER_LIST_FETCHED.getMessage());
