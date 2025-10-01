@@ -50,7 +50,9 @@ public class UserBookController {
                   responseDTO));
   }
 
-  // 도서 상세 조회
+  /*
+   * 공용: 도서 상세 조회
+   */
   @GetMapping("/{bookId}")
   public ResponseEntity<?> detailBook(@PathVariable("bookId") Long bookId) {
     
@@ -60,6 +62,7 @@ public class UserBookController {
     // 성공 메시지
     String message = messageProvider.getMessage(BookSuccessCode.BOOK_FETCHED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(BookSuccessCode.BOOK_FETCHED.getHttpStatus())
               .body(ApiResponse.success(

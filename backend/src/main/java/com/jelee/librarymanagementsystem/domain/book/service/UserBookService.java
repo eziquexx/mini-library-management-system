@@ -43,13 +43,16 @@ public class UserBookService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 도서 상세 조회
+  /*
+   * 공용: 도서 상세 조회
+   */
   public UserBookDetailResDTO detailBook(Long bookId) {
 
-    // bookId로 도서 데이터 가져오기
+    // bookId 조회 및 예외 처리
     Book book = bookRepository.findById(bookId)
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
     
+    // 반환
     return new UserBookDetailResDTO(book);
   }
 
