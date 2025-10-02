@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.book.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -223,45 +220,24 @@ public class AdminBookService {
     return new AdminBookDeleteResDTO(responseBook);
   }
 
-  // 도서 검색
-  // @Transactional
-  // public List<BookSearchResDTO> searchBooksByKeyword(String keyword) {
+  /*
+   * 관리자: 도서 검색 (페이징)
+   */
+  public PageResponse<AdminBookSearchResDTO> searchBooks(BookSearchType type, String keyword, int page, int size, Long userId) {
 
-  //   List<Book> books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
-  //   System.out.println("검색 키워드: [" + keyword + "]");
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
-  //   if (books.isEmpty()) {
-  //     throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
-  //   }
-
-  //   return books.stream()
-  //       .map(book -> new BookSearchResDTO(
-  //         book.getId(),
-  //         book.getTitle(),
-  //         book.getAuthor(),
-  //         book.getPublisher(),
-  //         book.getPublishedDate(),
-  //         book.getLocation()
-  //       ))
-  //       .collect(Collectors.toList());
-  // }
-
-  // 도서 검색 - 페이징
-  @Transactional
-  public Page<AdminBookSearchResDTO> searchBooks(String typeStr, String keyword, int page, int size) {
-
+    // 페이징 정의
     Pageable pageable = PageRequest.of(page, size);
 
-    // 타입 예외처리
-    BookSearchType type;
-    try {
-      type = BookSearchType.valueOf(typeStr.toUpperCase());
-    } catch(IllegalArgumentException e) {
-      throw new BaseException(BookErrorCode.BOOK_SEARCH_TYPE_FAILED);
-    }
-    
+    // 타이별 도서 검색
     Page<Book> result;
-    
     switch (type) {
       case ALL:
         result = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, pageable);
@@ -280,12 +256,11 @@ public class AdminBookService {
       throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
     }
 
-    List<AdminBookSearchResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminBookSearchResDTO::new)
-        .toList();
+    // Page<Book> -> AdminBookSearchResDTO 맵핑
+    Page<AdminBookSearchResDTO> pageDTO = result.map(AdminBookSearchResDTO::new);
 
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
 }
