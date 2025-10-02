@@ -2,6 +2,7 @@ package com.jelee.librarymanagementsystem.domain.book.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResD
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.book.service.AdminBookService;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -33,19 +35,27 @@ public class AdminBookController {
   private final AdminBookService adminBookService;
   private final MessageProvider messageProvider;
   
-  // 도서 등록
+  /*
+   * 관리자: 도서 등록
+   */
   @PostMapping()
-  public ResponseEntity<?> createBook(@RequestBody AdminBookCreateReqDTO bookDTO) {
-    AdminBookCreateResDTO responseDTO = adminBookService.createBook(bookDTO);
+  public ResponseEntity<?> createBook(
+    @RequestBody AdminBookCreateReqDTO requestDTO, 
+    @AuthenticationPrincipal User user) {
 
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_CREATED.getMessage());
+      // 서비스로직
+      AdminBookCreateResDTO responseDTO = adminBookService.createBook(requestDTO, user.getId());
 
-    return ResponseEntity
-            .status(BookSuccessCode.BOOK_CREATED.getHttpStatus())
-            .body(ApiResponse.success(
-              BookSuccessCode.BOOK_CREATED, 
-              message, 
-              responseDTO));
+      // 성공메시지
+      String message = messageProvider.getMessage(BookSuccessCode.BOOK_CREATED.getMessage());
+
+      // 응답
+      return ResponseEntity
+              .status(BookSuccessCode.BOOK_CREATED.getHttpStatus())
+              .body(ApiResponse.success(
+                BookSuccessCode.BOOK_CREATED, 
+                message, 
+                responseDTO));
   }
   // 도서 수정
   @PutMapping("/{bookId}")
