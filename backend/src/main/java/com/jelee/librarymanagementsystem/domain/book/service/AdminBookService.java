@@ -15,6 +15,7 @@ import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDetailRe
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.enums.BookSearchType;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
@@ -143,43 +144,58 @@ public class AdminBookService {
     return new AdminBookDetailResDTO(book);
   }
 
+  /*
+   * 관리자: 도서 수정
+   */
   // 도서 수정
   @Transactional
-  public AdminBookCreateResDTO updateBook(Long bookId, AdminBookUpdateReqDTO request) {
+  public AdminBookUpdateResDTO updateBook(Long bookId, AdminBookUpdateReqDTO requestDTO, Long userId) {
 
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 도서 조회 및 예외 처리
     Book book = bookRepository.findById(bookId)
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
 
-    // 필수 필드 Null 체크(title, isbn, author, publisher, publishedDate, location)
-    if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+    // 필수 필드 Null 체크
+    // (title, isbn, author, publisher, publishedDate, location)
+    if (requestDTO.getTitle() == null || requestDTO.getTitle().trim().isEmpty()) {
       throw new BaseException(BookErrorCode.BOOK_TITLE_REQUIRED);
     }
-    if (request.getIsbn() == null || request.getIsbn().trim().isEmpty()) {
+    if (requestDTO.getIsbn() == null || requestDTO.getIsbn().trim().isEmpty()) {
       throw new BaseException(BookErrorCode.BOOK_ISBN_REQUIRED);
     }
-    if (request.getAuthor() == null || request.getAuthor().trim().isEmpty()) {
+    if (requestDTO.getAuthor() == null || requestDTO.getAuthor().trim().isEmpty()) {
       throw new BaseException(BookErrorCode.BOOK_AUTHOR_REQUIRED);
     }
-    if (request.getPublisher() == null || request.getPublisher().trim().isEmpty()) {
+    if (requestDTO.getPublisher() == null || requestDTO.getPublisher().trim().isEmpty()) {
       throw new BaseException(BookErrorCode.BOOK_PUBLISHER_REQUIRED);
     }
-    if (request.getPublishedDate() == null) {
+    if (requestDTO.getPublishedDate() == null) {
       throw new BaseException(BookErrorCode.BOOK_PUBLISHERDATE_REQUIRED);
     }
-    if (request.getLocation() == null || request.getLocation().trim().isEmpty()) {
+    if (requestDTO.getLocation() == null || requestDTO.getLocation().trim().isEmpty()) {
       throw new BaseException(BookErrorCode.BOOK_LOCATION_REQUIRED);
     }
 
     // location 중복 체크
-    if (bookRepository.existsByLocationAndIdNot(request.getLocation(), bookId)) {
-      Book sameLocationBook = bookRepository.findByLocation(request.getLocation());
+    if (bookRepository.existsByLocationAndIdNot(requestDTO.getLocation(), bookId)) {
+      Book sameLocationBook = bookRepository.findByLocation(requestDTO.getLocation());
 
       throw new DataBaseException(BookErrorCode.BOOK_LOCATION_DUPLICATED, sameLocationBook);
     }
     
-    book.update(request);
+    // 도서 DB에 업데이트
+    book.update(requestDTO);
 
-    return new AdminBookCreateResDTO(book);
+    // 반환
+    return new AdminBookUpdateResDTO(book);
   }
 
   // 도서 삭제

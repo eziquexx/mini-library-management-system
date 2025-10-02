@@ -71,5 +71,6 @@ public class Book {
     this.publishedDate = request.getPublishedDate();
     this.location = request.getLocation();
     this.description = request.getDescription();
+    this.updatedAt = LocalDateTime.now();
   }
 }

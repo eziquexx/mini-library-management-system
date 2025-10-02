@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +19,7 @@ import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDetailRe
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateReqDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.book.service.AdminBookService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.dto.PageResponse;
@@ -106,19 +107,29 @@ public class AdminBookController {
                   responseDTO));
   }
 
+  /*
+   * 관리자: 도서 수정
+   */
   // 도서 수정
-  @PutMapping("/{bookId}")
-  public ResponseEntity<?> updateBook(@PathVariable("bookId") Long bookId, @RequestBody AdminBookUpdateReqDTO bookDTO) {
-    AdminBookCreateResDTO responseDTO = adminBookService.updateBook(bookId, bookDTO);
-    
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_UPDATED.getMessage());
+  @PatchMapping("/{bookId}")
+  public ResponseEntity<?> updateBook(
+    @PathVariable("bookId") Long bookId, 
+    @RequestBody AdminBookUpdateReqDTO requestDTO,
+    @AuthenticationPrincipal User user) {
 
-    return ResponseEntity
-            .status(BookSuccessCode.BOOK_UPDATED.getHttpStatus())
-            .body(ApiResponse.success(
-              BookSuccessCode.BOOK_UPDATED, 
-              message, 
-              responseDTO));
+      // 서비스로직
+      AdminBookUpdateResDTO responseDTO = adminBookService.updateBook(bookId, requestDTO, user.getId());
+      
+      // 성공메시지
+      String message = messageProvider.getMessage(BookSuccessCode.BOOK_UPDATED.getMessage());
+
+      // 응답
+      return ResponseEntity
+              .status(BookSuccessCode.BOOK_UPDATED.getHttpStatus())
+              .body(ApiResponse.success(
+                BookSuccessCode.BOOK_UPDATED, 
+                message, 
+                responseDTO));
   }
 
   // 도서 삭제
