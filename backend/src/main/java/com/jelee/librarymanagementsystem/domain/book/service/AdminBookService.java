@@ -20,6 +20,7 @@ import com.jelee.librarymanagementsystem.domain.book.enums.BookSearchType;
 import com.jelee.librarymanagementsystem.domain.book.repository.BookRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.exception.DataBaseException;
@@ -95,6 +96,30 @@ public class AdminBookService {
 
     // 반환
     return new AdminBookCreateResDTO(saveBook);
+  }
+
+  /*
+   * 관리자: 도서 전체 목록 조회
+   */
+  public PageResponse<AdminBookListResDTO> allListBooks(int page, int size, Long userId) {
+
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
+
+    // Book 형태로 페이지 조회 후 AdminBOokListResDTO로 변환
+    Page<Book> result = bookRepository.findAll(pageable);
+    Page<AdminBookListResDTO> pageDTO = result.map(AdminBookListResDTO::new);
+    
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 도서 수정
@@ -211,20 +236,6 @@ public class AdminBookService {
         .map(AdminBookSearchResDTO::new)
         .toList();
 
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
-  }
-
-  // 도서 전체 목록 조회
-  public Page<AdminBookListResDTO> allListBooks(int page, int size) {
-
-    Pageable pageable = PageRequest.of(page, size);
-
-    Page<Book> result = bookRepository.findAll(pageable);
-    List<AdminBookListResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminBookListResDTO::new)
-        .toList();
-    
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 

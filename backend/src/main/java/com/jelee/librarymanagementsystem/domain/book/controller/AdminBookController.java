@@ -21,6 +21,7 @@ import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchRe
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.book.service.AdminBookService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.BookSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -57,6 +58,31 @@ public class AdminBookController {
                 message, 
                 responseDTO));
   }
+
+  /*
+   * 관리자: 도서 전체 목록 조회
+   */
+  @GetMapping()
+  public ResponseEntity<?> allListBooks(
+    @RequestParam(value = "page", defaultValue = "0") int page, 
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      PageResponse<AdminBookListResDTO> responseDTO = adminBookService.allListBooks(page, size, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
+      
+      // 응답
+      return ResponseEntity
+                .status(BookSuccessCode.BOOK_LIST_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  BookSuccessCode.BOOK_LIST_FETCHED, 
+                  message, 
+                  responseDTO));
+  }
+
   // 도서 수정
   @PutMapping("/{bookId}")
   public ResponseEntity<?> updateBook(@PathVariable("bookId") Long bookId, @RequestBody AdminBookUpdateReqDTO bookDTO) {
@@ -122,24 +148,6 @@ public class AdminBookController {
                 BookSuccessCode.BOOK_LIST_FETCHED, 
                 message, 
                 books));
-  }
-
-  // 도저 전체 목록 조회
-  @GetMapping()
-  public ResponseEntity<?> allListBooks(
-    @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name = "size", defaultValue = "10") int size) {
-
-    Page<AdminBookListResDTO> listBooks = adminBookService.allListBooks(page, size);
-
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_LIST_FETCHED.getMessage());
-    
-    return ResponseEntity
-              .status(BookSuccessCode.BOOK_LIST_FETCHED.getHttpStatus())
-              .body(ApiResponse.success(
-                BookSuccessCode.BOOK_LIST_FETCHED, 
-                message, 
-                listBooks));
   }
 
   // 도서 상세 조회
