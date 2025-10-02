@@ -1,7 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.book.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
@@ -147,7 +147,6 @@ public class AdminBookService {
   /*
    * 관리자: 도서 수정
    */
-  // 도서 수정
   @Transactional
   public AdminBookUpdateResDTO updateBook(Long bookId, AdminBookUpdateReqDTO requestDTO, Long userId) {
 
@@ -198,17 +197,30 @@ public class AdminBookService {
     return new AdminBookUpdateResDTO(book);
   }
 
-  // 도서 삭제
+  /*
+   * 관리자: 도서 삭제
+   */
   @Transactional
-  public void deleteBook(Long bookId) {
-    Optional<Book> optionalBook = bookRepository.findById(bookId);
-
-    // Optional 안에 실제 Book이 있는지 확인
-    if (optionalBook.isPresent()) {
-      bookRepository.delete(optionalBook.get());
-    } else {
-      throw new BaseException(BookErrorCode.BOOK_NOT_FOUND);
+  public AdminBookDeleteResDTO deleteBook(Long bookId, Long userId) {
+    
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
     }
+
+    // 도서 조회 및 예외 처리
+    Book book = bookRepository.findById(bookId)
+        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
+
+    // 응답용 도서 저장 후 도서 삭제
+    Book responseBook = book;
+    bookRepository.delete(book);
+
+    // 반환
+    return new AdminBookDeleteResDTO(responseBook);
   }
 
   // 도서 검색

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookListResDTO;
 import com.jelee.librarymanagementsystem.domain.book.dto.admin.AdminBookSearchResDTO;
@@ -110,7 +111,6 @@ public class AdminBookController {
   /*
    * 관리자: 도서 수정
    */
-  // 도서 수정
   @PatchMapping("/{bookId}")
   public ResponseEntity<?> updateBook(
     @PathVariable("bookId") Long bookId, 
@@ -132,19 +132,27 @@ public class AdminBookController {
                 responseDTO));
   }
 
-  // 도서 삭제
+  /*
+   * 관리자: 도서 삭제
+   */
   @DeleteMapping("/{bookId}")
-  public ResponseEntity<?> deleteBook(@PathVariable Long bookId) {
-    adminBookService.deleteBook(bookId);
-    
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_DELETED.getMessage());
+  public ResponseEntity<?> deleteBook(
+    @PathVariable("bookId") Long bookId, 
+    @AuthenticationPrincipal User user) {
 
-    return ResponseEntity
-              .status(BookSuccessCode.BOOK_DELETED.getHttpStatus())
-              .body(ApiResponse.success(
-                BookSuccessCode.BOOK_DELETED, 
-                message, 
-                bookId));
+      // 서비스로직
+      AdminBookDeleteResDTO responseDTO = adminBookService.deleteBook(bookId, user.getId());
+      
+      // 성공메시지
+      String message = messageProvider.getMessage(BookSuccessCode.BOOK_DELETED.getMessage());
+
+      // 응답
+      return ResponseEntity
+                .status(BookSuccessCode.BOOK_DELETED.getHttpStatus())
+                .body(ApiResponse.success(
+                  BookSuccessCode.BOOK_DELETED, 
+                  message, 
+                  responseDTO));
   }
 
   // 도서 검색
