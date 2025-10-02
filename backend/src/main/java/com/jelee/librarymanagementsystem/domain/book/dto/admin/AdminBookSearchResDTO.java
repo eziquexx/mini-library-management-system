@@ -6,13 +6,9 @@ import java.time.LocalDateTime;
 import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.enums.BookStatus;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class AdminBookSearchResDTO {
   private Long id;
   private String title;
