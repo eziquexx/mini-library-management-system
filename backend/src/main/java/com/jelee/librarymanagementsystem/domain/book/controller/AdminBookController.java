@@ -83,6 +83,29 @@ public class AdminBookController {
                   responseDTO));
   }
 
+  /*
+   * 관리자: 도서 상세 조회
+   */
+  @GetMapping("/{bookId}")
+  public ResponseEntity<?> detailBook(
+    @PathVariable("bookId") Long bookId, 
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      AdminBookDetailResDTO responseDTO = adminBookService.detailBook(bookId, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(BookSuccessCode.BOOK_FETCHED.getMessage());
+
+      // 응답
+      return ResponseEntity
+                .status(BookSuccessCode.BOOK_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  BookSuccessCode.BOOK_FETCHED, 
+                  message, 
+                  responseDTO));
+  }
+
   // 도서 수정
   @PutMapping("/{bookId}")
   public ResponseEntity<?> updateBook(@PathVariable("bookId") Long bookId, @RequestBody AdminBookUpdateReqDTO bookDTO) {
@@ -150,21 +173,4 @@ public class AdminBookController {
                 books));
   }
 
-  // 도서 상세 조회
-  @GetMapping("/{bookId}")
-  public ResponseEntity<?> detailBook(@PathVariable("bookId") Long bookId) {
-
-    // 서비스 로직
-    AdminBookDetailResDTO responseDTO = adminBookService.detailBook(bookId);
-
-    // 메시지
-    String message = messageProvider.getMessage(BookSuccessCode.BOOK_FETCHED.getMessage());
-
-    return ResponseEntity
-              .status(BookSuccessCode.BOOK_FETCHED.getHttpStatus())
-              .body(ApiResponse.success(
-                BookSuccessCode.BOOK_FETCHED, 
-                message, 
-                responseDTO));
-  }
 }

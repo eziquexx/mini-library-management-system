@@ -122,6 +122,27 @@ public class AdminBookService {
     return new PageResponse<>(pageDTO);
   }
 
+  /*
+   * 관리자: 도서 상세 조회
+   */
+  public AdminBookDetailResDTO detailBook(Long bookId, Long userId) {
+    
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // bookId로 도서 조회
+    Book book = bookRepository.findById(bookId)
+        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
+
+    // 반환
+    return new AdminBookDetailResDTO(book);
+  }
+
   // 도서 수정
   @Transactional
   public AdminBookCreateResDTO updateBook(Long bookId, AdminBookUpdateReqDTO request) {
@@ -239,13 +260,4 @@ public class AdminBookService {
     return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
   }
 
-  // 도서 상세 조회
-  public AdminBookDetailResDTO detailBook(Long bookId) {
-    
-    // bookId로 도서 조회
-    Book book = bookRepository.findById(bookId)
-        .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
-
-    return new AdminBookDetailResDTO(book);
-  }
 }

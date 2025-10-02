@@ -7,10 +7,8 @@ import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.enums.BookStatus;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class AdminBookDetailResDTO {
   private Long id;
   private String title;
