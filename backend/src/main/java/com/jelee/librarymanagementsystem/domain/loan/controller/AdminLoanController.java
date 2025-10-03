@@ -24,6 +24,7 @@ import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.service.AdminLoanService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.LoanSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -61,19 +62,23 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 전체 대출 목록 조회
+  /*
+   * 관리자: 도서 대출 전체 목록 조회 (페이징)
+   */
   @GetMapping()
   public ResponseEntity<?> allListLoans(
-    @RequestParam(name = "status", required = false) LoanStatus status,
-    @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(value = "status", required = false) LoanStatus status,
+    @RequestParam(value = "page", defaultValue = "0") int page, 
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    Page<AdminLoanListResDTO> responseDTO = adminLoanService.allListLoans(status, page, size);
+    PageResponse<AdminLoanListResDTO> responseDTO = adminLoanService.allListLoans(status, page, size, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_LIST_FETCHED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(LoanSuccessCode.LOAN_LIST_FETCHED.getHttpStatus())
               .body(ApiResponse.success(

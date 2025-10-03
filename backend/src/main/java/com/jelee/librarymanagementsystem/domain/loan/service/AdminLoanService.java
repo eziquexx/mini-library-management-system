@@ -26,6 +26,7 @@ import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
@@ -98,14 +99,23 @@ public class AdminLoanService {
     return new AdminLoanCreateResDTO(loan);
   }
 
-  // 전체 대출 목록 조회
-  @Transactional
-  public Page<AdminLoanListResDTO> allListLoans(LoanStatus status, int page, int size) {
+  /*
+   * 관리자: 도서 대출 전체 목록 조회 (페이징)
+   */
+  public PageResponse<AdminLoanListResDTO> allListLoans(LoanStatus status, int page, int size, Long userId) {
 
-    // 페이징 준비
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 페이징 정의
     Pageable pageable = PageRequest.of(page, size);
 
-    // status에 값이 없으면 findAll, 값이 있으면 findByStatus
+    // status에 값이 없으면 findAll, 값이 있으면 해당 status로 조회
     // 결과를 Page<Loan> 타입으로 저장
     Page<Loan> result;
     if (status != null) {
@@ -119,14 +129,11 @@ public class AdminLoanService {
       throw new BaseException(LoanErrorCode.LOAN_NOT_FOUND);
     }
 
-    // Page타입의 결과를 List로 변환
-    List<AdminLoanListResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminLoanListResDTO::new)
-        .toList();
+    // Page<Loan>을 AdminLoanListResDTO로 맵핑하여 생성
+    Page<AdminLoanListResDTO> pageDTO = result.map(AdminLoanListResDTO::new);
 
-    // 반환시 DTO 리스트를 Page 형식으로 랩핑하여 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 도서 대출 상세 조회
