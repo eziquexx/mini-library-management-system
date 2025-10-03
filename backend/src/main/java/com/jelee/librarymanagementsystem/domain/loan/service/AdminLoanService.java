@@ -1,10 +1,8 @@
 package com.jelee.librarymanagementsystem.domain.loan.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,8 +24,11 @@ import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
+import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.LoanErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
@@ -43,15 +44,25 @@ public class AdminLoanService {
   private final BookRepository bookRepository;
   private final UserRepository userRepository;
 
-  // 도서 대출 등록
+  /*
+   * 관리자: 도서 대출 등록
+   */
   @Transactional
-  public AdminLoanCreateResDTO createLoan(AdminLoanCreateReqDTO requestDTO) {
+  public AdminLoanCreateResDTO createLoan(AdminLoanCreateReqDTO requestDTO, Long adminUserId) {
+
+    // 관리자 권환 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // 도서 유효성 검사
     Book book = bookRepository.findById(requestDTO.getBookId())
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
 
-    // 사용자 유효성 검사
+    // 사용자 유효성 검사 (도서 대출자)
     User user = userRepository.findById(requestDTO.getUserId())
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
@@ -82,18 +93,27 @@ public class AdminLoanService {
     // 도서 상태 변경
     book.setStatus(BookStatus.BORROWED);
 
-    // 응답
+    // 반환
     return new AdminLoanCreateResDTO(loan);
   }
 
-  // 전체 대출 목록 조회
-  @Transactional
-  public Page<AdminLoanListResDTO> allListLoans(LoanStatus status, int page, int size) {
+  /*
+   * 관리자: 도서 대출 전체 목록 조회 (페이징)
+   */
+  public PageResponse<AdminLoanListResDTO> allListLoans(LoanStatus status, int page, int size, Long userId) {
 
-    // 페이징 준비
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 페이징 정의
     Pageable pageable = PageRequest.of(page, size);
 
-    // status에 값이 없으면 findAll, 값이 있으면 findByStatus
+    // status에 값이 없으면 findAll, 값이 있으면 해당 status로 조회
     // 결과를 Page<Loan> 타입으로 저장
     Page<Loan> result;
     if (status != null) {
@@ -107,51 +127,52 @@ public class AdminLoanService {
       throw new BaseException(LoanErrorCode.LOAN_NOT_FOUND);
     }
 
-    // Page타입의 결과를 List로 변환
-    List<AdminLoanListResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminLoanListResDTO::new)
-        .toList();
+    // Page<Loan>을 AdminLoanListResDTO로 맵핑하여 생성
+    Page<AdminLoanListResDTO> pageDTO = result.map(AdminLoanListResDTO::new);
 
-    // 반환시 DTO 리스트를 Page 형식으로 랩핑하여 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
-  // 도서 대출 상세 조회
-  @Transactional
-  public AdminLoanDetailResDTO detailLoan(Long loanId) {
+  /*
+   * 관리자: 도서 대출 상세 조회
+   */
+  public AdminLoanDetailResDTO detailLoan(Long loanId, Long userId) {
 
-    // loan 유효 검사
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 도서 대출 조회 및 예외 처리
     Loan loan = loanRepository.findById(loanId)
         .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
     
-    // loan 데이터를 가지고 응답 DTO 객체 생성하여 반환
+    // 반환
     return new AdminLoanDetailResDTO(loan);
   }
 
-  // 도서 대출 조건별 검색
-  @Transactional
-  public Page<AdminLoanSearchResDTO> searchLoan(LoanSearchType typeStr, String keyword, LoanStatus status, int page, int size) {
+  /*
+   * 관리자: 도서 대출 타입별 검색
+   */
+  public PageResponse<AdminLoanSearchResDTO> searchLoan(LoanSearchType type, String keyword, LoanStatus status, int page, int size, Long adminUserId) {
 
-    // 값 체크
-    System.out.println(typeStr);
-    System.out.println(keyword);
-    System.out.println(status);
+    // 관리자 권환 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // 페이징 정의
     Pageable pageable = PageRequest.of(page, size);
-
-    // type 예외처리
-    LoanSearchType type;
-    try {
-      type = LoanSearchType.valueOf(typeStr.toString().toUpperCase());
-    } catch(IllegalArgumentException e) {
-      throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_INVALID);
-    }
     
     // type별 검색 - BOOKTITLE, USERID
     Page<Loan> result;
-    
     switch (type) {
       case BOOKTITLE:
         // 도서 유효검사
@@ -165,7 +186,7 @@ public class AdminLoanService {
             : loanRepository.findByBook_TitleContainingIgnoreCase(book.getTitle(), pageable);
         break;
       
-      case USERID:
+      case USERNAME:
         // 사용자 유효검사
         User user = userRepository.findByUsername(keyword)
             .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
@@ -181,14 +202,11 @@ public class AdminLoanService {
         throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_INVALID);
     }
 
-    // Page dto를 List 형태로 변환
-    List<AdminLoanSearchResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminLoanSearchResDTO::new)
-        .toList();
+    // Page<Loan> -> Page<AdminLoanSearchResDTO>로 맵핑
+    Page<AdminLoanSearchResDTO> pageDTO = result.map(AdminLoanSearchResDTO::new);
 
-    // 반환시 dtoList를 PageImpl로 감싸서 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   //도서 반납 처리

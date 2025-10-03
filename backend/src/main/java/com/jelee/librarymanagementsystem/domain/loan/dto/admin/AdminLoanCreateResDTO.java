@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 public class AdminLoanCreateResDTO {
-  private Long id;
+  private LoanDTO loan;
   private BorrowerDTO borrower;
   private BookSimpleDTO borrowedBook;
 
   public AdminLoanCreateResDTO(Loan loan) {
-    this.id = loan.getId();
+    this.loan = new LoanDTO(loan);
     this.borrower = new BorrowerDTO(loan.getUser());
     this.borrowedBook = new BookSimpleDTO(loan.getBook());
   }

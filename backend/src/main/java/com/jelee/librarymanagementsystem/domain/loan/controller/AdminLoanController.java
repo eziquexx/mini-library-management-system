@@ -1,7 +1,7 @@
 package com.jelee.librarymanagementsystem.domain.loan.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +22,8 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchRe
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.service.AdminLoanService;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.LoanSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -36,12 +38,16 @@ public class AdminLoanController {
   private final AdminLoanService adminLoanService;
   private final MessageProvider messageProvider;
   
-  // 도서 대출 등록
+  /*
+   * 관리자: 도서 대출 등록
+   */
   @PostMapping()
-  public ResponseEntity<?> createLoan(@RequestBody AdminLoanCreateReqDTO requestDTO) {
+  public ResponseEntity<?> createLoan(
+    @RequestBody AdminLoanCreateReqDTO requestDTO, 
+    @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    AdminLoanCreateResDTO responseDTO = adminLoanService.createLoan(requestDTO);
+    AdminLoanCreateResDTO responseDTO = adminLoanService.createLoan(requestDTO, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_CREATED.getMessage());
@@ -55,19 +61,23 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 전체 대출 목록 조회
+  /*
+   * 관리자: 도서 대출 전체 목록 조회 (페이징)
+   */
   @GetMapping()
   public ResponseEntity<?> allListLoans(
-    @RequestParam(name = "status", required = false) LoanStatus status,
-    @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(value = "status", required = false) LoanStatus status,
+    @RequestParam(value = "page", defaultValue = "0") int page, 
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    Page<AdminLoanListResDTO> responseDTO = adminLoanService.allListLoans(status, page, size);
+    PageResponse<AdminLoanListResDTO> responseDTO = adminLoanService.allListLoans(status, page, size, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_LIST_FETCHED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(LoanSuccessCode.LOAN_LIST_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
@@ -76,12 +86,16 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 대출 상세 조회
+  /*
+   * 관리자: 도서 대출 상세 조회
+   */
   @GetMapping("/{loanId}")
-  public ResponseEntity<?> detailLoan(@PathVariable("loanId") Long loanId) {
+  public ResponseEntity<?> detailLoan(
+    @PathVariable("loanId") Long loanId, 
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    AdminLoanDetailResDTO responseDTO = adminLoanService.detailLoan(loanId);
+    AdminLoanDetailResDTO responseDTO = adminLoanService.detailLoan(loanId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
@@ -95,27 +109,31 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 도서 대출 조건별 검색
+  /*
+   * 관리자: 도서 대출 타입별 검색
+   */
   @GetMapping("/search")
   public ResponseEntity<?> searchLoan(
-    @RequestParam(name = "type", required = false) LoanSearchType type, 
-    @RequestParam(name = "keyword") String keyword, 
-    @RequestParam(name = "status", required = false) LoanStatus status,
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(value = "type", required = false) LoanSearchType type, 
+    @RequestParam("keyword") String keyword, 
+    @RequestParam(value = "status", required = false) LoanStatus status,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
 
-    // 서비스로직
-    Page<AdminLoanSearchResDTO> responseDTO = adminLoanService.searchLoan(type, keyword, status, page, size);
+      // 서비스로직
+      PageResponse<AdminLoanSearchResDTO> responseDTO = adminLoanService.searchLoan(type, keyword, status, page, size, user.getId());
 
-    // 성공메시지
-    String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
+      // 성공메시지
+      String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
 
-    return ResponseEntity
-              .status(LoanSuccessCode.LOAN_FETCHED.getHttpStatus())
-              .body(ApiResponse.success(
-                LoanSuccessCode.LOAN_FETCHED, 
-                message, 
-                responseDTO));
+      // 응답
+      return ResponseEntity
+                .status(LoanSuccessCode.LOAN_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  LoanSuccessCode.LOAN_FETCHED, 
+                  message, 
+                  responseDTO));
   }
 
   // 도서 반납 처리
