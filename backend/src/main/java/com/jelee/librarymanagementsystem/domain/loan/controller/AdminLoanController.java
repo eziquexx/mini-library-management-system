@@ -2,6 +2,7 @@ package com.jelee.librarymanagementsystem.domain.loan.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.admin.AdminLoanSearchRe
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanSearchType;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.service.AdminLoanService;
+import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.LoanSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -36,12 +38,16 @@ public class AdminLoanController {
   private final AdminLoanService adminLoanService;
   private final MessageProvider messageProvider;
   
-  // 도서 대출 등록
+  /*
+   * 관리자: 도서 대출 등록
+   */
   @PostMapping()
-  public ResponseEntity<?> createLoan(@RequestBody AdminLoanCreateReqDTO requestDTO) {
+  public ResponseEntity<?> createLoan(
+    @RequestBody AdminLoanCreateReqDTO requestDTO, 
+    @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    AdminLoanCreateResDTO responseDTO = adminLoanService.createLoan(requestDTO);
+    AdminLoanCreateResDTO responseDTO = adminLoanService.createLoan(requestDTO, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_CREATED.getMessage());

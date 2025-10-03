@@ -26,8 +26,10 @@ import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.enums.UserStatus;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
+import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.LoanErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
@@ -43,15 +45,25 @@ public class AdminLoanService {
   private final BookRepository bookRepository;
   private final UserRepository userRepository;
 
-  // 도서 대출 등록
+  /*
+   * 관리자: 도서 대출 등록
+   */
   @Transactional
-  public AdminLoanCreateResDTO createLoan(AdminLoanCreateReqDTO requestDTO) {
+  public AdminLoanCreateResDTO createLoan(AdminLoanCreateReqDTO requestDTO, Long adminUserId) {
+
+    // 관리자 권환 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // 도서 유효성 검사
     Book book = bookRepository.findById(requestDTO.getBookId())
         .orElseThrow(() -> new BaseException(BookErrorCode.BOOK_NOT_FOUND));
 
-    // 사용자 유효성 검사
+    // 사용자 유효성 검사 (도서 대출자)
     User user = userRepository.findById(requestDTO.getUserId())
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
     
@@ -82,7 +94,7 @@ public class AdminLoanService {
     // 도서 상태 변경
     book.setStatus(BookStatus.BORROWED);
 
-    // 응답
+    // 반환
     return new AdminLoanCreateResDTO(loan);
   }
 

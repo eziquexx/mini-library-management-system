@@ -4,10 +4,8 @@ import com.jelee.librarymanagementsystem.domain.book.entity.Book;
 import com.jelee.librarymanagementsystem.domain.book.enums.BookStatus;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class BookSimpleDTO {
   private Long id;
   private String title;
