@@ -1,10 +1,8 @@
 package com.jelee.librarymanagementsystem.domain.loan.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -157,29 +155,24 @@ public class AdminLoanService {
     return new AdminLoanDetailResDTO(loan);
   }
 
-  // 도서 대출 조건별 검색
-  @Transactional
-  public Page<AdminLoanSearchResDTO> searchLoan(LoanSearchType typeStr, String keyword, LoanStatus status, int page, int size) {
+  /*
+   * 관리자: 도서 대출 타입별 검색
+   */
+  public PageResponse<AdminLoanSearchResDTO> searchLoan(LoanSearchType type, String keyword, LoanStatus status, int page, int size, Long adminUserId) {
 
-    // 값 체크
-    System.out.println(typeStr);
-    System.out.println(keyword);
-    System.out.println(status);
+    // 관리자 권환 조회 및 예외 처리
+    User userAdmin = userRepository.findById(adminUserId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (userAdmin.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // 페이징 정의
     Pageable pageable = PageRequest.of(page, size);
-
-    // type 예외처리
-    LoanSearchType type;
-    try {
-      type = LoanSearchType.valueOf(typeStr.toString().toUpperCase());
-    } catch(IllegalArgumentException e) {
-      throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_INVALID);
-    }
     
     // type별 검색 - BOOKTITLE, USERID
     Page<Loan> result;
-    
     switch (type) {
       case BOOKTITLE:
         // 도서 유효검사
@@ -193,7 +186,7 @@ public class AdminLoanService {
             : loanRepository.findByBook_TitleContainingIgnoreCase(book.getTitle(), pageable);
         break;
       
-      case USERID:
+      case USERNAME:
         // 사용자 유효검사
         User user = userRepository.findByUsername(keyword)
             .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
@@ -209,14 +202,11 @@ public class AdminLoanService {
         throw new BaseException(LoanErrorCode.LOAN_SEARCH_TYPE_INVALID);
     }
 
-    // Page dto를 List 형태로 변환
-    List<AdminLoanSearchResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminLoanSearchResDTO::new)
-        .toList();
+    // Page<Loan> -> Page<AdminLoanSearchResDTO>로 맵핑
+    Page<AdminLoanSearchResDTO> pageDTO = result.map(AdminLoanSearchResDTO::new);
 
-    // 반환시 dtoList를 PageImpl로 감싸서 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   //도서 반납 처리
