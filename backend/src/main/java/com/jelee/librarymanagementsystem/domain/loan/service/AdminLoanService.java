@@ -136,15 +136,24 @@ public class AdminLoanService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 도서 대출 상세 조회
-  @Transactional
-  public AdminLoanDetailResDTO detailLoan(Long loanId) {
+  /*
+   * 관리자: 도서 대출 상세 조회
+   */
+  public AdminLoanDetailResDTO detailLoan(Long loanId, Long userId) {
 
-    // loan 유효 검사
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
+    // 도서 대출 조회 및 예외 처리
     Loan loan = loanRepository.findById(loanId)
         .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
     
-    // loan 데이터를 가지고 응답 DTO 객체 생성하여 반환
+    // 반환
     return new AdminLoanDetailResDTO(loan);
   }
 

@@ -87,12 +87,16 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 대출 상세 조회
+  /*
+   * 관리자: 도서 대출 상세 조회
+   */
   @GetMapping("/{loanId}")
-  public ResponseEntity<?> detailLoan(@PathVariable("loanId") Long loanId) {
+  public ResponseEntity<?> detailLoan(
+    @PathVariable("loanId") Long loanId, 
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    AdminLoanDetailResDTO responseDTO = adminLoanService.detailLoan(loanId);
+    AdminLoanDetailResDTO responseDTO = adminLoanService.detailLoan(loanId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
