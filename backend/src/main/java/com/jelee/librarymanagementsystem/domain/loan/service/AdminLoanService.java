@@ -248,10 +248,20 @@ public class AdminLoanService {
     return new AdminLoanReturnResDTO(loan);
   }
 
-  // 도서 대출 연장 처리
+  /*
+   * 관리자: 도서 대출 연장 처리
+   */
   @Transactional
-  public AdminLoanExtendedResDTO extendLoan(Long loanId) {
+  public AdminLoanExtendedResDTO extendLoan(Long loanId, Long userId) {
     
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
     // loanId로 조회 및 예외처리
     Loan loan = loanRepository.findById(loanId)
         .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));
@@ -262,7 +272,7 @@ public class AdminLoanService {
       throw new BaseException(LoanErrorCode.LOAN_CANNOT_EXTEND);
     }
 
-    // loan 대출 여부 체크 및 예외처리
+    // loan 대출 연장 여부 체크 및 예외처리
     if (loan.isExtended() != false) {
       throw new BaseException(LoanErrorCode.LOAN_ALREADY_EXTENDED);
     }
@@ -276,10 +286,20 @@ public class AdminLoanService {
     return new AdminLoanExtendedResDTO(loan);
   }
 
-  // 도서 분실 처리
+  /*
+   * 관리자: 도서 분실 처리
+   */
   @Transactional
-  public AdminLoanLostResDTO loanLostBook(Long loanId) {
+  public AdminLoanLostResDTO loanLostBook(Long loanId, Long userId) {
 
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+    
     // loanId 조회 + 예외 처리
     Loan loan = loanRepository.findById(loanId)
         .orElseThrow(() -> new BaseException(LoanErrorCode.LOAN_NOT_FOUND));

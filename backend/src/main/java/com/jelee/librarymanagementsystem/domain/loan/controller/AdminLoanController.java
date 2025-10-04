@@ -159,12 +159,16 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 도서 대출 연장 처리
+  /*
+   * 관리자: 도서 대출 연장 처리
+   */
   @PatchMapping("/{loanId}/extend")
-  public ResponseEntity<?> extendLoan(@PathVariable("loanId") Long loanId) {
+  public ResponseEntity<?> extendLoan(
+    @PathVariable("loanId") Long loanId, 
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    AdminLoanExtendedResDTO responseDTO = adminLoanService.extendLoan(loanId);
+    AdminLoanExtendedResDTO responseDTO = adminLoanService.extendLoan(loanId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_EXTENDED.getMessage());
@@ -178,12 +182,16 @@ public class AdminLoanController {
                 responseDTO));
   }
 
-  // 도서 분실 처리
+  /*
+   * 관리자: 도서 분실 처리
+   */
   @PatchMapping("/{loanId}/lost")
-  public ResponseEntity<?> loanLostBook(@PathVariable("loanId") Long loanId) {
+  public ResponseEntity<?> loanLostBook(
+    @PathVariable("loanId") Long loanId, 
+    @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    AdminLoanLostResDTO responseDTO = adminLoanService.loanLostBook(loanId);
+    AdminLoanLostResDTO responseDTO = adminLoanService.loanLostBook(loanId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_MARKED_AS_LOST.getMessage());
