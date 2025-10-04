@@ -209,9 +209,19 @@ public class AdminLoanService {
     return new PageResponse<>(pageDTO);
   }
 
-  //도서 반납 처리
+  /*
+   * 관리자: 도서 대출 반납 처리
+   */
   @Transactional
-  public AdminLoanReturnResDTO returnLoan(Long loanId) {
+  public AdminLoanReturnResDTO returnLoan(Long loanId, Long userId) {
+
+    // 관리자 권환 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (user.getRole() != Role.ROLE_ADMIN) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // Loan 엔티티 조회 + 예외 처리
     Loan loan = loanRepository.findById(loanId)

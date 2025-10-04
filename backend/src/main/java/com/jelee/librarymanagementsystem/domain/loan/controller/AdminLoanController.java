@@ -136,16 +136,21 @@ public class AdminLoanController {
                   responseDTO));
   }
 
-  // 도서 반납 처리
+  /*
+   * 관리자: 도서 대출 반납 처리
+   */
   @PatchMapping("/{loanId}/return")
-  public ResponseEntity<?> returnLoan(@PathVariable("loanId") Long loanId) {
+  public ResponseEntity<?> returnLoan(
+    @PathVariable("loanId") Long loanId, 
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    AdminLoanReturnResDTO responseDTO = adminLoanService.returnLoan(loanId);
+    AdminLoanReturnResDTO responseDTO = adminLoanService.returnLoan(loanId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(LoanSuccessCode.LOAN_RETURNED.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(LoanSuccessCode.LOAN_RETURNED.getHttpStatus())
               .body(ApiResponse.success(
