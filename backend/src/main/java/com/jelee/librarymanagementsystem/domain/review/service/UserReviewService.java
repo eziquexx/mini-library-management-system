@@ -38,7 +38,9 @@ public class UserReviewService {
   private final UserRepository userRepository;
   private final BookRepository bookRepository;
 
-  // 사용자: 책 리뷰 작성
+  /*
+   * 사용자: 책 리뷰 작성
+   */
   @Transactional
   public UserReviewCreateResDTO createReview(Long bookId, UserReviewCreateReqDTO requestDTO, Long userId) {
 
