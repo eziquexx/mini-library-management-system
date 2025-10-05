@@ -38,7 +38,9 @@ public class UserReviewController {
   private final MessageProvider messageProvider;
 
 
-  // 사용자: 책 리뷰 작성
+  /*
+   * 사용자: 책 리뷰 작성
+   */
   @PostMapping("/books/{bookId}/reviews")
   public ResponseEntity<?> createReview(
     @PathVariable("bookId") Long bookId,
