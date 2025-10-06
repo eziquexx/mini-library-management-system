@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.review.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +19,7 @@ import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewErrorCode;
@@ -73,9 +71,10 @@ public class UserReviewService {
   }
 
 
-  // 사용자: 책 리뷰 전체 목록 조회 (페이징)
-  @Transactional
-  public Page<UserReviewListResDTO> allListReview(int page, int size, Long userId) {
+  /*
+   * 사용자: 책 리뷰 전체 목록 조회 (페이징)
+   */
+  public PageResponse<UserReviewListResDTO> allListReview(int page, int size, Long userId) {
 
     // 사용자 조회, 유효성 검사
     User user = userRepository.findById(userId)
@@ -87,18 +86,16 @@ public class UserReviewService {
     // userId로 책 리뷰 조회
     Page<Review> result = reviewRepository.findByUser_Id(user.getId(), pageable);
 
-    // Page DTO를 List DTO로 형변환.
-    List<UserReviewListResDTO> listDTO = result.getContent()
-        .stream()
-        .map(UserReviewListResDTO::new)
-        .toList();
+    // Page<Review> -> Page<UserReviewListResDTO> 맵핑 후 생성
+    Page<UserReviewListResDTO> pageDTO = result.map(UserReviewListResDTO::new);
 
-    // List DTO를 PageImpl로 감싸서 페이징 형태로 반환.
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
-  // 사용자: 책 리뷰 상세 조회
-  @Transactional
+  /*
+   * 사용자: 책 리뷰 상세 조회
+   */
   public UserReviewDetailResDTO detailReview(Long reviewId, Long userId) {
 
     // 사용자 조회 + 예외 처리
@@ -114,11 +111,13 @@ public class UserReviewService {
       throw new BaseException(ReviewErrorCode.REVIEW_USER_MISMATCH);
     }
 
-    // UserReviewDetailResDTO 객체로 반환
+    // 반환
     return new UserReviewDetailResDTO(review);
   }
 
-  // 사용자: 책 리뷰 수정
+  /*
+   * 사용자: 책 리뷰 수정
+   */
   @Transactional
   public UserReviewUpdateResDTO updateReview(Long reviewId, UserReviewUpdateReqDTO requestDTO, Long userId) {
     
@@ -142,7 +141,9 @@ public class UserReviewService {
     return new UserReviewUpdateResDTO(review);
   }
 
-  // 사용자: 책 리뷰 삭제
+  /*
+   * 사용자: 책 리뷰 삭제
+   */
   @Transactional
   public UserReviewDeleteResDTO deleteReview(Long reviewId, Long userId) {
 
@@ -165,11 +166,14 @@ public class UserReviewService {
     // 리뷰 삭제
     reviewRepository.delete(review);
 
+    // 반환
     return resopnseDTO;
   }
 
-  // 사용자: 책 리뷰 검색
-  public Page<UserReviewSearchResDTO> searchReview(String keyword, int page, int size, Long userId) {
+  /*
+   * 사용자: 책 리뷰 검색
+   */
+  public PageResponse<UserReviewSearchResDTO> searchReview(String keyword, int page, int size, Long userId) {
 
     // 사용자 조회 + 예외 처리
     User user = userRepository.findById(userId)
@@ -181,13 +185,10 @@ public class UserReviewService {
     // 검색어 조회 + 페이지 처리
     Page<Review> result = keyword != null ? result = reviewRepository.findByUser_IdAndBook_TitleContainingIgnoreCase(user.getId(), keyword, pageable) : reviewRepository.findAll(pageable);
 
-    // Page -> List 맵핑하여 변환
-    List<UserReviewSearchResDTO> listDTO = result.getContent()
-        .stream()
-        .map(UserReviewSearchResDTO::new)
-        .toList();
+    // Page<Review> -> Page<UserReviewSearchResDTO> 맵핑
+    Page<UserReviewSearchResDTO> pageDTO = result.map(UserReviewSearchResDTO::new);
 
-    // PageImpl로 감싸 Page 형태로 변환하여 반환
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 }
