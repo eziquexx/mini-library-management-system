@@ -22,6 +22,7 @@ import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewErrorCode;
@@ -73,9 +74,10 @@ public class UserReviewService {
   }
 
 
-  // 사용자: 책 리뷰 전체 목록 조회 (페이징)
-  @Transactional
-  public Page<UserReviewListResDTO> allListReview(int page, int size, Long userId) {
+  /*
+   * 사용자: 책 리뷰 전체 목록 조회 (페이징)
+   */
+  public PageResponse<UserReviewListResDTO> allListReview(int page, int size, Long userId) {
 
     // 사용자 조회, 유효성 검사
     User user = userRepository.findById(userId)
@@ -87,14 +89,11 @@ public class UserReviewService {
     // userId로 책 리뷰 조회
     Page<Review> result = reviewRepository.findByUser_Id(user.getId(), pageable);
 
-    // Page DTO를 List DTO로 형변환.
-    List<UserReviewListResDTO> listDTO = result.getContent()
-        .stream()
-        .map(UserReviewListResDTO::new)
-        .toList();
+    // Page<Review> -> Page<UserReviewListResDTO> 맵핑 후 생성
+    Page<UserReviewListResDTO> pageDTO = result.map(UserReviewListResDTO::new);
 
-    // List DTO를 PageImpl로 감싸서 페이징 형태로 반환.
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 사용자: 책 리뷰 상세 조회

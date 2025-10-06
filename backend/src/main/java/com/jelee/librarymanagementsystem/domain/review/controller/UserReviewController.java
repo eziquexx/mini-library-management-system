@@ -23,6 +23,7 @@ import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdate
 import com.jelee.librarymanagementsystem.domain.review.dto.user.UserReviewUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.review.service.UserReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -62,7 +63,9 @@ public class UserReviewController {
                 responseDTO));
   }
 
-  // 사용자: 책 리뷰 전체 목록 조회 (페이징)
+  /*
+   * 사용자: 책 리뷰 전체 목록 조회 (페이징)
+   */
   @GetMapping("/me/reviews")
   public ResponseEntity<?> allListReview(
     @RequestParam(name = "page", defaultValue = "0") int page,
@@ -70,11 +73,12 @@ public class UserReviewController {
     @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    Page<UserReviewListResDTO> responseDTO = userReviewService.allListReview(page, size, user.getId());
+    PageResponse<UserReviewListResDTO> responseDTO = userReviewService.allListReview(page, size, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
