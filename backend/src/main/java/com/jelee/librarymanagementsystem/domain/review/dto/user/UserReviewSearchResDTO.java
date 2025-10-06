@@ -8,11 +8,15 @@ import lombok.Getter;
 
 @Getter
 public class UserReviewSearchResDTO {
+  private Long id;
+  private String username;
   private String bookTitle;
   private String content;
   private LocalDateTime createdDate;
 
   public UserReviewSearchResDTO(Review review) {
+    this.id = review.getId();
+    this.username = review.getUser().getUsername();
     this.bookTitle = review.getBook().getTitle();
     this.content = review.getContent();
     this.createdDate = review.getCreatedDate();

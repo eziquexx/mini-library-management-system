@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.review.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -110,7 +109,9 @@ public class UserReviewController {
             responseDTO));
   }
 
-  // 사용자: 책 리뷰 수정
+  /*
+   * 사용자: 책 리뷰 수정
+   */
   @PatchMapping("/me/reviews/{reviewId}")
   public ResponseEntity<?> updateReview(
     @PathVariable("reviewId") Long reviewId,
@@ -123,6 +124,7 @@ public class UserReviewController {
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_UPDATED.getMessage());
     
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_UPDATED.getHttpStatus())
                 .body(ApiResponse.success(
@@ -131,7 +133,9 @@ public class UserReviewController {
                   responseDTO));
   }
 
-  // 사용자: 책 리뷰 삭제
+  /*
+   * 사용자: 책 리뷰 삭제
+   */
   @DeleteMapping("/me/reviews/{reviewId}")
   public ResponseEntity<?> deleteReview(
     @PathVariable("reviewId") Long reviewId, 
@@ -143,7 +147,7 @@ public class UserReviewController {
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_DELETED.getMessage());
 
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_DELETED.getHttpStatus())
                 .body(ApiResponse.success(
@@ -152,21 +156,23 @@ public class UserReviewController {
                   responseDTO));
   }
 
-  // 사용자: 책 리뷰 검색
+  /*
+   * 사용자: 책 리뷰 검색
+   */
   @GetMapping("/me/reviews/search")
   public ResponseEntity<?> searchReview(
-    @RequestParam(name = "keyword", required = false) String keyword,
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "keyword", required = false) String keyword,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
 
       // 서비스로직
-      Page<UserReviewSearchResDTO> responseDTO = userReviewService.searchReview(keyword, page, size, user.getId());
+      PageResponse<UserReviewSearchResDTO> responseDTO = userReviewService.searchReview(keyword, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_FETCHED.getMessage());
 
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(
