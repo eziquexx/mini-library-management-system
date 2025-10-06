@@ -15,9 +15,13 @@ const LoginPage = () => {
     try {
       const response = await axios.post('http://localhost:8080/api/v1/auth/signin', 
         { username, password },
-        { withCredential: true }
+        { withCredentials: true }
       );
 
+      // 로그인 성공 시 home으로 이동
+      if (response.status === 200) {
+        navigate('/');
+      }
     
     } catch (error) {
       console.log('로그인 실패: ', error.response?.data || error.message);
