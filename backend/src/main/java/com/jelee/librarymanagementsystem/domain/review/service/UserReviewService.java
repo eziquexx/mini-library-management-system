@@ -96,8 +96,9 @@ public class UserReviewService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 사용자: 책 리뷰 상세 조회
-  @Transactional
+  /*
+   * 사용자: 책 리뷰 상세 조회
+   */
   public UserReviewDetailResDTO detailReview(Long reviewId, Long userId) {
 
     // 사용자 조회 + 예외 처리
@@ -113,7 +114,7 @@ public class UserReviewService {
       throw new BaseException(ReviewErrorCode.REVIEW_USER_MISMATCH);
     }
 
-    // UserReviewDetailResDTO 객체로 반환
+    // 반환
     return new UserReviewDetailResDTO(review);
   }
 

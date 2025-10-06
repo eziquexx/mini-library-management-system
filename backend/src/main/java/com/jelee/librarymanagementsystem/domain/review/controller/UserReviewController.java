@@ -68,8 +68,8 @@ public class UserReviewController {
    */
   @GetMapping("/me/reviews")
   public ResponseEntity<?> allListReview(
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
     
     // 서비스로직
@@ -87,7 +87,9 @@ public class UserReviewController {
                 responseDTO));
   }
 
-  // 사용자: 책 리뷰 상세 조회
+  /*
+   * 사용자: 책 리뷰 상세 조회
+   */
   @GetMapping("/me/reviews/{reviewId}")
   public ResponseEntity<?> detailReview(
     @PathVariable("reviewId") Long reviewId, 
@@ -99,7 +101,7 @@ public class UserReviewController {
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_FETCHED.getMessage());
 
-      // 반환
+      // 응답
       return ResponseEntity
           .status(ReviewSuccessCode.REVIEW_FETCHED.getHttpStatus())
           .body(ApiResponse.success(
