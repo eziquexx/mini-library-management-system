@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const HomePage = () => {
 
@@ -47,11 +48,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <footer className="w-full bg-teal-700">
-          <div className="text-center text-white py-3 text-sm">
-            copyright 2025. dev.jelee
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
