@@ -58,9 +58,9 @@ const LoginPage = () => {
                   placeholderText={"비밀번호를 입력하세요"}
                 />
               </div>
-              <button type="submit" className="py-4 border rounded-xl text-blue-600 text-white hover:bg-blue-600 active:bg-blue-700 bg-blue-500 mt-7 mb-6 cursor-pointer">로그인</button>
+              <button type="submit" className="py-4 border rounded-xl text-white hover:bg-teal-600 active:bg-blue-700 bg-teal-500 mt-7 mb-6 cursor-pointer">로그인</button>
               <div className='text-center'>
-                아직 회원이 아닌가요?<Link to="/signup" className='inline-block ml-2 text-blue-500 cursor-pointer'>회원가입하기</Link>
+                아직 회원이 아닌가요?<Link to="/signup" className='inline-block ml-2 text-teal-600 cursor-pointer'>회원가입하기</Link>
               </div>
             </form>
           </div>
