@@ -55,7 +55,7 @@ const HomePage = () => {
       <div className="w-full">
         <header className="flex flex-col">
           {/* header1 */}
-          <div className="w-full flex justify-center bg-teal-800 px-7 md:px-10 lg:px-14">
+          <div className="w-full flex justify-center bg-teal-700 px-7 md:px-10 lg:px-14">
             <div className="w-7xl max-w-7xl h-9 leading-9 text-sm">
               <div className="flex flex-row float-right text-white">
                 {user ? (
@@ -70,16 +70,16 @@ const HomePage = () => {
                   <>
                     <Link to="/login">로그인</Link>
                     <div className="mx-3">|</div>
-                    <Link to="/login">회원가입</Link>
+                    <Link to="/signup">회원가입</Link>
                   </>
                 )}
               </div>
             </div>
           </div>
           {/* header2 */}
-          <div className="w-full flex justify-center bg-white border-b border-teal-700 px-7 md:px-10 lg:px-14">
+          <div className="w-full flex justify-center bg-white border-b border-teal-600 px-7 md:px-10 lg:px-14">
             <div className="w-7xl max-w-7xl flex justify-between h-18 leading-18 text-lg">
-              <h1><Link to="/" className="block font-bold text-white bg-teal-700 px-7">행복 도서관</Link></h1>
+              <h1><Link to="/" className="block font-bold text-white bg-teal-600 px-7">행복 도서관</Link></h1>
               <ul className="flex flex-row space-x-8">
                 <li><Link to="/">홈</Link></li>
                 <li><Link to="/notice">공지사항</Link></li>
@@ -106,7 +106,7 @@ const HomePage = () => {
                       text-sm leading-5 
                       bg-white"
                   />
-                  <button className="rounded-r-sm bg-teal-700 text-white px-4 w-1/6">검색</button>
+                  <button className="rounded-r-sm bg-teal-600 hover:bg-teal-700 text-white px-4 w-1/6 cursor-pointer">검색</button>
                 </div>
               </form>
             </div>
