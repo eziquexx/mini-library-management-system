@@ -32,7 +32,7 @@ const SignupPage = () => {
 
   return (
     <>
-      <div className='block w-full h-screen flex justify-center items-center bg-zinc-50'>
+      <div className='block w-full flex justify-center items-center'>
         <div className='block w-lg h-auto py-18 px-22 flex flex-col justify-center border border-zinc-100 rounded-3xl bg-white shadow-lg'>
           <h1 className='text-3xl text-center font-bold mb-4'>회원가입</h1>
           <div className='text-base mt-8'>

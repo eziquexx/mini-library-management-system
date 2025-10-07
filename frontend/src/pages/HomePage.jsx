@@ -6,7 +6,7 @@ const HomePage = () => {
 
   return (
     <>
-      <div className="w-full">
+      <div className="w-full border">
         <div className="w-full flex justify-center px-7 md:px-10 lg:px-14 py-30">
           <div className="w-7xl max-w-7xl flex flex-col overflow-hidden">
             <div className="w-full flex flex-col">
@@ -32,6 +32,15 @@ const HomePage = () => {
             </div>
             <div className="border mt-7 overflow-hidden">
               <div className="grid lg:grid-cols-4 lg:gap-4 md:grid-cols-3 md:gap-3 sm:grid-cols-2 sm:gap-2 grid-cols-1 gap-3">
+                <div className="border p-14">01</div>
+                <div className="border p-14">02</div>
+                <div className="border p-14">03</div>
+                <div className="border p-14">04</div>
+                <div className="border p-14">05</div>
+                <div className="border p-14">06</div>
+                <div className="border p-14">07</div>
+                <div className="border p-14">08</div>
+                <div className="border p-14">09</div>
                 <div className="border p-14">01</div>
                 <div className="border p-14">02</div>
                 <div className="border p-14">03</div>

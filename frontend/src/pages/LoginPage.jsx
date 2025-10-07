@@ -2,21 +2,32 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import FocusPlaceholderInput from '../components/FocusPlaceholderInput';
 import { Link, useNavigate } from 'react-router-dom';
+import useUserStore from '../stores/useUserStore';
 
 const LoginPage = () => {
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // 새로고침 방지
 
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/auth/signin', 
+      await axios.post(
+        'http://localhost:8080/api/v1/auth/signin', 
         { username, password },
         { withCredentials: true }
       );
+
+      const response = await axios.get("http://localhost:8080/api/v1/user/me", 
+          { withCredentials: true,
+            headers: {
+              Accept: "application/json",
+            },
+          });
+      setUser(response.data.data.username);
 
       // 로그인 성공 시 home으로 이동
       if (response.status === 200) {
@@ -31,7 +42,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className='block w-full h-screen flex justify-center items-center bg-zinc-50'>
+      <div className='block w-full h-auto flex justify-center items-center '>
         <div className='block w-lg h-auto py-18 px-22 flex flex-col justify-center border border-zinc-100 rounded-3xl bg-white shadow-lg'>
           <h1 className='text-3xl text-center font-bold mb-4'>로그인</h1>
           <div className='text-base mt-8'>

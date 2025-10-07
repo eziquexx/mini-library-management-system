@@ -1,53 +1,25 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useUserStore from "../stores/useUserStore";
 
 const Header = () => {
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, fetchUser, loading, logout } = useUserStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/v1/user/me", 
-          { withCredentials: true,
-            headers: {
-              Accept: "application/json",
-            },
-          });
-          setUser(response.data.data.username);
-          console.log(response.data.data);
-      } catch(error) {
-        // 로그인 안된 상태 체크하여 user에 null값 유지
-        if (error.response && error.response.status === 401) {
-          setUser(null);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUser();
   }, []);
 
   if (loading) {
-    return <div>로딩 중...</div>
-  }
-
-  const goToLoginPage = () => {
-    navigate("/login");
+    return null
   }
 
   // 로그아웃
   const goToLogout = async () => {
-    await axios.post(
-      "http://localhost:8080/api/v1/auth/logout",
-      null,
-      { withCredentials: true }
-    );
-    setUser(null);
+    await logout();
+    navigate('/');
   }
 
   return (
