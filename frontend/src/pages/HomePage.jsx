@@ -1,15 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 const HomePage = () => {
 
   return (
     <>
       <div className="w-full">
-        <Header />
         <div className="w-full flex justify-center px-7 md:px-10 lg:px-14 py-30">
           <div className="w-7xl max-w-7xl flex flex-col overflow-hidden">
             <div className="w-full flex flex-col">
@@ -48,7 +45,6 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </>
   );

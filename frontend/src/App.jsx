@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage'
 import SignupPage from './pages/SignupPage'
 import NoticePage from './pages/NoticePage'
 import SignupSuccessPage from './pages/SingupSuccessPage'
+import Layout from './components/Layout'
 
 function App() {
 
@@ -17,11 +18,13 @@ function App() {
    */
   return (
     <Routes>
-      <Route path='/' element={<HomePage />}></Route>
-      <Route path='/login' element={<LoginPage />}></Route>
-      <Route path='/signup' element={<SignupPage />}></Route>
-      <Route path='/notice' element={<NoticePage />}></Route>
-      <Route path='/signup/success' element={<SignupSuccessPage />}></Route>
+      <Route element={<Layout />}>
+        <Route path='/' element={<HomePage />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/signup' element={<SignupPage />} />
+        <Route path='/notice' element={<NoticePage />} />
+        <Route path='/signup/success' element={<SignupSuccessPage />} />
+      </Route>
     </Routes>
   )
 }
