@@ -55,39 +55,39 @@ const HomePage = () => {
       <div className="w-full">
         <header className="flex flex-col">
           {/* header1 */}
-          <div className="w-full flex justify-center bg-teal-500">
-            <div className="w-7xl max-w-7xl h-10 flex flex-row justify-between px-7 lg:px-12  leading-10  text-sm">
-              <h1><Link to="/">로고</Link></h1>
-              <div className="flex flex-row">
+          <div className="w-full flex justify-center bg-teal-800 px-7 md:px-10 lg:px-14">
+            <div className="w-7xl max-w-7xl h-9 leading-9 text-sm">
+              <div className="flex flex-row float-right text-white">
                 {user ? (
                   <>
                     <span>{user}님</span>
-                    <div className="mx-2">|</div>
+                    <div className="mx-3">|</div>
                     <div className="cursor-pointer">마이페이지</div>
-                    <div className="mx-2">|</div>
+                    <div className="mx-3">|</div>
                     <div onClick={goToLogout} className="cursor-pointer">로그아웃</div>
                   </>
                 ) : (
-                  <Link to="/login">로그인</Link>
+                  <>
+                    <Link to="/login">로그인</Link>
+                    <div className="mx-3">|</div>
+                    <Link to="/login">회원가입</Link>
+                  </>
                 )}
-                
-                {/* <Link to="/login">로그인</Link>
-                <span className="mr-2">님</span>
-                <div>마이페이지</div> */}
               </div>
             </div>
           </div>
           {/* header2 */}
-          <div className="w-full flex justify-center bg-teal-400">
-            <div className="w-7xl max-w-7xl h-14 px-7 lg:px-12 leading-14">
-              <ul className="flex flex-row">
-                <li className="mr-2"><Link to="/">홈</Link></li>
+          <div className="w-full flex justify-center bg-white border-b border-teal-700 px-7 md:px-10 lg:px-14">
+            <div className="w-7xl max-w-7xl flex justify-between h-18 leading-18 text-lg">
+              <h1><Link to="/" className="block font-bold text-white bg-teal-700 px-7">행복 도서관</Link></h1>
+              <ul className="flex flex-row space-x-8">
+                <li><Link to="/">홈</Link></li>
                 <li><Link to="/notice">공지사항</Link></li>
               </ul>
             </div>
           </div>
         </header>
-        <div className="w-full flex justify-center px-7 lg:px-12">
+        <div className="w-full flex justify-center px-7 md:px-10 lg:px-14">
           <div className="w-7xl max-w-7xl flex flex-col overflow-hidden">
             <div className="w-full flex flex-col mt-26 ">
               <h1 className="text-3xl font-bold text-center">행복 도서관</h1>
@@ -108,7 +108,7 @@ const HomePage = () => {
                       text-sm leading-5 
                       bg-white"
                   />
-                  <button className="rounded-r-sm bg-teal-500 text-white px-5 flex-none">검색</button>
+                  <button className="rounded-r-sm bg-teal-700 text-white px-5 flex-none">검색</button>
                 </div>
               </form>
             </div>
