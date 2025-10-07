@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import SignupPage from './pages/SignupPage'
 import NoticePage from './pages/NoticePage'
+import SignupSuccessPage from './pages/SingupSuccessPage'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
       <Route path='/login' element={<LoginPage />}></Route>
       <Route path='/signup' element={<SignupPage />}></Route>
       <Route path='/notice' element={<NoticePage />}></Route>
+      <Route path='/signup/success' element={<SignupSuccessPage />}></Route>
     </Routes>
   )
 }
