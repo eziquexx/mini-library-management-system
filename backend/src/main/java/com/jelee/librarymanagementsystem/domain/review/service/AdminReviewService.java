@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.review.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -166,8 +163,9 @@ public class AdminReviewService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 관리자: 리뷰 상세
-  @Transactional
+  /*
+   * 관리자: 리뷰 상세
+   */
   public AdminReviewDetailResDTO detailReview(Long reviewId, Long userId) {
 
     // 관리자 조회 및 권한 확인
@@ -185,7 +183,9 @@ public class AdminReviewService {
     return new AdminReviewDetailResDTO(result);
   }
 
-  // 관리자: 리뷰 삭제
+  /*
+   * 관리자: 리뷰 삭제
+   */
   @Transactional
   public AdminReviewDeleteResDTO deleteReview(Long reviewId, Long usreId) {
 

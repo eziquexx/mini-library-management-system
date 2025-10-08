@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.review.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -134,10 +133,12 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 리뷰 상세
+  /*
+   * 관리자: 리뷰 상세
+   */
   @GetMapping("/reviews/{reviewId}")
   public ResponseEntity<?> detailReview(
-    @PathVariable(name = "reviewId") Long reviewId,
+    @PathVariable("reviewId") Long reviewId,
     @AuthenticationPrincipal User user) {
     
       // 서비스로직
@@ -155,10 +156,12 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 리뷰 삭제
+  /*
+   * 관리자: 리뷰 삭제
+   */
   @DeleteMapping("/reviews/{reviewId}")
   public ResponseEntity<?> deleteReview(
-    @PathVariable(name = "reviewId") Long reviewId,
+    @PathVariable("reviewId") Long reviewId,
     @AuthenticationPrincipal User user) {
       
       // 서비스로직
