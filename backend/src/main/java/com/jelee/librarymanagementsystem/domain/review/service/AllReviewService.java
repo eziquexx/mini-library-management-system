@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.review.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +10,7 @@ import com.jelee.librarymanagementsystem.domain.review.dto.all.AllReviewListResD
 import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.BookErrorCode;
 import com.jelee.librarymanagementsystem.global.response.code.UserErrorCode;
@@ -26,8 +24,10 @@ public class AllReviewService {
   private final UserRepository userRepository;
   private final BookRepository bookRepository;
 
-  // 공용: 특정 책 리뷰 전체 목록
-  public Page<AllReviewListResDTO> allListReviews(Long bookId, int page, int size, Long userId) {
+  /*
+   * 공용: 특정 책 리뷰 전체 목록 (페이징)
+   */
+  public PageResponse<AllReviewListResDTO> allListReviews(Long bookId, int page, int size, Long userId) {
 
     // 사용자 확인
     userRepository.findById(userId)
@@ -43,13 +43,10 @@ public class AllReviewService {
     // bookId 페이징 조회
     Page<Review> result = reviewRepository.findByBook_Id(bookId, pageable);
 
-    // List로 형변환
-    List<AllReviewListResDTO> listDTO = result.getContent()
-        .stream()
-        .map(AllReviewListResDTO::new)
-        .toList();
+    // Page<Review> -> age<AllReviewListResDTO>로 맵핑
+    Page<AllReviewListResDTO> pageDTO = result.map(AllReviewListResDTO::new);
 
-    // PageImpl을 사용하여 pageable 형태로 랩핑하여 반환
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 }
