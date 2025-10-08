@@ -62,9 +62,10 @@ public class AdminReviewService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 관리자: 책 리뷰 타입별 검색 (페이징)
-  @Transactional
-  public Page<AdminReviewSearchResDTO> typeSearchReview(ReviewSearchType type, String keyword, int page, int size, Long userId) {
+  /*
+   * 관리자: 책 리뷰 타입별 검색 (페이징)
+   */
+  public PageResponse<AdminReviewSearchResDTO> typeSearchReview(ReviewSearchType type, String keyword, int page, int size, Long userId) {
 
     // 관리자 조회 및 권한 확인
     User user = userRepository.findById(userId)
@@ -106,14 +107,11 @@ public class AdminReviewService {
       throw new BaseException(ReviewErrorCode.REVIEW_NOT_FOUND);
     }
 
-    // Page 형태를 List로 변환
-    List<AdminReviewSearchResDTO> listDTO = result.getContent()
-        .stream()
-        .map(AdminReviewSearchResDTO::new)
-        .toList();
+    // Page<Review> -> Page<AdminReviewSearchResDTO> 맵핑
+    Page<AdminReviewSearchResDTO> pageDTO = result.map(AdminReviewSearchResDTO::new);
 
-    // PageImpl을 사용하여 ListDTO를 Pageable로 감싸서 반환
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 관리자: 특정 도서 리뷰 목록

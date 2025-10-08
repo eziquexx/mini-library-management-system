@@ -58,17 +58,19 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 책 리뷰 타입별 검색 (페이징)
+  /*
+   * 관리자: 책 리뷰 타입별 검색 (페이징)
+   */
   @GetMapping("/reviews/search")
   public ResponseEntity<?> typeSearchReview(
-    @RequestParam(name = "type", defaultValue = "ALL") ReviewSearchType type, 
-    @RequestParam(name = "keyword") String keyword,
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "type", defaultValue = "ALL") ReviewSearchType type, 
+    @RequestParam(value = "keyword") String keyword,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
 
       // 서비스로직
-      Page<AdminReviewSearchResDTO> responseDTO = adminReviewService.typeSearchReview(type, keyword, page, size, user.getId());
+      PageResponse<AdminReviewSearchResDTO> responseDTO = adminReviewService.typeSearchReview(type, keyword, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
