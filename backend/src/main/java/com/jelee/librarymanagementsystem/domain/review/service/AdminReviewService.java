@@ -114,9 +114,10 @@ public class AdminReviewService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 관리자: 특정 도서 리뷰 목록
-  @Transactional
-  public Page<AdminReviewBookIdResDTO> bookIdListReview(Long bookId, int page, int size, Long userId) {
+  /*
+   * 관리자: 특정 도서 리뷰 목록 (페이징)
+   */
+  public PageResponse<AdminReviewBookIdResDTO> bookIdListReview(Long bookId, int page, int size, Long userId) {
 
     // 관리자 조회 및 권한 확인
     User user = userRepository.findById(userId)
@@ -132,14 +133,11 @@ public class AdminReviewService {
     // Page형태로 결과 가져오기
     Page<Review> result = reviewRepository.findByBook_Id(bookId, pageable);
 
-    // PageDTO를 List 형태로 변환
-    List<AdminReviewBookIdResDTO> listDTO = result.getContent()
-        .stream()
-        .map(AdminReviewBookIdResDTO::new)
-        .toList();
+    // Page<Review> -> Page<AdminReviewBookIdResDTO> 맵핑
+    Page<AdminReviewBookIdResDTO> pageDTO = result.map(AdminReviewBookIdResDTO::new);
 
-    // PageImpl을 사용하여 ListDTO를 pageable로 랩핑하여 반환
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 관리자: 특정 사용자 리뷰 목록
