@@ -109,21 +109,23 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 특정 사용자 리뷰 목록
+  /*
+   * 관리자: 특정 사용자 리뷰 목록 (페이징)
+   */
   @GetMapping("/users/{userId}/reviews")
   public ResponseEntity<?> userIdListReview(
     @PathVariable("userId") Long userId, 
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
 
       // 서비스로직
-      Page<AdminReviewUserIdResDTO> responseDTO = adminReviewService.userIdListReview(userId, page, size, user.getId());
+      PageResponse<AdminReviewUserIdResDTO> responseDTO = adminReviewService.userIdListReview(userId, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
 
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(
