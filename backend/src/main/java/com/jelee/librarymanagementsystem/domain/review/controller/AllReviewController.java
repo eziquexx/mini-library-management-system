@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.review.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.review.dto.all.AllReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.service.AllReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -26,16 +26,18 @@ public class AllReviewController {
   private final AllReviewService allReviewService;
   private final MessageProvider messageProvider;
 
-  // 공용: 특정 책 리뷰 전체 목록
+  /*
+   * 공용: 특정 책 리뷰 전체 목록 (페이징)
+   */
   @GetMapping("/books/{bookId}/reviews")
   public ResponseEntity<?> allListReviews(
-    @PathVariable(name = "bookId") Long bookId,
-    @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @PathVariable("bookId") Long bookId,
+    @RequestParam(value = "page", defaultValue = "0") int page, 
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
     
       // 서비스로직
-      Page<AllReviewListResDTO> responseDTO = allReviewService.allListReviews(bookId, page, size, user.getId());
+      PageResponse<AllReviewListResDTO> responseDTO = allReviewService.allListReviews(bookId, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());

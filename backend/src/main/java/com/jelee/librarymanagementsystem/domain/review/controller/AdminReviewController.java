@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.review.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +18,7 @@ import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewUser
 import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
 import com.jelee.librarymanagementsystem.domain.review.service.AdminReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -33,20 +33,22 @@ public class AdminReviewController {
   private final AdminReviewService adminReviewService;
   private final MessageProvider messageProvider;
 
-  // 관리자: 책 리뷰 전체 목록
+  /*
+   * 관리자: 책 리뷰 전체 목록 (페이징)
+   */
   @GetMapping("/reviews")
   public ResponseEntity<?> allListReview(
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
     
       // 서비스로직
-      Page<AdminReviewListResDTO> responseDTO = adminReviewService.allListReview(page, size, user.getId());
+      PageResponse<AdminReviewListResDTO> responseDTO = adminReviewService.allListReview(page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
     
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(
@@ -55,17 +57,19 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 책 리뷰 타입별 검색 (페이징)
+  /*
+   * 관리자: 책 리뷰 타입별 검색 (페이징)
+   */
   @GetMapping("/reviews/search")
   public ResponseEntity<?> typeSearchReview(
-    @RequestParam(name = "type", defaultValue = "ALL") ReviewSearchType type, 
-    @RequestParam(name = "keyword") String keyword,
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "type", defaultValue = "ALL") ReviewSearchType type, 
+    @RequestParam(value = "keyword") String keyword,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
 
       // 서비스로직
-      Page<AdminReviewSearchResDTO> responseDTO = adminReviewService.typeSearchReview(type, keyword, page, size, user.getId());
+      PageResponse<AdminReviewSearchResDTO> responseDTO = adminReviewService.typeSearchReview(type, keyword, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
@@ -79,21 +83,23 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 특정 도서 리뷰 목록
+  /*
+   * 관리자: 특정 도서 리뷰 목록 (페이징)
+   */
   @GetMapping("/books/{bookId}/reviews")
   public ResponseEntity<?> bookIdListReview(
     @PathVariable("bookId") Long bookId, 
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
 
       // 서비스로직
-      Page<AdminReviewBookIdResDTO> responseDTO = adminReviewService.bookIdListReview(bookId, page, size, user.getId());
+      PageResponse<AdminReviewBookIdResDTO> responseDTO = adminReviewService.bookIdListReview(bookId, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
 
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(
@@ -102,21 +108,23 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 특정 사용자 리뷰 목록
+  /*
+   * 관리자: 특정 사용자 리뷰 목록 (페이징)
+   */
   @GetMapping("/users/{userId}/reviews")
   public ResponseEntity<?> userIdListReview(
     @PathVariable("userId") Long userId, 
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
 
       // 서비스로직
-      Page<AdminReviewUserIdResDTO> responseDTO = adminReviewService.userIdListReview(userId, page, size, user.getId());
+      PageResponse<AdminReviewUserIdResDTO> responseDTO = adminReviewService.userIdListReview(userId, page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
 
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(
@@ -125,10 +133,12 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 리뷰 상세
+  /*
+   * 관리자: 리뷰 상세
+   */
   @GetMapping("/reviews/{reviewId}")
   public ResponseEntity<?> detailReview(
-    @PathVariable(name = "reviewId") Long reviewId,
+    @PathVariable("reviewId") Long reviewId,
     @AuthenticationPrincipal User user) {
     
       // 서비스로직
@@ -146,10 +156,12 @@ public class AdminReviewController {
                   responseDTO));
   }
 
-  // 관리자: 리뷰 삭제
+  /*
+   * 관리자: 리뷰 삭제
+   */
   @DeleteMapping("/reviews/{reviewId}")
   public ResponseEntity<?> deleteReview(
-    @PathVariable(name = "reviewId") Long reviewId,
+    @PathVariable("reviewId") Long reviewId,
     @AuthenticationPrincipal User user) {
       
       // 서비스로직
