@@ -19,6 +19,7 @@ import com.jelee.librarymanagementsystem.domain.review.dto.admin.AdminReviewUser
 import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
 import com.jelee.librarymanagementsystem.domain.review.service.AdminReviewService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -33,20 +34,22 @@ public class AdminReviewController {
   private final AdminReviewService adminReviewService;
   private final MessageProvider messageProvider;
 
-  // 관리자: 책 리뷰 전체 목록
+  /*
+   * 관리자: 책 리뷰 전체 목록 (페이징)
+   */
   @GetMapping("/reviews")
   public ResponseEntity<?> allListReview(
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
     @AuthenticationPrincipal User user) {
     
       // 서비스로직
-      Page<AdminReviewListResDTO> responseDTO = adminReviewService.allListReview(page, size, user.getId());
+      PageResponse<AdminReviewListResDTO> responseDTO = adminReviewService.allListReview(page, size, user.getId());
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
     
-      // 반환
+      // 응답
       return ResponseEntity
                 .status(ReviewSuccessCode.REVIEW_LIST_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(

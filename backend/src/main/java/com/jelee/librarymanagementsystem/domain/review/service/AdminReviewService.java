@@ -19,6 +19,7 @@ import com.jelee.librarymanagementsystem.domain.review.enums.ReviewSearchType;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
@@ -35,8 +36,10 @@ public class AdminReviewService {
   private final ReviewRepository reviewRepository;
   private final UserRepository userRepository;
 
-  // 관리자: 책 리뷰 전체 목록
-  public Page<AdminReviewListResDTO> allListReview(int page, int size, Long userId) {
+  /*
+   * 관리자: 책 리뷰 전체 목록 (페이징)
+   */
+  public PageResponse<AdminReviewListResDTO> allListReview(int page, int size, Long userId) {
 
     // 관리자 조회 및 권한 확인
     User user = userRepository.findById(userId)
@@ -52,14 +55,11 @@ public class AdminReviewService {
     // 리뷰 전체 목록 Page 형태로 가져오기
     Page<Review> result = reviewRepository.findAll(pageable);
     
-    // Page 결과를 List 형태로 변환
-    List<AdminReviewListResDTO> listDTO = result.getContent()
-        .stream()
-        .map(AdminReviewListResDTO::new)
-        .toList();
+    // Page<Review> -> Page<AdminReviewListResDTO> 로 맵핑.
+    Page<AdminReviewListResDTO> pageDTO = result.map(AdminReviewListResDTO::new);
 
-    // PageImpl을 사용하여 Page 형태로 감싸서 반환
-    return new PageImpl<>(listDTO, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 관리자: 책 리뷰 타입별 검색 (페이징)
