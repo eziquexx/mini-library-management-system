@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeSearchResDTO;
-import com.jelee.librarymanagementsystem.domain.notice.service.UserNoticeService;
+import com.jelee.librarymanagementsystem.domain.notice.service.NoticeService;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.NoticeSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -21,24 +22,26 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/notices")
 @RequiredArgsConstructor
-public class UserNoticeController {
+public class NoticeController {
   
-  private final UserNoticeService userNoticeService;
+  private final NoticeService userNoticeService;
   private final MessageProvider messageProvider;
   
-  // 공지사항 전체 목록 보기
+  /*
+   * 공용: 공지사항 전체 목록 보기 (페이징)
+   */
   @GetMapping()
   public ResponseEntity<?> allListNotices(
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size) {
 
     // 서비스로직
-    Page<UserNoticeListResDTO> responseDTO = userNoticeService.allListNotices(page, size);
+    PageResponse<UserNoticeListResDTO> responseDTO = userNoticeService.allListNotices(page, size);
 
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_LIST_FETCHED.getMessage());
 
-    // 반환
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_LIST_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
