@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.notice.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,19 +70,22 @@ public class NoticeController {
                 responseDTO));
   }
 
-  // 공지사항 검색 목록 보기 (페이징)
+  /*
+   * 공용: 공지사항 검색 목록 보기 (페이징)
+   */
   @GetMapping("/search")
   public ResponseEntity<?> searchNotices(
-    @RequestParam(name = "keyword") String keyword, 
-    @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam("keyword") String keyword, 
+    @RequestParam(value = "page", defaultValue = "0") int page, 
+    @RequestParam(value = "size", defaultValue = "10") int size) {
 
     // 서비스로직
-    Page<UserNoticeSearchResDTO> responseDTO = userNoticeService.searchNotices(keyword, page, size);
+    PageResponse<UserNoticeSearchResDTO> responseDTO = userNoticeService.searchNotices(keyword, page, size);
     
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
