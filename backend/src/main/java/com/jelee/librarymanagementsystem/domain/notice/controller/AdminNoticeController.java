@@ -36,18 +36,21 @@ public class AdminNoticeController {
   private final AdminNoticeService adminNoticeService;
   private final MessageProvider messageProvider;
   
-  // 공지사항 등록
+  /*
+   * 관리자: 공지사항 등록
+   */
   @PostMapping()
   public ResponseEntity<?> createNotice(
     @RequestBody AdminNoticeCreateReqDTO requestDTO,
     @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    AdminNoticeCreateResDTO responseDTO = adminNoticeService.createNotice(requestDTO, user);
+    AdminNoticeCreateResDTO responseDTO = adminNoticeService.createNotice(requestDTO, user.getId());
 
     // 성공 메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_CREATED.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_CREATED.getHttpStatus())
               .body(ApiResponse.success(

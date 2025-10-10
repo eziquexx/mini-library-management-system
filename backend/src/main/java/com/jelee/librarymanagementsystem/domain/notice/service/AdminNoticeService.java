@@ -15,7 +15,6 @@ import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeList
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateResDTO;
-import com.jelee.librarymanagementsystem.domain.notice.dto.admin.WriterDTO;
 import com.jelee.librarymanagementsystem.domain.notice.entity.Notice;
 import com.jelee.librarymanagementsystem.domain.notice.repository.NoticeRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -36,13 +35,20 @@ public class AdminNoticeService {
   private final NoticeRepository noticeRepository;
   private final UserRepository userRepository;
 
-  // 공지사항 등록
+  /*
+   * 관리자: 공지사항 등록
+   */
   @Transactional
-  public AdminNoticeCreateResDTO createNotice(AdminNoticeCreateReqDTO requestDTO, User user) {
+  public AdminNoticeCreateResDTO createNotice(AdminNoticeCreateReqDTO requestDTO, Long userId) {
 
-    // 사용자 조회
-    User writer = userRepository.findById(user.getId())
+    // 관리자 조회 및 권한 체크, 예외처리
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 권한 체크(ROLE_MANAGER, ROLE_ADMIN 만 가능)
+    if (!(user.getRole().equals(Role.ROLE_MANAGER) || user.getRole().equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(NoticeErrorCode.NOTICE_CREATE_AUTHORIZED);
+    }
 
     // 필수 필드 Null 체크(title, content)
     if (requestDTO.getTitle() == null || requestDTO.getTitle().trim().isEmpty()) {
@@ -52,31 +58,20 @@ public class AdminNoticeService {
       throw new BaseException(NoticeErrorCode.NOTICE_CONTENT_REQUIRED);
     }
 
-    System.out.println(writer.getRole());
-
-    // 권한 체크(ROLE_MANAGER, ROLE_ADMIN 만 가능)
-    if (!(writer.getRole().equals(Role.ROLE_MANAGER) || writer.getRole().equals(Role.ROLE_ADMIN))) {
-      throw new BaseException(NoticeErrorCode.NOTICE_CREATE_AUTHORIZED);
-    }
+    System.out.println(user.getRole());
 
     // Notice 객체 생성
     Notice notice = Notice.builder()
                       .title(requestDTO.getTitle())
                       .content(requestDTO.getTitle())
-                      .writer(writer)
+                      .writer(user)
                       .build();
 
     // notice DB에 저장
     noticeRepository.save(notice);
-
-    AdminNoticeCreateResDTO responseDTO = AdminNoticeCreateResDTO.builder()
-        .id(notice.getId())
-        .title(notice.getTitle())
-        .createdDate(notice.getCreatedDate())
-        .writer(new WriterDTO(writer))
-        .build();
-        
-    return responseDTO;
+    
+    // 반환
+    return new AdminNoticeCreateResDTO(notice);
   }
 
   // 공지사항 수정
