@@ -59,7 +59,9 @@ public class AdminNoticeController {
                 responseDTO));
   }
 
-  // 공지사항 수정
+  /*
+   * 관리자: 공지사항 수정
+   */
   @PatchMapping("/{noticeId}")
   public ResponseEntity<?> updateNotice(
     @PathVariable("noticeId") Long noticeId, 
@@ -67,11 +69,12 @@ public class AdminNoticeController {
     @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    AdminNoticeUpdateResDTO responseDTO = adminNoticeService.updateNotice(noticeId, requestDTO, user);
+    AdminNoticeUpdateResDTO responseDTO = adminNoticeService.updateNotice(noticeId, requestDTO, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_UPDATED.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_UPDATED.getHttpStatus())
               .body(ApiResponse.success(

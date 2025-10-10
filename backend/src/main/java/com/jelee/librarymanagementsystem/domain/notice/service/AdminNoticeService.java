@@ -74,19 +74,23 @@ public class AdminNoticeService {
     return new AdminNoticeCreateResDTO(notice);
   }
 
-  // 공지사항 수정
+  /*
+   * 관리자: 공지사항 수정
+   */
   @Transactional
-  public AdminNoticeUpdateResDTO updateNotice(Long noticeId, AdminNoticeUpdateReqDTO requestDTO, User user) {
+  public AdminNoticeUpdateResDTO updateNotice(Long noticeId, AdminNoticeUpdateReqDTO requestDTO, Long usreId) {
+
+    // 사용자 조회 및 권한 체크
+    User user = userRepository.findById(usreId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (!(user.getRole().equals(Role.ROLE_MANAGER) || user.getRole().equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // noticeId로 공지사항 데이터 가져오기
     Notice notice = noticeRepository.findById(noticeId)
         .orElseThrow(() -> new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND));
-
-    // user 권한 체크
-    Role userRole = user.getRole();
-    if (!(userRole.equals(Role.ROLE_MANAGER) || userRole.equals(Role.ROLE_ADMIN))) {
-      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
-    }
 
     // 필수 필드 Null 체크(title, content)
     if (requestDTO.getTitle() == null || requestDTO.getTitle().trim().isEmpty()) {
