@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
@@ -107,22 +108,32 @@ public class AdminNoticeService {
     return new AdminNoticeUpdateResDTO(notice);
   }
 
-  // 공지사항 삭제
+  /*
+   * 관리자: 공지사항 삭제
+   */
   @Transactional
-  public void deleteNotice(Long noticeId, User user) {
+  public AdminNoticeDeleteResDTO deleteNotice(Long noticeId, Long userId) {
+
+    // 사용자 조회 및 권한 체크
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (!(user.getRole().equals(Role.ROLE_MANAGER) || user.getRole().equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // notice 조회
     Notice notice = noticeRepository.findById(noticeId)
         .orElseThrow(() -> new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND));
-
-    // 권한 체크
-    Role userRole = user.getRole();
-    if (!(userRole.equals(Role.ROLE_MANAGER) || userRole.equals(Role.ROLE_ADMIN))) {
-      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
-    }
+    
+    // 반환용 notice
+    AdminNoticeDeleteResDTO responseDTO = new AdminNoticeDeleteResDTO(notice);
     
     // 삭제
     noticeRepository.delete(notice);
+
+    // 반환
+    return responseDTO;
   }
 
   // 공지사항 전체 목록 조회

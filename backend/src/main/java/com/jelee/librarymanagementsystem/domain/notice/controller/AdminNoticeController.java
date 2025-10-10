@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateReqDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeCreateResDTO;
+import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeDeleteResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeDetailResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeListResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeSearchResDTO;
@@ -83,22 +84,27 @@ public class AdminNoticeController {
                 responseDTO));
   }
 
-  // 공지사항 삭제
+  /*
+   * 관리자: 공지사항 삭제
+   */
   @DeleteMapping("/{noticeId}")
-  public ResponseEntity<?> deleteNotice(@PathVariable("noticeId") Long noticeId, @AuthenticationPrincipal User user) {
+  public ResponseEntity<?> deleteNotice(
+    @PathVariable("noticeId") Long noticeId, 
+    @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    adminNoticeService.deleteNotice(noticeId, user);
+    AdminNoticeDeleteResDTO responseDTO = adminNoticeService.deleteNotice(noticeId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_DELETED.getMessage());
     
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_DELETED.getHttpStatus())
               .body(ApiResponse.success(
               NoticeSuccessCode.NOTICE_DELETED, 
               message, 
-              noticeId));
+              responseDTO));
   }
 
   // 공지사항 전체 목록 조회(페이징)
