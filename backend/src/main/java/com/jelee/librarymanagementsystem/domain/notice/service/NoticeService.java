@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.notice.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +10,7 @@ import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeList
 import com.jelee.librarymanagementsystem.domain.notice.dto.client.UserNoticeSearchResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.entity.Notice;
 import com.jelee.librarymanagementsystem.domain.notice.repository.NoticeRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.NoticeErrorCode;
 
@@ -20,12 +18,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserNoticeService {
+public class NoticeService {
   
   private final NoticeRepository noticeRepository;
 
-  // 공지사항 전체 목록 조회
-  public Page<UserNoticeListResDTO> allListNotices(int page, int size) {
+  /*
+   * 공용: 공지사항 전체 목록 보기 (페이징)
+   */
+  public PageResponse<UserNoticeListResDTO> allListNotices(int page, int size) {
 
     // Pageable. 페이징 준비
     Pageable pageable = PageRequest.of(page, size);
@@ -38,17 +38,16 @@ public class UserNoticeService {
       throw new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND);
     }
 
-    // Page를 List타입으로 변환
-    List<UserNoticeListResDTO> dtoList = result.getContent()
-        .stream()
-        .map(UserNoticeListResDTO::new)
-        .toList();
+    // Page<Notice> -> Page<UserNoticeListResDTO>로 맵핑 
+    Page<UserNoticeListResDTO> pageList = result.map(UserNoticeListResDTO::new);
 
-    // dtoList를 PageImpl로 랩핑하여 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageList);
   }
 
-  // 공지사항 상세보기
+  /*
+   * 공용: 공지사항 상세 조회
+   */
   public UserNoticeDetailResDTO detailNotice(Long noticeId) {
     
     // noticeId로 해당 데이터 조회
@@ -59,8 +58,10 @@ public class UserNoticeService {
     return new UserNoticeDetailResDTO(notice);
   }
 
-  // 공지사항 검색 목록 보기 (페이징)
-  public Page<UserNoticeSearchResDTO> searchNotices(String keyword, int page, int size) {
+  /*
+   * 공용: 공지사항 검색 목록 보기 (페이징)
+   */
+  public PageResponse<UserNoticeSearchResDTO> searchNotices(String keyword, int page, int size) {
 
     // 페이징 준비
     Pageable pageable = PageRequest.of(page, size);
@@ -74,13 +75,10 @@ public class UserNoticeService {
       throw new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND);
     }
 
-    // 엔티티 리스트를 DTO 리스트로 변환
-    List<UserNoticeSearchResDTO> dtoList = result.getContent()
-        .stream()
-        .map(UserNoticeSearchResDTO::new)
-        .toList();
+    // Page<Notice> -> Page<UserNoticeSearchResDTO>로 맵핑
+    Page<UserNoticeSearchResDTO> pageList = result.map(UserNoticeSearchResDTO::new);
 
-    // 반환할 때 DTO 리스트를 Page 형식으로 랩핑하여 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageList);
   } 
 }
