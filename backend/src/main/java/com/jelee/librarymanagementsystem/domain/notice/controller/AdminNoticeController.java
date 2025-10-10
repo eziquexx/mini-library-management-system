@@ -23,6 +23,7 @@ import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpda
 import com.jelee.librarymanagementsystem.domain.notice.dto.admin.AdminNoticeUpdateResDTO;
 import com.jelee.librarymanagementsystem.domain.notice.service.AdminNoticeService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.NoticeSuccessCode;
 import com.jelee.librarymanagementsystem.global.util.MessageProvider;
@@ -107,19 +108,23 @@ public class AdminNoticeController {
               responseDTO));
   }
 
-  // 공지사항 전체 목록 조회(페이징)
+  /*
+   * 관리자: 공지사항 전체 목록 조회(페이징)
+   */
   @GetMapping()
   public ResponseEntity<?> allListNotices(
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    Page<AdminNoticeListResDTO> resonseDTO = adminNoticeService.allListNotices(page, size);
+    PageResponse<AdminNoticeListResDTO> resonseDTO = adminNoticeService.allListNotices(page, size, user.getId());
     
     
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_LIST_FETCHED.getMessage());
 
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_LIST_FETCHED.getHttpStatus())
               .body(ApiResponse.success(

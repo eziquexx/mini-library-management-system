@@ -20,6 +20,7 @@ import com.jelee.librarymanagementsystem.domain.notice.entity.Notice;
 import com.jelee.librarymanagementsystem.domain.notice.repository.NoticeRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
+import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.enums.Role;
 import com.jelee.librarymanagementsystem.global.exception.BaseException;
 import com.jelee.librarymanagementsystem.global.response.code.AuthErrorCode;
@@ -136,9 +137,18 @@ public class AdminNoticeService {
     return responseDTO;
   }
 
-  // 공지사항 전체 목록 조회
-  @Transactional
-  public Page<AdminNoticeListResDTO> allListNotices(int page, int size) {
+  /*
+   * 관리자: 공지사항 전체 목록 조회(페이징)
+   */
+  public PageResponse<AdminNoticeListResDTO> allListNotices(int page, int size, Long userId) {
+
+    // 사용자 조회 및 권한 체크
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (!(user.getRole().equals(Role.ROLE_MANAGER) || user.getRole().equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
     
     // 페이징 정보 생성
     Pageable pageable = PageRequest.of(page, size);
@@ -146,14 +156,11 @@ public class AdminNoticeService {
     // 결과를 Page<Notice> 타입으로 저장
     Page<Notice> result = noticeRepository.findAll(pageable);
 
-    // 엔티티 리스트를 DTO 리스트로 변환
-    List<AdminNoticeListResDTO> dtoList = result.getContent()
-        .stream()
-        .map(AdminNoticeListResDTO::new)
-        .toList();
+    // Page<Notice> -> 
+    Page<AdminNoticeListResDTO> pageDTO = result.map(AdminNoticeListResDTO::new);
     
-    // 반환할때 DTO 리스트를 Page 형식으로 래핑하여 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 공지사항 검색
