@@ -1,9 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.notice.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -163,9 +160,18 @@ public class AdminNoticeService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 공지사항 검색
-  @Transactional
-  public Page<AdminNoticeSearchResDTO> searchNotices(String keyword, int page, int size) {
+  /*
+   * 관리자: 공지사항 검색 (페이징)
+   */
+  public PageResponse<AdminNoticeSearchResDTO> searchNotices(String keyword, int page, int size, Long userId) {
+
+    // 사용자 조회 및 권한 체크
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (!(user.getRole().equals(Role.ROLE_MANAGER) || user.getRole().equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
 
     // 페이징 정보 생성
     Pageable pageable = PageRequest.of(page, size);
@@ -178,14 +184,11 @@ public class AdminNoticeService {
       throw new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND);
     }
 
-    // 엔티티 리스트를 DTO 리스트로 변환
-    List<AdminNoticeSearchResDTO> dtoList = result.getContent()
-          .stream()
-          .map(AdminNoticeSearchResDTO::new)
-          .toList();
+    // Page<Notice> -> Page<AdminNoticeSearchResDTO>로 맵핑
+    Page<AdminNoticeSearchResDTO> pageDTO = result.map(AdminNoticeSearchResDTO::new);
 
-    // 반환할때 DTO 리스트를 Page 형식으로 래핑하여 반환
-    return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
+    // 반환
+    return new PageResponse<>(pageDTO);
   }
 
   // 공지사항 상세보기

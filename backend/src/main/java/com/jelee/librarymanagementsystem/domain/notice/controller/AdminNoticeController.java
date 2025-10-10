@@ -1,6 +1,5 @@
 package com.jelee.librarymanagementsystem.domain.notice.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -133,20 +132,23 @@ public class AdminNoticeController {
                 resonseDTO));
   }
 
-  // 공지사항 키워드 검색 조회(페이징)
+  /*
+   * 관리자: 공지사항 검색 (페이징)
+   */
   @GetMapping("/search")
   public ResponseEntity<?> searchNotices(
-    @RequestParam(name = "keyword") String keyword,
-    @RequestParam(name = "page", defaultValue = "0") int page,
-    @RequestParam(name = "size", defaultValue = "10") int size) {
+    @RequestParam("keyword") String keyword,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
     
     // 서비스로직
-    Page<AdminNoticeSearchResDTO> responseDTO = adminNoticeService.searchNotices(keyword, page, size);
+    PageResponse<AdminNoticeSearchResDTO> responseDTO = adminNoticeService.searchNotices(keyword, page, size, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
 
-    // 반환
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_FETCHED.getHttpStatus())
               .body(ApiResponse.success(
