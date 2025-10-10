@@ -50,7 +50,9 @@ public class NoticeController {
                 responseDTO));
   }
 
-  // 공지사항 상세보기
+  /*
+   * 공용: 공지사항 상세 조회
+   */
   @GetMapping("/{noticeId}")
   public ResponseEntity<?> detailNotice(@PathVariable("noticeId") Long noticeId) {
 
@@ -60,7 +62,7 @@ public class NoticeController {
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
 
-    // 반환
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_DELETED.getHttpStatus())
               .body(ApiResponse.success(

@@ -48,7 +48,9 @@ public class NoticeService {
     return new PageResponse<>(pageList);
   }
 
-  // 공지사항 상세보기
+  /*
+   * 공용: 공지사항 상세 조회
+   */
   public UserNoticeDetailResDTO detailNotice(Long noticeId) {
     
     // noticeId로 해당 데이터 조회
