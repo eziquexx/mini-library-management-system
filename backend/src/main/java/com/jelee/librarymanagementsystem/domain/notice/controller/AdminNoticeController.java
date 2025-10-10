@@ -157,17 +157,21 @@ public class AdminNoticeController {
                 responseDTO));
   }
 
-  // 공지사항 상세
+  /*
+   * 관리자: 공지사항 상세 조회
+   */
   @GetMapping("/{noticeId}")
-  public ResponseEntity<?> detailNotice(@PathVariable("noticeId") Long noticeId) {
+  public ResponseEntity<?> detailNotice(
+    @PathVariable("noticeId") Long noticeId, 
+    @AuthenticationPrincipal User user) {
 
     // 서비스로직
-    AdminNoticeDetailResDTO responseDTO = adminNoticeService.detailNotice(noticeId);
+    AdminNoticeDetailResDTO responseDTO = adminNoticeService.detailNotice(noticeId, user.getId());
 
     // 성공메시지
     String message = messageProvider.getMessage(NoticeSuccessCode.NOTICE_FETCHED.getMessage());
 
-    // 반환
+    // 응답
     return ResponseEntity
               .status(NoticeSuccessCode.NOTICE_FETCHED.getHttpStatus())
               .body(ApiResponse.success(

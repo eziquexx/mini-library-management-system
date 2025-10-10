@@ -191,14 +191,24 @@ public class AdminNoticeService {
     return new PageResponse<>(pageDTO);
   }
 
-  // 공지사항 상세보기
-  public AdminNoticeDetailResDTO detailNotice(Long noticeId) {
+  /*
+   * 관리자: 공지사항 상세 조회
+   */
+  public AdminNoticeDetailResDTO detailNotice(Long noticeId, Long userId) {
     
+    // 사용자 조회 및 권한 체크
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+    
+    if (!(user.getRole().equals(Role.ROLE_MANAGER) || user.getRole().equals(Role.ROLE_ADMIN))) {
+      throw new BaseException(AuthErrorCode.AUTH_FORBIDDEN);
+    }
+
     // noticeId로 조회후 Notice 객체 생성
     Notice notice = noticeRepository.findById(noticeId)
         .orElseThrow(() -> new BaseException(NoticeErrorCode.NOTICE_NOT_FOUND));
 
-    // notice 반환
+    // 반환
     return new AdminNoticeDetailResDTO(notice);
   }
 }
