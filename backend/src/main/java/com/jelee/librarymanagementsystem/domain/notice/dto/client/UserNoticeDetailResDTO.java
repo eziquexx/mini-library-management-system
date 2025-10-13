@@ -19,7 +19,7 @@ public class UserNoticeDetailResDTO {
   public UserNoticeDetailResDTO(Notice notice) {
     this.id = notice.getId();
     this.title = notice.getTitle();
-    this.content = notice.getTitle();
+    this.content = notice.getContent();
     this.createdDate = notice.getCreatedDate();
     this.updatedDate = notice.getUpdatedDate();
     this.writer = new WriterDTO(notice.getWriter());
