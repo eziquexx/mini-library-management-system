@@ -7,6 +7,7 @@ import SignupPage from './pages/SignupPage'
 import NoticePage from './pages/NoticePage'
 import SignupSuccessPage from './pages/SingupSuccessPage'
 import Layout from './components/Layout'
+import NoticeDetailPage from './pages/NoticeDetailPage'
 
 function App() {
 
@@ -22,8 +23,9 @@ function App() {
         <Route path='/' element={<HomePage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
-        <Route path='/notice' element={<NoticePage />} />
         <Route path='/signup/success' element={<SignupSuccessPage />} />
+        <Route path='/notice' element={<NoticePage />} />
+        <Route path='/notice/:noticeId' element={<NoticeDetailPage />}/>
       </Route>
     </Routes>
   )

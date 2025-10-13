@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const NoticePage = () => {
 
@@ -9,6 +10,7 @@ const NoticePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
+  const navigate = useNavigate();
 
   const fetchNotice = async (page) => {
     setLoading(true);
@@ -58,6 +60,11 @@ const NoticePage = () => {
     setPage(pageNumber);
   }
 
+  const goToDetailPage = (id) => {
+    console.log(id);
+    navigate(`/notice/${id}`);
+  }
+
   return (
     <>
       <div className="">
@@ -84,9 +91,16 @@ const NoticePage = () => {
                     </thead>
                     <tbody>
                       {posts.map((post) => (
-                        <tr>
+                        <tr key={post.id}>
                           <td className="border border-gray-300 text-center p-2 truncate sm:w-1/12">{post.id}</td>
-                          <td className="border border-gray-300 p-2 truncate sm:w-6/12">{post.title}</td>
+                          <td className="border border-gray-300 p-2 truncate sm:w-6/12">
+                            <button
+                              onClick={ () => goToDetailPage(post.id) }
+                              className="cursor-pointer"
+                            >
+                              {post.title}
+                            </button>
+                          </td>
                           <td className="border border-gray-300 text-center p-2 truncate sm:w-1/12">{post.writer.username}</td>
                           <td className="border border-gray-300 text-center p-2 truncate sm:w-1/12">{post.createdDate.split('T')[0]}</td>
                         </tr>
