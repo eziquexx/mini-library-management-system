@@ -49,11 +49,11 @@ const NoticePage = () => {
   }, [page]);
 
   const handleNext = () => {
-    if (page > 0) setPage((prev) => prev - 1);
+    setPage((prev) => prev + 1);
   }
 
   const handlePrev = (pageNumber) => {
-    setPage(pageNumber);
+    if (page > 0) setPage((prev) => prev - 1);
   } 
 
   const handlePageClick = (pageNumber) => {
