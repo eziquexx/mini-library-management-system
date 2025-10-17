@@ -22,6 +22,11 @@ const Header = () => {
     navigate('/');
   }
 
+  const handleNoticeMenuClick = () => {
+    setKeyword("");
+    fetchNotice();
+  }
+
   return (
     <>
       <header className="flex flex-col">
@@ -53,7 +58,7 @@ const Header = () => {
             <h1><Link to="/" className="block font-bold text-white bg-teal-600 px-7">행복 도서관</Link></h1>
             <ul className="flex flex-row space-x-8">
               <li><Link to="/">홈</Link></li>
-              <li><Link to="/notice">공지사항</Link></li>
+              <li><Link to="/notice" onClick={ handleNoticeMenuClick }>공지사항</Link></li>
             </ul>
           </div>
         </div>

@@ -71,7 +71,7 @@ const NoticeDetailPage = () => {
                       </tr>
                       <tr>
                         <th className="w-1/6 border border-gray-300 px-3 py-2 bg-gray-100">작성일</th>
-                        <td className="w-5/6 border border-gray-300 px-3 py-2">{post.createdDate}</td>
+                        <td className="w-5/6 border border-gray-300 px-3 py-2">{post.createdDate.split('T').join(' ')}</td>
                       </tr>
                       <tr>
                         <th className="w-1/6 border border-gray-300 px-3 py-2 bg-gray-100">작성자</th>
