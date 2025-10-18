@@ -10,6 +10,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
+  const navigator = useNavigate();
 
   const fetchPosts = async (page) => {
     setLoading(true);
@@ -58,6 +59,12 @@ const HomePage = () => {
     setPage(pageNumber);
   }
 
+  // 상세페이지 이동
+  const goToDetailPage = (id) => {
+    console.log(id);
+    navigator(`/books/${id}`);
+  }
+
   return (
     <>
       <div className="w-full">
@@ -98,7 +105,9 @@ const HomePage = () => {
                   sm:grid-cols-3 sm:gap-4 
                   grid-cols-2 gap-4 ">
                     {posts.map((post) => (
-                      <li key={[post.id]}
+                      <li 
+                        key={[post.id]}
+                        onClick={ () => goToDetailPage(post.id) }
                         className="
                           border 
                           border-zinc-300

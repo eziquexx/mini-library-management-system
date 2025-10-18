@@ -8,6 +8,7 @@ import NoticePage from './pages/NoticePage'
 import SignupSuccessPage from './pages/SingupSuccessPage'
 import Layout from './components/Layout'
 import NoticeDetailPage from './pages/NoticeDetailPage'
+import BookDetailPage from './pages/BookDetailPage'
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
         <Route path='/signup/success' element={<SignupSuccessPage />} />
         <Route path='/notice' element={<NoticePage />} />
         <Route path='/notice/:noticeId' element={<NoticeDetailPage />}/>
+        <Route path='/books/:bookId' element={<BookDetailPage />}/>
       </Route>
     </Routes>
   )
