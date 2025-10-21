@@ -1,16 +1,28 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const HomePage = () => {
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState(0);
-  const size = 10;
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 0);
+  const [size, setSize] = useState(Number(searchParams.get('size')) || 10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const navigator = useNavigate();
+
+  useEffect(() => {
+    const newPage = Number(searchParams.get('page')) || 0;
+    const newSize = Number(searchParams.get('size')) || 10;
+    setPage(newPage);
+    setSize(newSize); 
+  }, [searchParams]);
+
+  useEffect(() => {
+    fetchPosts(page, size);
+  }, [page, size]);
 
   const fetchPosts = async (page) => {
     setLoading(true);
@@ -43,10 +55,6 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPosts(page);
-  }, [page]);
-
   const handleNext = () => {
     setPage((prev) => prev + 1);
   }
@@ -62,6 +70,8 @@ const HomePage = () => {
   // 상세페이지 이동
   const goToDetailPage = (id) => {
     console.log(id);
+    sessionStorage.setItem('lastPage', page);
+    sessionStorage.setItem('size', size);
     navigator(`/books/${id}`);
   }
 
@@ -70,67 +80,90 @@ const HomePage = () => {
       <div className="w-full">
         <div className="w-full flex justify-center px-7 md:px-10 lg:px-14 py-30">
           <div className="w-7xl max-w-7xl flex flex-col overflow-hidden">
+            {/* 타이틀 */}
             <div className="w-full flex flex-col">
               <h1 className="text-3xl font-bold text-center">행복 도서관</h1>
               <span className="text-center mt-5">행복 도서관에 오신 것을 환영합니다.</span>
-            </div>
-            <div className="w-full flex justify-center mt-6">
-              <form className="w-full md:w-120">
-                <div className="flex">
-                  <input 
-                    type="text" 
-                    placeholder="검색어를 입력해주세요"
-                    className="
-                      w-5/6
-                      py-4 px-5
-                      border rounded-l-sm border-gray-300 
-                      text-sm leading-5 
-                      bg-white"
-                  />
-                  <button className="rounded-r-sm bg-teal-600 hover:bg-teal-700 text-white px-4 w-1/6 cursor-pointer">검색</button>
-                </div>
-              </form>
             </div>
 
             {loading && <p>불러오는 중...</p>}
             {error && <p style={{ color: "red"}}>{error}</p>}
 
+            {/* 도서 아이템 */}
             {!loading && !error && (
               <>
-                <div className="mt-7 overflow-hidden">
-                  <ul className="
-                  grid items-start min-h-[600px] 
-                  lg:grid-cols-5 lg:gap-4 
-                  md:grid-cols-4 md:gap-4 
-                  sm:grid-cols-3 sm:gap-4 
-                  grid-cols-2 gap-4 ">
-                    {posts.map((post) => (
-                      <li 
-                        key={[post.id]}
-                        onClick={ () => goToDetailPage(post.id) }
-                        className="
-                          border 
-                          border-zinc-300
-                          rounded-md
-                          shadow-sm
-                          max-w-xl
-                          overflow-hidden
-                        "
-                      >
-                        <div className="max-w-xl mx-auto bg-teal-300 text-center">
-                          <img src="https://placehold.co/800x900" alt="" className="w-full h-auto" />
-                        </div>
-                        <div className="w-full p-3 text-sm/6 tracking-tight overflow-hidden wrap-anywhere">
-                          <p className="truncate font-bold">{post.title}</p>
-                          <p className="truncate">{post.author}</p>
-                          <p className="truncate">{post.publisher}</p>
-                          <p className="truncate">{post.publishedDate}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex flex-col items-center w-full overflow-hidden">
+                  <div className="mt-20 max-w-[1100px]">
+                    <h2 className="text-3xl mb-4">인기 도서</h2>
+                    <ul className="
+                    grid items-start w-full h-auto
+                    lg:grid-cols-5 lg:gap-4 
+                    md:grid-cols-4 md:gap-4 
+                    sm:grid-cols-3 sm:gap-4 
+                    grid-cols-2 gap-4 ">
+                      {posts.map((post) => (
+                        <li 
+                          key={[post.id]}
+                          onClick={ () => goToDetailPage(post.id) }
+                          className="
+                            border 
+                            border-zinc-300
+                            rounded-md
+                            shadow-sm
+                            max-w-xl
+                            overflow-hidden
+                          "
+                        >
+                          <div className="max-w-xl mx-auto bg-teal-300 text-center">
+                            <img src="https://placehold.co/800x900" alt="" className="w-full h-auto" />
+                          </div>
+                          <div className="w-full p-3 text-sm/6 tracking-tight overflow-hidden wrap-anywhere">
+                            <p className="truncate font-bold">{post.title}</p>
+                            <p className="truncate">{post.author}</p>
+                            <p className="truncate">{post.publisher}</p>
+                            <p className="truncate">{post.publishedDate}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                  <div className="mt-5 text-center">
+                  <div className="mt-20 max-w-[1100px]">
+                    <h2 className="text-3xl mb-4">신작 도서</h2>
+                    <ul className="
+                    grid items-start w-full h-auto
+                    lg:grid-cols-5 lg:gap-4 
+                    md:grid-cols-4 md:gap-4 
+                    sm:grid-cols-3 sm:gap-4 
+                    grid-cols-2 gap-4 ">
+                      {posts.map((post) => (
+                        <li 
+                          key={[post.id]}
+                          onClick={ () => goToDetailPage(post.id) }
+                          className="
+                            border 
+                            border-zinc-300
+                            rounded-md
+                            shadow-sm
+                            max-w-xl
+                            overflow-hidden
+                          "
+                        >
+                          <div className="max-w-xl mx-auto bg-teal-300 text-center">
+                            <img src="https://placehold.co/800x900" alt="" className="w-full h-auto" />
+                          </div>
+                          <div className="w-full p-3 text-sm/6 tracking-tight overflow-hidden wrap-anywhere">
+                            <p className="truncate font-bold">{post.title}</p>
+                            <p className="truncate">{post.author}</p>
+                            <p className="truncate">{post.publisher}</p>
+                            <p className="truncate">{post.publishedDate}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* <div className="mt-5 text-center">
                     <button 
                       onClick={ handlePrev }
                       disabled={page === 0}
@@ -156,7 +189,7 @@ const HomePage = () => {
                     >
                       다음
                     </button>
-                  </div>
+                  </div> */}
                 </div>              
               </>
             )}
