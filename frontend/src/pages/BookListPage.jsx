@@ -14,7 +14,7 @@ const BookListPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [type, setType] = useState('ALL');
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,19 +34,42 @@ const BookListPage = () => {
     setError(null);
 
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/books`,
-        {
-          params: {
-            page: page,
-            size: size,
+      let response;
+
+      if (type && keyword) {
+        // 검색 조건이 있을 경우 api
+        response = await axios.get(
+          `http://localhost:8080/api/v1/books/search`,
+          {
+            params: {
+              type: type,
+              keyword: keyword,
+              page: page,
+              size: size,
+            },
+            withCredentials: true,
+            headers: {
+              Accept: "application/json",
+            }
           },
-          withCredentials: true,
-          headers: {
-            Accept: "application/json",
-          }
-        },
-      );
+        );
+
+      } else {
+        // 전체 목록 조회
+        response = await axios.get(
+          `http://localhost:8080/api/v1/books`,
+          {
+            params: {
+              page: page,
+              size: size,
+            },
+            withCredentials: true,
+            headers: {
+              Accept: "application/json",
+            }
+          },
+        );
+      }
 
       console.log(response.data);
       setPosts(response.data.data.content);
@@ -62,15 +85,33 @@ const BookListPage = () => {
 
   // 상세페이지 이동
   const goToDetailPage = (id) => {
-    sessionStorage.setItem('lastPage', page);
-    sessionStorage.setItem('size', size);
+    if (keyword != null) {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', keyword);
+      sessionStorage.setItem('type', type);
+    } else {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', null);
+      sessionStorage.setItem('type', null);
+    }
     navigate(`/books/${id}`);
   }
 
   // 페이지 이동
   const handlePageClick = (pageNumber) => {
-    sessionStorage.setItem('lastPage', page);
-    sessionStorage.setItem('size', size);
+    if (keyword != null) {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', keyword);
+      sessionStorage.setItem('type', type);
+    } else {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', null);
+      sessionStorage.setItem('type', null);
+    }
     setPage(pageNumber);
   }
 
