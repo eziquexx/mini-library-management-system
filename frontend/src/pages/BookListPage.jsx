@@ -13,6 +13,7 @@ const BookListPage = () => {
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [type, setType] = useState('ALL');
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ const BookListPage = () => {
     fetchBooks(page, size);
   }, [page, size]);
 
-  // api
+  // 전체목록 api
   const fetchBooks = async (page, size) => {
     setLoading(true);
     setError(null);
@@ -59,16 +60,12 @@ const BookListPage = () => {
     }
   }
 
-  // console.log(...[posts]);
-
   // 상세페이지 이동
   const goToDetailPage = (id) => {
     sessionStorage.setItem('lastPage', page);
     sessionStorage.setItem('size', size);
     navigate(`/books/${id}`);
   }
-  console.log("page: ", page);
-  // console.log("savePage: ", savePage);
 
   // 페이지 이동
   const handlePageClick = (pageNumber) => {
@@ -93,6 +90,99 @@ const BookListPage = () => {
     }
   }
 
+  // 도서 검색
+  const searchBook = async () => {
+    console.log(keyword);
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/books/search`,
+        {
+          params: {
+            type: type,
+            keyword: keyword,
+            page: page,
+            size: size,
+          },
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+          }
+        }
+      );
+
+      // console.log(response.data.data);
+      setPosts(response.data.data.content);
+      setTotalPages(response.data.data.totalPages || 1);
+      setTotalElements(response.data.data.totalElements || 1);
+    } catch (error) {
+      console.log("Error: ", error.response.data.data);
+      setError(error.response.data.data);
+      setPosts(error.response.data.data);
+      setPage(0);
+      setTotalPages(0);
+      setTotalElements(0);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // 값 확인용
+  // console.log("keyword: ", keyword);
+  // console.log("type: ", type);
+
+  let content;
+  if (!loading && !error) {
+    if (posts && posts.length > 0) {
+      content = (
+        <>
+          {posts.map((post) => (
+            <div 
+              key={post.id}
+              onClick={ () => goToDetailPage(post.id) }
+              className="
+                w-full h-auto max-h-[300px] 
+                flex flex-row p-4
+                border border-gray-400 rounded-md
+                hover:border-2
+                hover:border-teal-600
+                hover:shadow-xl
+                bg-white overflow-hidden"
+            >
+              <div className="w-full h-full flex sm:flex-1 flex-2 overflow-hidden justify-end ">
+                <img src="https://placehold.co/600x800" alt="" className="h-full object-contain object-top object-right" />
+              </div>
+              <div className="w-full flex sm:flex-row flex-col justify-between items-start md:flex-4 sm:flex-3 flex-4 lg:text-[18px]  sm:text-[16px] text-[15px]">
+                <div className="w-full flex flex-4 h-full flex-col sm:p-1 p-0 sm:px-4 px-5 leading-6 sm:leading-8">
+                  <span className="lg:text-[25px] md:text-[23px] sm:text-[20px] text-[18px] mb-1">{post.title}</span>
+                  <span>{post.author} | {post.publisher} | {post.publishedDate}</span>
+                  <span>위치: {post.location}</span>
+                </div>
+                <div className="w-full h-full flex flex-2 sm:justify-center justify-start pl-4">
+                  <span className={
+                    `border px-3 py-2 sm:self-center self-end lg:text-[20px] md:text-[18px] sm:text-[16px] text-[15px]
+                    ${post.status != 'AVAILABLE' ? "border-red-700 text-red-700" : "border-teal-700 text-teal-700"}
+                    `
+                  }
+                    
+                  >
+                    { post.status != 'AVAILABLE' ? '대출불가' : '대출가능' }
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </>
+      );
+    } else {
+      content = (
+        <>
+          <div className="my-15 text-center">등록된 도서가 없습니다.</div>
+        </>
+      );
+    }
+  }
+
   return (
     <>
       <div>
@@ -104,21 +194,49 @@ const BookListPage = () => {
 
           {/* 검색 */}
           <div className="w-full flex justify-center mt-10">
-            <form className="w-full sm:w-120">
+            <div className="w-full sm:w-120">
               <div className="flex">
+                <div 
+                  className="
+                    flex justify-center 
+                    w-2/10 min-w-[100px] mr-1 pr-1 py-1
+                    border rounded-sm border-gray-300 
+                    text-sm
+                    overflow-hidden
+                  ">
+                  <select 
+                    name="type" id="type"
+                    value={ type }
+                    onChange={ (e) => setType(e.target.value) }
+                    className="outline-none pl-2 pr-1 overflow-hidden"
+                  >
+                    <option value="ALL">통합검색</option>
+                    <option value="TITLE">도서명</option>
+                    <option value="AUTHOR">저자</option>
+                  </select>
+                </div>
                 <input 
                   type="text" 
                   placeholder="검색어를 입력해주세요"
+                  value={ keyword }
+                  onChange={ (e) => setKeyword(e.target.value) }
                   className="
-                    w-5/6
-                    py-3 px-4
-                    border rounded-l-sm border-gray-300 
+                    w-6/10
+                    py-3 px-3
+                    border rounded-l-sm border-gray-300
+                    outline-none 
                     text-sm leading-5 
                     bg-white"
                 />
-                <button className="rounded-r-sm bg-teal-600 hover:bg-teal-700 text-white px-4 w-1/6 cursor-pointer">검색</button>
+                <button 
+                  onClick={ searchBook }
+                  className="
+                    rounded-r-sm bg-teal-600 
+                    hover:bg-teal-700 text-white 
+                    px-4 w-2/10 cursor-pointer
+                  ">검색</button>
               </div>
-            </form>
+            </div>
           </div>
 
 
@@ -126,11 +244,11 @@ const BookListPage = () => {
           <div className="w-full flex justify-center mt-5">
             <div className="flex justify-between w-full lg:w-[900px]">
               <div className="flex flex-row text-[14px] leading-7">
-                <div className="text-gray-700">총 { totalElements }건</div>
+                <div className="text-gray-700">총 { posts.length > 0 ? totalElements : 0 }건</div>
                 <div>&nbsp;&nbsp;|&nbsp;&nbsp;</div>
                 <div className="text-gray-700">
                   <span>{ posts.length > 0 ? page+1 : page }</span>
-                  /{ totalPages } 페이지
+                  /{ posts.length > 0 ? totalPages : 0 } 페이지
                 </div>
               </div>
             </div>
@@ -138,52 +256,12 @@ const BookListPage = () => {
 
           {/* 도서목록 */}
           {loading && <p style={{textAlign: 'center', marginTop: '100px'}}>불러오는 중...</p>}
-          {error && <p style={{textAlign: 'center', marginTop: '100px', color: 'red'}}>{error}</p>}
+          {error && (<p style={{textAlign: 'center', marginTop: '100px', color: 'red'}}>{error.message || String(error)}</p>)}
 
           <div className="w-full flex flex-col justify-start items-center mt-2">
             <div className="w-full grid gap-4 h-auto lg:w-[900px]">
               {/* 아이템's */}
-              {!loading && !error && (
-                  <>
-                    {posts.map((post) => (
-                      <div 
-                        key={post.id}
-                        onClick={ () => goToDetailPage(post.id) }
-                        className="
-                          w-full h-auto max-h-[300px] 
-                          flex flex-row p-4
-                          border border-gray-400 rounded-md
-                          hover:border-2
-                          hover:border-teal-600
-                          hover:shadow-xl
-                          bg-white overflow-hidden"
-                      >
-                        <div className="w-full h-full flex sm:flex-1 flex-2 overflow-hidden justify-end ">
-                          <img src="https://placehold.co/600x800" alt="" className="h-full object-contain object-top object-right" />
-                        </div>
-                        <div className="w-full flex sm:flex-row flex-col justify-between items-start md:flex-4 sm:flex-3 flex-4 lg:text-[18px]  sm:text-[16px] text-[15px]">
-                          <div className="w-full flex flex-4 h-full flex-col sm:p-1 p-0 sm:px-4 px-5 leading-6 sm:leading-8">
-                            <span className="lg:text-[25px] md:text-[23px] sm:text-[20px] text-[18px] mb-1">{post.title}</span>
-                            <span>{post.author} | {post.publisher} | {post.publishedDate}</span>
-                            <span>위치: {post.location}</span>
-                          </div>
-                          <div className="w-full h-full flex flex-2 sm:justify-center justify-start pl-4">
-                            <span className={
-                              `border px-3 py-2 sm:self-center self-end lg:text-[20px] md:text-[18px] sm:text-[16px] text-[15px]
-                              ${post.status != 'AVAILABLE' ? "border-red-700 text-red-700" : "border-teal-700 text-teal-700"}
-                              `
-                            }
-                              
-                            >
-                              { post.status != 'AVAILABLE' ? '대출불가' : '대출가능' }
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )
-              }
+              { content }
 
               {/* 페이징 버튼 */}
               <div className="mt-5 text-center">
