@@ -11,6 +11,10 @@ const BookDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const page = sessionStorage.getItem('lastPage');
+  const size = sessionStorage.getItem('size');
+  const keyword = sessionStorage.getItem('keyword');
+  const type = sessionStorage.getItem('type');
 
   // api
   const fetchPost = async (bookId) => {
@@ -45,8 +49,13 @@ const BookDetailPage = () => {
   }, [bookId])
 
   // 목록페이지로 이동
-  const goToHome = () => {
-    navigate('/');
+  const handleGoBack = () => {
+
+    if (keyword != null) {
+      navigate(`/books?type=${type}&keyword=${keyword}&page=${page}&size=${size}`);
+    } else {
+      navigate(`/books?page=${page}&size=${size}`);
+    }
   }
 
   // 대출 가능
@@ -75,6 +84,10 @@ const BookDetailPage = () => {
   const postDescription = post.description?.replace(/\\n/g, '\n') ?? '';
 
   console.log(...[post]);
+  console.log("page: ", page);
+  console.log("size: ", size);
+  console.log("type: ", type);
+  console.log("keyword: ", keyword);
 
   return (
     <>
@@ -115,7 +128,6 @@ const BookDetailPage = () => {
                           </div>
                         </div>
                         <button 
-                          disabled={ post.status != "AVAILABLE" }
                           className="
                             border 
                             px-4 py-2 mt-8 
@@ -125,7 +137,7 @@ const BookDetailPage = () => {
                             disabled:border-gray-400 
                             disabled:text-gray-400
                             disabled:hover:border-gray-400 disabled:hover:text-gray-400"
-                        >대출하기</button>
+                        >🤍❤️찜하기</button>
                       </div>
                     </div>
                     <div className="mt-5 border border-zinc-200">
@@ -138,7 +150,7 @@ const BookDetailPage = () => {
             )}
 
             <button 
-              onClick={ goToHome }
+              onClick={ handleGoBack }
               className="py-3 px-6 mt-6 border bg-teal-600 text-white rounded-md hover:bg-teal-700 cursor-pointer self-center"
             >목록</button>
           </div>
