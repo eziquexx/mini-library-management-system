@@ -117,6 +117,19 @@ const BookListPage = () => {
 
   // 이전 페이지
   const handlePrev = () => {
+    
+    if (keyword != null) {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', keyword);
+      sessionStorage.setItem('type', type);
+    } else {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', null);
+      sessionStorage.setItem('type', null);
+    }
+
     if (page > 0) {
       setPage(page - 1);
       fetchBooks(currentFilter, page - 1);
@@ -125,6 +138,19 @@ const BookListPage = () => {
 
   // 다음 페이지
   const handleNext = () => {
+
+    if (keyword != null) {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', keyword);
+      sessionStorage.setItem('type', type);
+    } else {
+      sessionStorage.setItem('lastPage', page);
+      sessionStorage.setItem('size', size);
+      sessionStorage.setItem('keyword', null);
+      sessionStorage.setItem('type', null);
+    }
+
     if (page < totalPages - 1) {
       setPage(page + 1);
       fetchBooks(currentFilter, page + 1);
@@ -134,7 +160,10 @@ const BookListPage = () => {
   // 도서 검색
   const searchBook = async () => {
     console.log(keyword);
-
+    console.log(type);
+    console.log(page);
+    setPage(0);
+    
     try {
       const response = await axios.get(
         `http://localhost:8080/api/v1/books/search`,
@@ -172,6 +201,7 @@ const BookListPage = () => {
   // console.log("keyword: ", keyword);
   // console.log("type: ", type);
 
+  console.log(posts);
   let content;
   if (!loading && !error) {
     if (posts && posts.length > 0) {
