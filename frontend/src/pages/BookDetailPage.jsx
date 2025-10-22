@@ -15,6 +15,7 @@ const BookDetailPage = () => {
   const size = sessionStorage.getItem('size');
   const keyword = sessionStorage.getItem('keyword');
   const type = sessionStorage.getItem('type');
+  const [bookLike, setBookLike] = useState('');
 
   // api
   const fetchPost = async (bookId) => {
@@ -137,7 +138,8 @@ const BookDetailPage = () => {
                             disabled:border-gray-400 
                             disabled:text-gray-400
                             disabled:hover:border-gray-400 disabled:hover:text-gray-400"
-                        >🤍❤️찜하기</button>
+                        >
+                          {bookLike != null ? "🤍" : "❤️"} 찜하기</button>
                       </div>
                     </div>
                     <div className="mt-5 border border-zinc-200">

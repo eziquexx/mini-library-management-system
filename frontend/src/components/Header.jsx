@@ -22,6 +22,19 @@ const Header = () => {
     navigate('/');
   }
 
+
+  // 도서검색 메뉴 클릭시 키워드 초기화
+  const handleBooksMenuClick = () => {
+    sessionStorage.removeItem('lastPage');
+    sessionStorage.removeItem('size');
+    sessionStorage.removeItem('keyword');
+    sessionStorage.removeItem('type');
+
+    setKeyword("");
+    fetchBooks();
+  }
+
+  // 공지사항 메뉴 클릭시 키워드 초기화
   const handleNoticeMenuClick = () => {
     setKeyword("");
     fetchNotice();
@@ -58,7 +71,7 @@ const Header = () => {
             <h1><Link to="/" className="block font-bold text-white bg-teal-600 px-7">행복 도서관</Link></h1>
             <ul className="flex flex-row space-x-8">
               <li><Link to="/">홈</Link></li>
-              <li><Link to="/books">도서검색</Link></li>
+              <li><Link to="/books" onClick={ handleBooksMenuClick }>도서검색</Link></li>
               <li><Link to="/notice" onClick={ handleNoticeMenuClick }>공지사항</Link></li>
             </ul>
           </div>
