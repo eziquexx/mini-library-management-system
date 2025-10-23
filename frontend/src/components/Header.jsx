@@ -12,10 +12,6 @@ const Header = () => {
     fetchUser();
   }, []);
 
-  if (loading) {
-    return null
-  }
-
   // 로그아웃
   const goToLogout = async () => {
     await logout();
@@ -49,7 +45,7 @@ const Header = () => {
             <div className="flex flex-row float-right text-white">
               {user ? (
                 <>
-                  <span>{user}님</span>
+                  <span>{user.username}님</span>
                   <div className="mx-3">|</div>
                   <div className="cursor-pointer">마이페이지</div>
                   <div className="mx-3">|</div>
