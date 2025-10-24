@@ -9,7 +9,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUser();
+    useUserStore.getState().fetchUser();
   }, []);
 
   // 로그아웃
@@ -47,7 +47,7 @@ const Header = () => {
                 <>
                   <span>{user.username}님</span>
                   <div className="mx-3">|</div>
-                  <div className="cursor-pointer">마이페이지</div>
+                  <Link to="/mypage">마이페이지</Link>
                   <div className="mx-3">|</div>
                   <div onClick={goToLogout} className="cursor-pointer">로그아웃</div>
                 </>
