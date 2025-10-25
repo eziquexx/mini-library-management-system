@@ -6,10 +6,10 @@ import useUserStore from '../stores/useUserStore';
 
 const LoginPage = () => {
   
+  const { fetchUser } = useUserStore();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const setUser = useUserStore((state) => state.setUser);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // 새로고침 방지
@@ -21,18 +21,9 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
-      const response = await axios.get("http://localhost:8080/api/v1/user/me", 
-          { withCredentials: true,
-            headers: {
-              Accept: "application/json",
-            },
-          });
-      setUser(response.data.data.username);
-
-      // 로그인 성공 시 home으로 이동
-      if (response.status === 200) {
-        navigate('/');
-      }
+      await fetchUser();
+      
+      navigate('/');
     
     } catch (error) {
       console.log('로그인 실패: ', error.response?.data || error.message);

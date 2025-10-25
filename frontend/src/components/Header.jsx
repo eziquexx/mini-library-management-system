@@ -9,8 +9,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    useUserStore.getState().fetchUser();
-  }, []);
+    fetchUser();
+  }, [fetchUser]);
 
   // 로그아웃
   const goToLogout = async () => {
@@ -45,7 +45,7 @@ const Header = () => {
             <div className="flex flex-row float-right text-white">
               {user ? (
                 <>
-                  <span>{user.username}님</span>
+                  <span>{user?.username??""}님</span>
                   <div className="mx-3">|</div>
                   <Link to="/mypage">마이페이지</Link>
                   <div className="mx-3">|</div>
