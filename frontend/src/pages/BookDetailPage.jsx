@@ -41,8 +41,8 @@ const BookDetailPage = () => {
       console.log(response.data);
       setPost(response.data.data);
     } catch(error) {
-      console.log("Error: ", error);
-      // setError();
+      console.log("Error: ", error.response.data);
+      setError(error.response.data);
     } finally {
       setLoading(false);
     }
@@ -66,8 +66,8 @@ const BookDetailPage = () => {
       setReviews(response.data.data.content);
       setReviewPage(response.data.data.page);
     } catch (error) {
-      console.log("Error: ", error);
-      setError(error.data);
+      console.log("Error: ", error.response.data);
+      setError(error.response.data);
     }
   }
 
