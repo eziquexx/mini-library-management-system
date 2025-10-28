@@ -1,7 +1,6 @@
 package com.jelee.librarymanagementsystem.domain.review.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelee.librarymanagementsystem.domain.review.dto.all.AllReviewListResDTO;
 import com.jelee.librarymanagementsystem.domain.review.service.AllReviewService;
-import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.global.dto.PageResponse;
 import com.jelee.librarymanagementsystem.global.response.ApiResponse;
 import com.jelee.librarymanagementsystem.global.response.code.ReviewSuccessCode;
@@ -33,11 +31,10 @@ public class AllReviewController {
   public ResponseEntity<?> allListReviews(
     @PathVariable("bookId") Long bookId,
     @RequestParam(value = "page", defaultValue = "0") int page, 
-    @RequestParam(value = "size", defaultValue = "10") int size,
-    @AuthenticationPrincipal User user) {
+    @RequestParam(value = "size", defaultValue = "10") int size) {
     
       // 서비스로직
-      PageResponse<AllReviewListResDTO> responseDTO = allReviewService.allListReviews(bookId, page, size, user.getId());
+      PageResponse<AllReviewListResDTO> responseDTO = allReviewService.allListReviews(bookId, page, size);
 
       // 성공메시지
       String message = messageProvider.getMessage(ReviewSuccessCode.REVIEW_LIST_FETCHED.getMessage());
