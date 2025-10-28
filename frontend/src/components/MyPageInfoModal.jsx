@@ -12,15 +12,18 @@ const modalData = {
   dialogPw: {
     title: "비밀번호 수정",
     content: "새로운 비밀번호를 입력해주세요.",
-    plcaeholder: "새 비밀번호 입력",
+    placeholderOri: "새 비밀번호 입력",
+    placeholderRe: "새 비밀번호 확인 입력",
   }
 }
 
 const MyPageInfoModal = ({id}) => {
 
+  const { title, content, placeholder, placeholderOri, placeholderRe } = modalData[id] || {};
   const fetchUser = useUserStore((state) => state.fetchUser);
-  const { title, content, placeholder } = modalData[id] || {};
-  const [value, setValue] = useState();
+  const [emailValue, setEmailValue] = useState();
+  const [pwValue, setPwValue] = useState();
+  const [repwValue, setRepwValue] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
@@ -30,7 +33,7 @@ const MyPageInfoModal = ({id}) => {
     try {
       const response = await axios.patch(
         "http://localhost:8080/api/v1/user/me/email",
-        { email: value },
+        { email: emailValue },
         { withCredentials: true },
       );
 
@@ -45,16 +48,42 @@ const MyPageInfoModal = ({id}) => {
     }
   }
 
+  // 비밀번호 수정 api
+  const updatePw = async () => {
+    try {
+      const response = await axios.patch(
+        "http://localhost:8080/api/v1/user/me/password",
+        { password: pwValue,
+          repassword: repwValue,
+        },
+        { withCredentials: true },
+      );
+
+      console.log(response.data.data);
+      setData(response.data.data);
+
+    } catch (error) {
+      console.log("Error: ", error);
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   // 버튼 클릭 시 id에 따라 api 호출
   const handleClick = async () => {
     if (id === "dialogEmail") {
       await updateEmail();
+      alert("이메일 변경 성공");
     } else if (id === "dialogPw") {
-      // await updatePassword();
+      await updatePw();
+      alert("비밀번호 변경 성공");
     }
 
     await fetchUser(); 
-    setValue("");
+    setEmailValue("");
+    setPwValue("");
+    setRepwValue("");
     document.getElementById(id)?.close();
   }
 
@@ -75,24 +104,65 @@ const MyPageInfoModal = ({id}) => {
                       <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                   </div> */}
-                  <div class="flex flex-col w-full mt-3 text-center sm:mt-0 sm:text-left">
-                    <h3 id="dialog-title" class="text-base font-semibold text-gray-900">{title}</h3>
-                    <div class="mt-2">
-                      <p class="text-sm text-gray-500 mb-3">{content}</p>
-                      <input 
-                        type="text" 
-                        placeholder={placeholder}
-                        className="
-                          border p-2 border-gray-300 outline-none
-                          w-full
-                          text-sm 
-                          focus:border-teal-600
-                        "
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                      />
-                    </div>
-                  </div>
+
+                  { id === "dialogEmail" && (
+                    <>
+                      <div class="flex flex-col w-full mt-3 text-center sm:mt-0 sm:text-left">
+                        <h3 id="dialog-title" class="text-base font-semibold text-gray-900">{title}</h3>
+                        <div class="mt-2">
+                          <p class="text-sm text-gray-500 mb-3">{content}</p>
+                          <input 
+                            type="text" 
+                            placeholder={placeholder}
+                            className="
+                              border p-2 border-gray-300 outline-none
+                              w-full
+                              text-sm 
+                              focus:border-teal-600
+                            "
+                            value={emailValue}
+                            onChange={ (e) => setEmailValue(e.target.value) }
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  { id === "dialogPw" && (
+                    <>
+                      <div class="flex flex-col w-full mt-3 text-center sm:mt-0 sm:text-left">
+                        <h3 id="dialog-title" class="text-base font-semibold text-gray-900">{title}</h3>
+                        <div class="mt-2">
+                          <p class="text-sm text-gray-500 mb-3">{content}</p>
+                          <input 
+                            type="text" 
+                            placeholder={placeholderOri}
+                            className="
+                              border p-2 border-gray-300 outline-none
+                              w-full
+                              text-sm 
+                              focus:border-teal-600
+                            "
+                            value={pwValue}
+                            onChange={ (e) => setPwValue(e.target.value)}
+                          />
+                          <input 
+                            type="text" 
+                            placeholder={placeholderRe}
+                            className="
+                              border p-2 border-gray-300 outline-none
+                              w-full
+                              text-sm 
+                              focus:border-teal-600
+                            "
+                            value={repwValue}
+                            onChange={ (e) => setRepwValue(e.target.value) }
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
                 </div>
               </div>
               <div class="px-4 pb-7 sm:pb-5 sm:flex sm:flex-row-reverse sm:px-6">
