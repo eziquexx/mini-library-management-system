@@ -55,7 +55,9 @@ const MyPageInfo = (user) => {
           <MyPageInfoModal id="dialogPw"/>
         </div>
         <div className="mt-5 mb-7 border-b-1 border-gray-300"></div>
-        <div 
+        <button 
+          command="show-modal" 
+          commandfor="dialogDelAccount"
           className="px-4 py-3 
             border border-gray-500 
             self-start leading-none
@@ -63,7 +65,8 @@ const MyPageInfo = (user) => {
             hover:border-red-700
             hover:text-red-700
             cursor-pointer
-          ">회원탈퇴</div>
+          ">회원탈퇴</button>
+        <MyPageInfoModal id="dialogDelAccount" />
       </div>
     </>
   );

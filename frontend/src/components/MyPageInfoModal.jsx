@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useState } from "react";
+import React, { useState } from "react"; 
 import useUserStore from "../stores/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 
 const modalData = {
@@ -14,6 +15,11 @@ const modalData = {
     content: "새로운 비밀번호를 입력해주세요.",
     placeholderOri: "새 비밀번호 입력",
     placeholderRe: "새 비밀번호 확인 입력",
+  },
+  dialogDelAccount: {
+    title: "회원 탈퇴",
+    content: "사용중인 비밀번호를 입력해주세요.",
+    placeholder: "비밀번호 입력",
   }
 }
 
@@ -24,9 +30,11 @@ const MyPageInfoModal = ({id}) => {
   const [emailValue, setEmailValue] = useState();
   const [pwValue, setPwValue] = useState();
   const [repwValue, setRepwValue] = useState();
+  const [delPwValue, setDelPwValue] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   // 이메일 수정 api
   const updateEmail = async () => {
@@ -37,12 +45,14 @@ const MyPageInfoModal = ({id}) => {
         { withCredentials: true },
       );
 
-      console.log(response.data.data)
+      console.log("이메일 변경: ",response.data.data)
       setData(response.data.data);
+      alert("이메일 변경 성공");
 
     } catch (error) {
       console.log("Error: ", error);
-      setError(error);
+      setError(error.response.data);
+      alert(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -59,12 +69,37 @@ const MyPageInfoModal = ({id}) => {
         { withCredentials: true },
       );
 
-      console.log(response.data.data);
+      console.log("비밀번호 변경: ",response.data.data);
       setData(response.data.data);
+      alert("비밀번호 변경 성공");
 
     } catch (error) {
       console.log("Error: ", error);
-      setError(error);
+      setError(error.response.data);
+      alert(error.response.data.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // 회원 탈퇴 api
+  const delAccount = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/user/me/withdraw",
+        { password: delPwValue },
+        { withCredentials: true },
+      );
+
+      console.log("회원탈퇴: ", response.data.data);
+      setData(response.data.data);
+      alert("회원탈퇴 성공");
+      navigate("/");
+      
+    } catch (error) {
+      console.log("Error: ", error.response.data);
+      setError(error.response.data);
+      alert(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -74,16 +109,17 @@ const MyPageInfoModal = ({id}) => {
   const handleClick = async () => {
     if (id === "dialogEmail") {
       await updateEmail();
-      alert("이메일 변경 성공");
     } else if (id === "dialogPw") {
       await updatePw();
-      alert("비밀번호 변경 성공");
+    } else if (id === "dialogDelAccount") {
+      await delAccount();
     }
 
     await fetchUser(); 
     setEmailValue("");
     setPwValue("");
     setRepwValue("");
+    setDelPwValue("");
     document.getElementById(id)?.close();
   }
 
@@ -105,6 +141,7 @@ const MyPageInfoModal = ({id}) => {
                     </svg>
                   </div> */}
 
+                  {/* 이메일 변경 */}
                   { id === "dialogEmail" && (
                     <>
                       <div class="flex flex-col w-full mt-3 text-center sm:mt-0 sm:text-left">
@@ -128,6 +165,7 @@ const MyPageInfoModal = ({id}) => {
                     </>
                   )}
 
+                  {/* 비밀번호 변경 */}
                   { id === "dialogPw" && (
                     <>
                       <div class="flex flex-col w-full mt-3 text-center sm:mt-0 sm:text-left">
@@ -162,6 +200,30 @@ const MyPageInfoModal = ({id}) => {
                       </div>
                     </>
                   )}
+
+                  {/* 회원탈퇴 */}
+                  { id === "dialogDelAccount" && (
+                    <>
+                      <div class="flex flex-col w-full mt-3 text-center sm:mt-0 sm:text-left">
+                        <h3 id="dialog-title" class="text-base font-semibold text-gray-900">{title}</h3>
+                        <div class="mt-2">
+                          <p class="text-sm text-gray-500 mb-3">{content}</p>
+                          <input 
+                            type="text" 
+                            placeholder={placeholder}
+                            className="
+                              border p-2 border-gray-300 outline-none
+                              w-full
+                              text-sm 
+                              focus:border-teal-600
+                            "
+                            value={delPwValue}
+                            onChange={ (e) => setDelPwValue(e.target.value) }
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                   
                 </div>
               </div>
@@ -175,7 +237,7 @@ const MyPageInfoModal = ({id}) => {
                     px-3 py-2 sm:ml-3 sm:w-auto
                   "
                   onClick={handleClick}
-                >변경</button>
+                >{id === 'dialogDelAccount' ? "탈퇴" : "변경"}</button>
                 <button type="button" command="close" commandfor={id} class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">취소</button>
               </div>
             </el-dialog-panel>
