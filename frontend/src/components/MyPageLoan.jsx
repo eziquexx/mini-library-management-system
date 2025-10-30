@@ -74,6 +74,22 @@ const MyPageLoan = () => {
   const handlePageClick = (pageNumber) => {
     setPage(pageNumber);
   }
+  
+  // 도서 대출 상태 체크
+  let bookStatus = (status) => {
+    switch(status) {
+      case "LOANED":
+        return "대출중";
+      case "RETURNED":
+        return "반납 완료";
+      case "OVERDUE":
+        return "연체됨";
+      case "LOST":
+        return "분실됨";
+      default:
+        return "";
+    }
+  };
 
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
   let content;
@@ -102,7 +118,7 @@ const MyPageLoan = () => {
                     <div>위치:<span className="ml-1">{item.location}</span></div>
                     <div>상태: 
                       <span className="text-blue-700 ml-1">
-                        {item.returnDate === null ? "대출중" : "반납"}
+                        { bookStatus(item.status) }
                       </span>
                     </div>
                     <div className="flex sm:flex-row flex-col">
