@@ -74,6 +74,22 @@ const MyPageLoan = () => {
   const handlePageClick = (pageNumber) => {
     setPage(pageNumber);
   }
+  
+  // 도서 대출 상태 체크
+  let bookStatus = (status) => {
+    switch(status) {
+      case "LOANED":
+        return "대출중";
+      case "RETURNED":
+        return "반납 완료";
+      case "OVERDUE":
+        return "연체됨";
+      case "LOST":
+        return "분실됨";
+      default:
+        return "";
+    }
+  };
 
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
   let content;
@@ -85,40 +101,35 @@ const MyPageLoan = () => {
             <div className="flex flex-col w-full">
               {/* 대출 내역 items */}
               {data.map((item) => (
-                <>
-                  <div className="flex flex-row w-full border border-gray-200 p-3 mb-2">
-                    <div className="flex w-[120px] items-start">
-                      <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
-                    </div>
-                    <div
-                      key={item.id} 
-                      className="
-                        flex flex-col justify-start self-start 
-                        leading-6 text-[15px] ml-2 
-                        text-gray-700"
-                    >
-                      <div className="font-bold text-black">{item.bookTitle}</div>
-                      <div className="flex sm:flex-row flex-col">
-                        <div>{item.author}</div>
-                        <div className="mx-2 hidden sm:block">|</div>
-                        <div>{item.publisher}</div>
-                      </div>
-                      <div>위치:<span className="ml-1">가-123</span></div>
-                      <div>상태: 
-                        <span className="text-blue-700 ml-1">
-                          {item.returnDate === null ? "대출중" : "반납"}
-                        </span>
-                      </div>
-                      <div className="flex sm:flex-row flex-col">
-                        <div>대출일:<span className="ml-1">{item.loanDate.split('T', 1)}</span></div>
-                        <div className="mx-2 hidden sm:block">|</div>
-                        <div>반납일:<span className="text-red-700 ml-1">{item.returnDate === null ? " ": item.returnDate.split('T', 1)}</span></div>
-                      </div>
-                      <div>대출자:<span className="ml-1">{user.username}</span></div>
-                      <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
-                    </div>
+                <div 
+                  key={item.id}
+                  className="flex flex-row w-full border border-gray-200 p-3 mb-2"
+                >
+                  <div className="flex w-[120px] items-start">
+                    <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
                   </div>
-                </>
+                  <div className=" flex flex-col justify-start self-start leading-6 text-[15px] ml-2 text-gray-700">
+                    <div className="font-bold text-black">{item.bookTitle}</div>
+                    <div className="flex sm:flex-row flex-col">
+                      <div>{item.author}</div>
+                      <div className="mx-2 hidden sm:block">|</div>
+                      <div>{item.publisher}</div>
+                    </div>
+                    <div>위치:<span className="ml-1">{item.location}</span></div>
+                    <div>상태: 
+                      <span className="text-blue-700 ml-1">
+                        { bookStatus(item.status) }
+                      </span>
+                    </div>
+                    <div className="flex sm:flex-row flex-col">
+                      <div>대출일:<span className="ml-1">{item.loanDate.split('T', 1)}</span></div>
+                      <div className="mx-2 hidden sm:block">|</div>
+                      <div>반납일:<span className="text-red-700 ml-1">{item.returnDate === null ? " ": item.returnDate.split('T', 1)}</span></div>
+                    </div>
+                    <div>대출자:<span className="ml-1">{item.borowwer}</span></div>
+                    <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
+                  </div>
+                </div>
               ))}
             </div>
             {/* 페이징 */}
