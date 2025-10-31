@@ -3,10 +3,13 @@ package com.jelee.librarymanagementsystem.domain.loan.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelee.librarymanagementsystem.domain.loan.dto.user.UserLoanExtendedResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.dto.user.UserLoanListResDTO;
 import com.jelee.librarymanagementsystem.domain.loan.service.UserLoanService;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
@@ -45,6 +48,29 @@ public class UserLoanController {
                 .status(LoanSuccessCode.LOAN_LIST_FETCHED.getHttpStatus())
                 .body(ApiResponse.success(
                   LoanSuccessCode.LOAN_LIST_FETCHED, 
+                  message, 
+                  responseDTO));
+  }
+
+  /*
+   * 사용자: 도서 대출 연장
+   */
+  @PatchMapping("/loans/{loanId}/extend")
+  public ResponseEntity<?> extendLoan(
+    @PathVariable("loanId") Long loanId,
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      UserLoanExtendedResDTO responseDTO = userLoanService.extendLoan(loanId, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(LoanSuccessCode.LOAN_EXTENDED.getMessage());
+    
+      // 응답
+      return ResponseEntity
+                .status(LoanSuccessCode.LOAN_EXTENDED.getHttpStatus())
+                .body(ApiResponse.success(
+                  LoanSuccessCode.LOAN_EXTENDED, 
                   message, 
                   responseDTO));
   }
