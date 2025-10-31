@@ -126,7 +126,7 @@ const MyPageLoan = () => {
                       <div className="mx-2 hidden sm:block">|</div>
                       <div>반납일:<span className="text-red-700 ml-1">{item.returnDate === null ? " ": item.returnDate.split('T', 1)}</span></div>
                     </div>
-                    <div>대출자:<span className="ml-1">{item.borowwer}</span></div>
+                    <div>대출자:<span className="ml-1">{item.borrower}</span></div>
                     <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
                   </div>
                 </div>
