@@ -40,7 +40,8 @@ public class UserLoanService {
     Pageable pageable = PageRequest.of(page, size);
 
     // DB에서 사용자id로 조회
-    Page<Loan> result = loanRepository.findByUser_Id(user.getId(), pageable);
+    // Page<Loan> result = loanRepository.findByUser_Id(user.getId(), pageable);
+    Page<Loan> result = loanRepository.findByUser_IdOrderByLoanDateDesc(user.getId(), pageable);
 
     // Page<Loan> -> Page<UserLoanListResDTO>로 맵핑
     Page<UserLoanListResDTO> pageDTO = result.map(UserLoanListResDTO::new);

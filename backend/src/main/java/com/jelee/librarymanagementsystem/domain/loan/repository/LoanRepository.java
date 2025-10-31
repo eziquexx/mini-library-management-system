@@ -30,4 +30,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
   // 사용자 도서 대출 내역 조회: userId로 조회
   Page<Loan> findByUser_Id(Long userId, Pageable pageable);
+
+  // 사용자 도서 대출 내역 조회: userId로 조회
+  Page<Loan> findByUser_IdOrderByLoanDateDesc(Long userId, Pageable pageable);
 }
