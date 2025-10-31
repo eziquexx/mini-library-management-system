@@ -13,7 +13,8 @@ public enum LoanErrorCode implements ErrorCode {
   LOAN_ALREADY_EXTENDED(HttpStatus.BAD_REQUEST, "LOAN_5006", "error.loan.already_extended"),
   LOAN_CANNOT_EXTEND(HttpStatus.BAD_REQUEST, "LOAN_5007","error.loan.cannot_extend"),
   LOAN_ALREADY_LOST(HttpStatus.BAD_REQUEST, "LOAN_5008", "error.loan.already_lost"),
-  LOAN_STATUS_INVALID_FOR_LOST(HttpStatus.BAD_REQUEST, "LOAN_5009", "error.loan.status_invalid_for_lost");
+  LOAN_STATUS_INVALID_FOR_LOST(HttpStatus.BAD_REQUEST, "LOAN_5009", "error.loan.status_invalid_for_lost"),
+  LOAN_USER_NOT_SAME(HttpStatus.BAD_REQUEST, "LOAN_5010", "error.loan.user.not_same");
 
   private final HttpStatus httpStatus;
   private final String code;

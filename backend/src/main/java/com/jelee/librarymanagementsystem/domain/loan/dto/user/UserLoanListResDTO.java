@@ -17,9 +17,11 @@ public class UserLoanListResDTO {
   private LocalDate publishedDate;
   private String location;
   private LocalDateTime loanDate;
+  private LocalDateTime dueDate;
   private LocalDateTime returnDate;
   private String borrower;
   private LoanStatus status;
+  private boolean extended;
 
   public UserLoanListResDTO(Loan loan) {
     this.id = loan.getId();
@@ -29,8 +31,10 @@ public class UserLoanListResDTO {
     this.publishedDate = loan.getBook().getPublishedDate();
     this.location = loan.getBook().getLocation();
     this.loanDate = loan.getLoanDate();
+    this.dueDate = loan.getDueDate();
     this.returnDate = loan.getReturnDate();
     this.borrower = loan.getUser().getUsername();
     this.status = loan.getStatus();
+    this.extended = loan.isExtended();
   }
 }
