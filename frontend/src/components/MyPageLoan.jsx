@@ -120,20 +120,34 @@ const MyPageLoan = () => {
                       <div className="mx-2 hidden sm:block">|</div>
                       <div>{item.publisher}</div>
                     </div>
-                    <div>위치:<span className="ml-1">{item.location}</span></div>
-                    <div>상태: 
-                      <span className="text-blue-700 ml-1">
+                    <div>위치:<span className="ml-[4px]">{item.location}</span></div>
+                    <div className="font-bold">상태: 
+                      <span className="text-blue-700 ml-[4px] font-normal">
                         { bookStatus(item.status) }
                       </span>
                     </div>
                     <div className="flex sm:flex-row flex-col">
-                      <div>대출일:<span className="ml-1">{item.loanDate.split('T', 1)}</span></div>
+                      <div className="font-bold">대출일:<span className="ml-[4px] font-normal">{item.loanDate.split('T', 1)}</span></div>
                       <div className="mx-2 hidden sm:block">|</div>
-                      <div>반납일:<span className="text-red-700 ml-1">{item.returnDate === null ? " ": item.returnDate.split('T', 1)}</span></div>
+                      {item.returnDate
+                        ? (
+                            <div className="font-bold">
+                              반납일:
+                              <span className="text-red-700 ml-[4px] font-normal">{item.returnDate.split('T', 1)}</span>
+                            </div>
+                          )
+                        : (
+                            <div className="font-bold">
+                              반납예정일:
+                              <span className="text-red-700 ml-[4px] font-normal">{item.dueDate.split('T', 1)}</span>
+                            </div>
+                          )
+                        }
+                      
                     </div>
-                    <div>대출자:<span className="ml-1">{item.borrower}</span></div>
-                    <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
-                    <div>대출연장: <span>{item.extended != true ? "0" : "1"}</span>회</div>
+                    <div>대출자:<span className="ml-[4px]">{item.borrower}</span></div>
+                    <div>리뷰작성:<span className="text-green-700 ml-[4px]">미작성</span></div>
+                    <div>대출연장:<span className="ml-[4px]">{item.extended != true ? "0" : "1"}</span>회</div>
                     <button 
                       command="show-modal" 
                       commandfor="dialogExtended"
