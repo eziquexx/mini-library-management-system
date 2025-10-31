@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useUserStore from "../stores/useUserStore";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import MyPageLoanModal from "./MyPageLoanModal";
 
 
 const MyPageLoan = () => {
@@ -14,6 +15,8 @@ const MyPageLoan = () => {
   const [size, setSize] = useState(Number(searchParams.get('size')) || 5);
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [extended, setExtended] = useState();
+  const [selectLoanId, setSelectLoanId] = useState(null);
 
   console.log(user);
 
@@ -45,6 +48,7 @@ const MyPageLoan = () => {
       console.log(response.data.data);
       setData(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
+      setExtended(response.data.data.content.extended);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -91,6 +95,7 @@ const MyPageLoan = () => {
     }
   };
 
+
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
   let content;
   if (!loading && !error) {
@@ -115,19 +120,57 @@ const MyPageLoan = () => {
                       <div className="mx-2 hidden sm:block">|</div>
                       <div>{item.publisher}</div>
                     </div>
-                    <div>위치:<span className="ml-1">{item.location}</span></div>
-                    <div>상태: 
-                      <span className="text-blue-700 ml-1">
+                    <div>위치:<span className="ml-[4px]">{item.location}</span></div>
+                    <div className="font-bold">상태: 
+                      <span className="text-blue-700 ml-[4px] font-normal">
                         { bookStatus(item.status) }
                       </span>
                     </div>
                     <div className="flex sm:flex-row flex-col">
-                      <div>대출일:<span className="ml-1">{item.loanDate.split('T', 1)}</span></div>
+                      <div className="font-bold">대출일:<span className="ml-[4px] font-normal">{item.loanDate.split('T', 1)}</span></div>
                       <div className="mx-2 hidden sm:block">|</div>
-                      <div>반납일:<span className="text-red-700 ml-1">{item.returnDate === null ? " ": item.returnDate.split('T', 1)}</span></div>
+                      {item.returnDate
+                        ? (
+                            <div className="font-bold">
+                              반납일:
+                              <span className="text-red-700 ml-[4px] font-normal">{item.returnDate.split('T', 1)}</span>
+                            </div>
+                          )
+                        : (
+                            <div className="font-bold">
+                              반납예정일:
+                              <span className="text-red-700 ml-[4px] font-normal">{item.dueDate.split('T', 1)}</span>
+                            </div>
+                          )
+                        }
+                      
                     </div>
-                    <div>대출자:<span className="ml-1">{item.borowwer}</span></div>
-                    <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
+                    <div>대출자:<span className="ml-[4px]">{item.borrower}</span></div>
+                    <div>리뷰작성:<span className="text-green-700 ml-[4px]">미작성</span></div>
+                    <div>대출연장:<span className="ml-[4px]">{item.extended != true ? "0" : "1"}</span>회</div>
+                    <button 
+                      command="show-modal" 
+                      commandfor="dialogExtended"
+                      onClick={() => {
+                        setSelectLoanId(item.id);
+                      }}
+                      disabled={item.extended != false}
+                      className="
+                        mt-2 px-2 py-1 
+                        border border-gray-500 
+                        text-[15px] self-start
+                        hover:border-teal-600
+                        hover:bg-teal-600
+                        hover:text-white
+                        disabled:border-gray-400
+                        disabled:text-gray-400
+                        disabled:hover:bg-transparent"
+                    >연장하기</button>
+                    <MyPageLoanModal 
+                      id="dialogExtended" 
+                      loanId={selectLoanId} 
+                      fetchBookLoans={() => fetchBookLoans(page, size)}
+                    />
                   </div>
                 </div>
               ))}
