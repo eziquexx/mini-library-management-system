@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useUserStore from "../stores/useUserStore";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import MyPageLoanModal from "./MyPageLoanModal";
 
 
 const MyPageLoan = () => {
@@ -14,6 +15,8 @@ const MyPageLoan = () => {
   const [size, setSize] = useState(Number(searchParams.get('size')) || 5);
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [extended, setExtended] = useState();
+  const [selectLoanId, setSelectLoanId] = useState(null);
 
   console.log(user);
 
@@ -45,6 +48,7 @@ const MyPageLoan = () => {
       console.log(response.data.data);
       setData(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
+      setExtended(response.data.data.content.extended);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -91,6 +95,7 @@ const MyPageLoan = () => {
     }
   };
 
+
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
   let content;
   if (!loading && !error) {
@@ -128,9 +133,14 @@ const MyPageLoan = () => {
                     </div>
                     <div>대출자:<span className="ml-1">{item.borrower}</span></div>
                     <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
-                    <div>대출연장: <span>0</span>회</div>
+                    <div>대출연장: <span>{item.extended != true ? "0" : "1"}</span>회</div>
                     <button 
-                      disabled=""
+                      command="show-modal" 
+                      commandfor="dialogExtended"
+                      onClick={() => {
+                        setSelectLoanId(item.id);
+                      }}
+                      disabled={item.extended != false}
                       className="
                         mt-2 px-2 py-1 
                         border border-gray-500 
@@ -138,9 +148,15 @@ const MyPageLoan = () => {
                         hover:border-teal-600
                         hover:bg-teal-600
                         hover:text-white
-                        disabled:border-gray-300
-                        disabled:text-gray-300"
+                        disabled:border-gray-400
+                        disabled:text-gray-400
+                        disabled:hover:bg-transparent"
                     >연장하기</button>
+                    <MyPageLoanModal 
+                      id="dialogExtended" 
+                      loanId={selectLoanId} 
+                      fetchBookLoans={() => fetchBookLoans(page, size)}
+                    />
                   </div>
                 </div>
               ))}
