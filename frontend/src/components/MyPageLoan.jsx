@@ -128,6 +128,19 @@ const MyPageLoan = () => {
                     </div>
                     <div>대출자:<span className="ml-1">{item.borrower}</span></div>
                     <div>리뷰작성:<span className="text-green-700 ml-1">미작성</span></div>
+                    <div>대출연장: <span>0</span>회</div>
+                    <button 
+                      disabled=""
+                      className="
+                        mt-2 px-2 py-1 
+                        border border-gray-500 
+                        text-[15px] self-start
+                        hover:border-teal-600
+                        hover:bg-teal-600
+                        hover:text-white
+                        disabled:border-gray-300
+                        disabled:text-gray-300"
+                    >연장하기</button>
                   </div>
                 </div>
               ))}
