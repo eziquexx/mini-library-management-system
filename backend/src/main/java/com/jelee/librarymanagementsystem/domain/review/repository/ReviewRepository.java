@@ -31,4 +31,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
   // 관리자: 특정 도서 리뷰 목록 (페이징)
   Page<Review> findByBook_Id(Long bookId, Pageable pageable);
+
+  // 사용자: 특정 도서 리뷰 작성 체크
+  boolean existsByBook_IdAndUser_Id(Long bookId, Long userId);
 }
