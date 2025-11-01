@@ -11,6 +11,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.user.UserLoanListResDTO
 import com.jelee.librarymanagementsystem.domain.loan.entity.Loan;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
+import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
 import com.jelee.librarymanagementsystem.global.dto.PageResponse;
@@ -26,6 +27,7 @@ public class UserLoanService {
   
   private final LoanRepository loanRepository;
   private final UserRepository userRepository;
+  private final ReviewRepository reviewRepository;
 
   /*
    * 사용자: 내 도서 대출 내역 (페이징)
@@ -41,10 +43,15 @@ public class UserLoanService {
 
     // DB에서 사용자id로 조회
     // Page<Loan> result = loanRepository.findByUser_Id(user.getId(), pageable);
-    Page<Loan> result = loanRepository.findByUser_IdOrderByLoanDateDesc(user.getId(), pageable);
+    Page<Loan> loans = loanRepository.findByUser_IdOrderByLoanDateDesc(user.getId(), pageable);
 
     // Page<Loan> -> Page<UserLoanListResDTO>로 맵핑
-    Page<UserLoanListResDTO> pageDTO = result.map(UserLoanListResDTO::new);
+    // 리뷰 작성 여부 체크 추가
+    Page<UserLoanListResDTO> pageDTO = loans.map(loan -> {
+      boolean reviewWritten = reviewRepository.existsByBook_IdAndUser_Id(loan.getBook().getId(), loan.getUser().getId());
+
+      return new UserLoanListResDTO(loan, reviewWritten);
+    });
 
     // 반환
     return new PageResponse<>(pageDTO);

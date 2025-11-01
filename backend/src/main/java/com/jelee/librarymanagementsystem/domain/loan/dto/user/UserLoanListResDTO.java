@@ -22,8 +22,9 @@ public class UserLoanListResDTO {
   private String borrower;
   private LoanStatus status;
   private boolean extended;
+  private boolean reviewWritten;
 
-  public UserLoanListResDTO(Loan loan) {
+  public UserLoanListResDTO(Loan loan, boolean reviewWritten) {
     this.id = loan.getId();
     this.bookTitle = loan.getBook().getTitle();
     this.author = loan.getBook().getAuthor();
@@ -36,5 +37,6 @@ public class UserLoanListResDTO {
     this.borrower = loan.getUser().getUsername();
     this.status = loan.getStatus();
     this.extended = loan.isExtended();
+    this.reviewWritten = reviewWritten;
   }
 }
