@@ -1,50 +1,126 @@
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import useUserStore from "../stores/useUserStore";
+import axios from "axios";
 
 
 const MyPageReview = () => {
+
+  const {user, logout} = useUserStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 0);
+  const [size, setSize] = useState(Number(searchParams.get('size')) || 10);
+  const [data, setData] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+
+
+  useEffect (() => {
+    fetchBookReview(page, size);
+  }, [page, size])
+  
+
+  // 리뷰 전체 api
+  const fetchBookReview = async (page, size) => {
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/user/me/reviews`,
+        {
+          params: {
+            page: page,
+            size: size,
+          },
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+          }
+        }
+      );
+
+      console.log(response.data.data);
+      setData(response.data.data.content);
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("리뷰 전체 목록 조회 완료");
+      setLoading(false);
+    }
+  }
+  
+
   return (
     <>
       <div className="flex flex-col border border-gray-300  mt-2 p-8 leading-10">
         <div className="text-2xl mb-4">리뷰내역 정보</div>
-        <div className="flex flex-row items-center pl-1">
-          <div className="w-[90px]">이름</div>
-          <div className="">테스트</div>
+        <div className="flex flex-col w-full items-center">
+          <div className="flex flex-col w-full">
+            {/* 대출 내역 items */}
+            {!loading && !error && (
+              <>
+                {data.map((review) => (
+                  <div 
+                    key={review.id}
+                    className="flex flex-col w-full border border-gray-200 p-3 mb-2"
+                  >
+                    <div className="flex flex-row w-full overflow-hidden">
+                      {/* 썸네일 */}
+                      <div className="flex w-[100px] min-w-[100px] items-start shrink-0">
+                        <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
+                      </div>
+                      {/* 텍스트 */}
+                      <div className="flex flex-col justify-start self-start w-full min-w-0 leading-6 text-[15px] ml-2 text-gray-700">
+                        <div className="font-bold text-black">{review.bookTitle}</div>
+                        <div>작성일: {review.createdDate.split('T').join(" ")}</div>
+                        <div className="flex flex-row w-full mt-2 leading-6 overflow-hidden items-center">
+                          <div className="min-w-0 px-2 py-1 h-[82px] border border-gray-300 line-clamp-3">
+                            {review.content}
+                          </div>
+                          <div className="flex flex-col self-end ml-2">
+                            <button className="mb-2 px-3 py-2 border border-gray-300 leading-none whitespace-nowrap">수정</button>
+                            <button className="px-3 py-2 border border-gray-300 leading-none whitespace-nowrap">삭제</button>
+                          </div>
+                        </div>
+                      </div>
+                      {/* <div className="border flex-1 text-[15px]">
+                        <button className="border border-gray-500 px-2 py-3 leading-none">수정</button>
+                        <button className="border border-gray-500 px-2 py-3 leading-none">삭제</button>
+                      </div> */}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            
+          </div>
+          {/* 페이징 */}
+          {/* <div>
+            <button
+              onClick={ handlePrev }
+              disabled={page === 0 || totalPages === 0}
+              className="px-3 py-1 cursor-pointer disabled:opacity-50"
+            >이전</button>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageClick(i)}
+                className={`px-[10px] py-[6px] mx-[3px] text-base cursor-pointer ${
+                  i === page ? "text-teal-600 font-bold" : ""
+                }`}
+              >{i + 1}</button>
+            ))}
+            <button
+              onClick={ handleNext }
+              disabled={page === totalPages - 1 || totalPages === 0}
+              className="px-3 py-1 cursor-pointer disabled:opacity-50"
+            >이후</button>
+          </div> */}
         </div>
-        <div className="flex flex-row items-center pl-1">
-          <div className="w-[90px]">이메일</div>
-          <div>테스트</div>
-          <div className="
-            ml-3 px-2 py-2 
-            border border-teal-600 
-            text-sm text-teal-600 leading-none 
-            hover:border-teal-700
-            hover:bg-teal-700
-            hover:text-white
-            cursor-pointer
-          ">수정</div>
-        </div>
-        <div className="flex flex-row items-center pl-1">
-          <div className="w-[90px]">비밀번호</div>
-          <div className="">****</div>
-          <div className="
-            ml-3 px-2 py-2 
-            border border-teal-600 
-            text-sm text-teal-600 leading-none 
-            hover:border-teal-700
-            hover:bg-teal-700
-            hover:text-white 
-            cursor-pointer
-          ">수정</div>
-        </div>
-        <div className="mt-5 mb-7 border-b-1 border-gray-300"></div>
-        <div 
-          className="px-4 py-3 
-            border border-gray-500 
-            self-start leading-none
-            text-gray-500 
-            hover:border-red-700
-            hover:text-red-700
-            cursor-pointer
-          ">회원탈퇴</div>
       </div>
     </>
   );

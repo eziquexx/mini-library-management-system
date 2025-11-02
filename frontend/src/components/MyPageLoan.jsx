@@ -16,7 +16,6 @@ const MyPageLoan = () => {
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [selectLoanId, setSelectLoanId] = useState(null);
-  const [reviewTexts, setReviewTexts] = useState({});
 
   console.log(user);
 
@@ -98,45 +97,15 @@ const MyPageLoan = () => {
   const handleClick = (id, mode) => {
     const reviewAreaId = "reviewArea" + id;
     const reviewArea = document.getElementById(reviewAreaId);
-    // console.log("id: ", id);
-    // console.log("reviewAreaId: ", reviewAreaId);
+
     if (!reviewArea) return;
 
     // 모드별 코드 실행
     if (mode === "reviewCreate") {
-      setReviewTexts((prev) => ({
-        ...prev,
-        [id]: "",
-      }));
+
     } else if (mode === "reviewUpdate") {
-      setReviewTexts((prev) => ({
-        ...prev,
-        [id]: "",
-      }));
+
     }
-
-    // 화면에 표시
-    reviewArea.style.display = "block";
-  }
-
-  // 리뷰작성 상태 변화 관리
-  const handleChange = (id, value) => {
-    setReviewTexts((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  }
-
-  // 취소버튼
-  const handleCancle = (id) => {
-    const reviewAreaId = "reviewArea" + id;
-    // console.log("id: ", id);
-    // console.log("reviewAreaId: ", reviewAreaId);
-    setReviewTexts((prev) => ({
-      ...prev,
-      [id]: "",
-    }));
-    document.getElementById(`${reviewAreaId}`).style.display = "none";
   }
 
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
@@ -241,33 +210,6 @@ const MyPageLoan = () => {
                         loanId={selectLoanId} 
                         fetchBookLoans={() => fetchBookLoans(page, size)}
                       />
-                    </div>
-                  </div>
-
-                  {/* 리뷰작성 textarea */}
-                  <div 
-                    id={`reviewArea${item.id}`} 
-                    className={`flex flex-col items-start border-t-1 border-gray-300 mt-4 leading-normal hidden`}>
-                    <div className="font-bold pl-1 mt-4 mb-2">{item.reviewWritten ? "리뷰수정" : "리뷰작성"}</div>
-                    <textarea 
-                      className="
-                        border border-gray-300 
-                        px-3 py-2 w-full min-h-[100px] max-h-[300px]
-                        text-[15px] leading-7
-                        outline-none
-                        focus:border-black
-                      "
-                      placeholder="여기에 내용을 입력하세요."
-                      value={reviewTexts[item.id] || ""}
-                      onChange={(e) => handleChange(item.id, e.target.value)}
-                    ></textarea>
-                    <div className="flex w-full justify-end">
-                      <button className="border border-gray-300 px-3 py-2 mt-2 mr-1 text-[15px] leading-normal">{item.reviewWritten ? "수정하기" : "작성하기"}</button>
-                      <button 
-                        id="reviewAreaCancleBtn"
-                        className="self-end border border-gray-300 px-3 py-2 mt-2 text-[15px] leading-normal"
-                        onClick={() => handleCancle(item.id)}
-                      >취소</button>
                     </div>
                   </div>
                 </div>
