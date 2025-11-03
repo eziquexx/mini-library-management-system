@@ -15,7 +15,6 @@ const MyPageLoan = () => {
   const [size, setSize] = useState(Number(searchParams.get('size')) || 5);
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [extended, setExtended] = useState();
   const [selectLoanId, setSelectLoanId] = useState(null);
 
   console.log(user);
@@ -48,7 +47,6 @@ const MyPageLoan = () => {
       console.log(response.data.data);
       setData(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
-      setExtended(response.data.data.content.extended);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -95,6 +93,20 @@ const MyPageLoan = () => {
     }
   };
 
+  // 리뷰작성 및 수정 버튼
+  const handleClick = (id, mode) => {
+    const reviewAreaId = "reviewArea" + id;
+    const reviewArea = document.getElementById(reviewAreaId);
+
+    if (!reviewArea) return;
+
+    // 모드별 코드 실행
+    if (mode === "reviewCreate") {
+
+    } else if (mode === "reviewUpdate") {
+
+    }
+  }
 
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
   let content;
@@ -108,69 +120,97 @@ const MyPageLoan = () => {
               {data.map((item) => (
                 <div 
                   key={item.id}
-                  className="flex flex-row w-full border border-gray-200 p-3 mb-2"
+                  className="flex flex-col w-full border border-gray-200 p-3 mb-2"
                 >
-                  <div className="flex w-[120px] items-start">
-                    <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
-                  </div>
-                  <div className=" flex flex-col justify-start self-start leading-6 text-[15px] ml-2 text-gray-700">
-                    <div className="font-bold text-black">{item.bookTitle}</div>
-                    <div className="flex sm:flex-row flex-col">
-                      <div>{item.author}</div>
-                      <div className="mx-2 hidden sm:block">|</div>
-                      <div>{item.publisher}</div>
+                  <div className="flex flex-row w-full">
+                    <div className="flex w-[120px] min-w-[120px] items-start">
+                      <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
                     </div>
-                    <div>위치:<span className="ml-[4px]">{item.location}</span></div>
-                    <div className="font-bold">상태: 
-                      <span className="text-blue-700 ml-[4px] font-normal">
-                        { bookStatus(item.status) }
-                      </span>
-                    </div>
-                    <div className="flex sm:flex-row flex-col">
-                      <div className="font-bold">대출일:<span className="ml-[4px] font-normal">{item.loanDate.split('T', 1)}</span></div>
-                      <div className="mx-2 hidden sm:block">|</div>
-                      {item.returnDate
-                        ? (
-                            <div className="font-bold">
-                              반납일:
-                              <span className="text-red-700 ml-[4px] font-normal">{item.returnDate.split('T', 1)}</span>
-                            </div>
-                          )
-                        : (
-                            <div className="font-bold">
-                              반납예정일:
-                              <span className="text-red-700 ml-[4px] font-normal">{item.dueDate.split('T', 1)}</span>
-                            </div>
-                          )
+                    <div className="flex flex-col justify-start self-start leading-6 text-[15px] ml-2 text-gray-700">
+                      <div className="font-bold text-black">{item.bookTitle}</div>
+                      <div className="flex sm:flex-row flex-col">
+                        <div>{item.author}</div>
+                        <div className="mx-2 hidden sm:block">|</div>
+                        <div>{item.publisher}</div>
+                      </div>
+                      <div>위치:<span className="ml-[4px]">{item.location}</span></div>
+                      <div className="font-bold">상태: 
+                        <span className="text-blue-700 ml-[4px] font-normal">
+                          { bookStatus(item.status) }
+                        </span>
+                      </div>
+                      <div className="flex sm:flex-row flex-col">
+                        <div className="font-bold">대출일:<span className="ml-[4px] font-normal">{item.loanDate.split('T', 1)}</span></div>
+                        <div className="mx-2 hidden sm:block">|</div>
+                        {item.returnDate
+                          ? (
+                              <div className="font-bold">
+                                반납일:
+                                <span className="text-red-700 ml-[4px] font-normal">{item.returnDate.split('T', 1)}</span>
+                              </div>
+                            )
+                          : (
+                              <div className="font-bold">
+                                반납예정일:
+                                <span className="text-red-700 ml-[4px] font-normal">{item.dueDate.split('T', 1)}</span>
+                              </div>
+                            )
+                          }
+                        
+                      </div>
+                      <div>대출자:<span className="ml-[4px]">{item.borrower}</span></div>
+                      <div className="flex flex-row items-center">
+                        리뷰작성:
+                        {item.reviewWritten != true 
+                          ? (
+                              <>
+                                <span className="text-green-700 ml-[4px]">미작성</span>
+                                <div className="mx-2">|</div>
+                                <button 
+                                  id="reviewCreate" 
+                                  className="cursor-pointer hover:underline"
+                                  onClick={() => handleClick(item.id, "reviewCreate")}
+                                >작성하기&nbsp;&gt;</button>
+                              </>
+                            )
+                          : (
+                              <>
+                                <span className="text-green-700 ml-[4px]">작성</span>
+                                <div className="mx-2">|</div>
+                                <button 
+                                  id="reviewUpdate" 
+                                  className="cursor-pointer hover:underline"
+                                  onClick={() => handleClick(item.id, "reviewUpdate")}
+                                >수정하기&nbsp;&gt;</button>
+                              </>
+                            )
                         }
-                      
+                      </div>
+                      <div>대출연장:<span className="ml-[4px]">{item.extended != true ? "0" : "1"}</span>회</div>
+                      <button 
+                        command="show-modal" 
+                        commandfor="dialogExtended"
+                        onClick={() => {
+                          setSelectLoanId(item.id);
+                        }}
+                        disabled={item.extended != false}
+                        className="
+                          mt-2 px-2 py-1 
+                          border border-gray-500 
+                          text-[15px] self-start
+                          hover:border-teal-600
+                          hover:bg-teal-600
+                          hover:text-white
+                          disabled:border-gray-400
+                          disabled:text-gray-400
+                          disabled:hover:bg-transparent"
+                      >연장하기</button>
+                      <MyPageLoanModal 
+                        id="dialogExtended" 
+                        loanId={selectLoanId} 
+                        fetchBookLoans={() => fetchBookLoans(page, size)}
+                      />
                     </div>
-                    <div>대출자:<span className="ml-[4px]">{item.borrower}</span></div>
-                    <div>리뷰작성:<span className="text-green-700 ml-[4px]">미작성</span></div>
-                    <div>대출연장:<span className="ml-[4px]">{item.extended != true ? "0" : "1"}</span>회</div>
-                    <button 
-                      command="show-modal" 
-                      commandfor="dialogExtended"
-                      onClick={() => {
-                        setSelectLoanId(item.id);
-                      }}
-                      disabled={item.extended != false}
-                      className="
-                        mt-2 px-2 py-1 
-                        border border-gray-500 
-                        text-[15px] self-start
-                        hover:border-teal-600
-                        hover:bg-teal-600
-                        hover:text-white
-                        disabled:border-gray-400
-                        disabled:text-gray-400
-                        disabled:hover:bg-transparent"
-                    >연장하기</button>
-                    <MyPageLoanModal 
-                      id="dialogExtended" 
-                      loanId={selectLoanId} 
-                      fetchBookLoans={() => fetchBookLoans(page, size)}
-                    />
                   </div>
                 </div>
               ))}

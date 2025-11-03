@@ -1,0 +1,187 @@
+import { useEffect, useState } from "react";
+import useUserStore from "../stores/useUserStore";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+
+
+const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
+  
+  const fetchUser = useUserStore((state) => state.fetchUser);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+  const [originReview, setOriginReview] = useState("");
+  const [updateReview, setUpdateReview] = useState("");
+  const navigate = useNavigate();
+
+  console.log("id: ", id);
+  console.log("reviewId: ", reviewId);
+
+  useEffect(() => {
+    fetchReviewDetail(reviewId);
+  }, [reviewId]);
+
+  // 리뷰 상세 api
+  const fetchReviewDetail = async (reviewId) => {
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+          }
+        }
+      );
+
+      console.log(response.data.data);
+      setData(response.data.data);
+      setOriginReview(response.data.data.content);
+      setUpdateReview(response.data.data.content);
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("리뷰 상세 조회 완료");
+      setLoading(false);
+    }
+  }
+
+  // 리뷰 수정 api
+  const fetchUpdateReview = async () => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+        { content: updateReview, },
+        { withCredentials: true, }
+      );
+
+      console.log("리뷰 수정 성공");
+      alert("리뷰 수정 성공했습니다.");
+      return response;
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("리뷰 수정 완료");
+    }
+  }
+
+  // 닫기 버튼
+  const handleClose = () => {
+    setUpdateReview(originReview);
+  }
+
+  // 리뷰 수정 버튼
+  const handleUpdateReview = async () => {
+    await fetchUpdateReview();
+    await fetchBookReview();
+
+    document.getElementById(id)?.close();
+  }
+
+  return (
+    <>
+      {/* <button command="show-modal" commandfor="dialog" className="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10">Open dialog</button> */}
+      <el-dialog>
+        <dialog id={id} aria-labelledby="dialog-title" className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+          {/* 배경 */}
+          <el-dialog-backdrop className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+
+          <div tabindex="0" className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+            <el-dialog-panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  {/* <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" className="size-6 text-red-600">
+                      <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div> */}
+
+                  
+                  <div className="flex flex-col w-full mt-3 sm:mt-0 sm:text-left">
+                    <h3 id="dialog-title" className="text-base font-semibold text-gray-900 text-center sm:text-left">리뷰 상세</h3>
+                    {/* 내용 */}
+                    <div className="flex flex-col items-start mt-2">
+                      {/* 도서정보 */}
+                      <div className="flex flex-row w-full items-start text-sm text-gray-500">
+                        {/* 썸네일 */}
+                        <div className="flex w-[100px] min-w-[100px] items-start shrink-0">
+                          <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
+                        </div>
+                        <div className="flex flex-col w-full min-w-0 leading-6 text-[15px] ml-2 text-gray-700">
+                          <div className="font-bold text-black">{data.bookTitle}</div>
+                          <div className="flex flex-row text-black w-full">
+                            <span className="text-gray-500 w-1/7 mr-1">저자</span>
+                            <span className="">{data.author}</span>
+                          </div>
+                          <div className="flex flex-row text-black w-full">
+                            <span className="text-gray-500 w-1/7 mr-1">출판사</span>
+                            <span className="w-6/7">{data.publisher}</span>
+                          </div>
+                          <div className="flex flex-row text-black w-full">
+                            <span className="text-gray-500 w-1/7 mr-1">출판일</span>
+                            <span className="">{data.publishedDate}</span>
+                          </div>
+                          <div className="flex flex-row text-black w-full">
+                            <span className="text-gray-500 w-1/7 mr-1">ISBN</span>
+                            <span className="">{data.isbn}</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* 리뷰내용 */}
+                      <div className="flex flex-row w-full mt-2 leading-6 overflow-hidden items-center text-[15px]">
+                        <textarea 
+                          className="
+                            w-full min-w-0 
+                            min-h-[82px] max-h-[82px] h-[82px] 
+                            px-2 py-1 
+                            border border-gray-200 rounded line-clamp-3 
+                            outline-none focus:border-teal-600"
+                          value={updateReview}
+                          onChange={(e) => setUpdateReview(e.target.value)}
+                        >
+                        </textarea>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              <div className="px-4 pb-7 sm:pb-5 sm:flex sm:flex-row-reverse sm:px-6">
+                <button 
+                  type="button" 
+                  command="close" 
+                  commandfor={id} 
+                  disabled={originReview === updateReview}
+                  className="
+                    inline-flex w-full justify-center rounded-md 
+                    bg-teal-600 hover:bg-teal-700 
+                    text-sm font-semibold text-white shadow-xs 
+                    px-3 py-2 sm:ml-3 sm:w-auto
+                    disabled:bg-gray-400
+                  "
+                  onClick={handleUpdateReview}
+                >변경</button>
+                <button 
+                  type="button" 
+                  command="close" 
+                  commandfor={id} 
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                  onClick={handleClose}
+                >닫기</button>
+              </div>
+            </el-dialog-panel>
+          </div>
+        </dialog>
+      </el-dialog>
+    </>
+  );
+}
+
+export default MyPageReviewModal;
