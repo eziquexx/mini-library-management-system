@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useUserStore from "../stores/useUserStore";
 import axios from "axios";
+import MyPageReviewModal from "./MyPageReviewModal";
 
 
 const MyPageReview = () => {
@@ -88,6 +89,9 @@ const MyPageReview = () => {
                 {data.map((review) => (
                   <div 
                     key={review.id}
+                    // command="show-modal" 
+                    // commandfor="dialogtest"
+                    onClick={() => document.getElementById("dialogtest").showModal()}
                     className="flex flex-col w-full"
                   >
                     <div className="flex flex-row w-full overflow-hidden p-2 hover:border-1 hover:border-teal-600 cursor-pointer">
@@ -103,18 +107,11 @@ const MyPageReview = () => {
                           <div className="w-full min-w-0 px-2 py-1 h-[82px] border border-gray-200 rounded line-clamp-3">
                             {review.content}
                           </div>
-                          {/* <div className="flex flex-col self-end ml-2">
-                            <button className="mb-2 px-3 py-2 border border-gray-300 leading-none whitespace-nowrap">수정</button>
-                            <button className="px-3 py-2 border border-gray-300 leading-none whitespace-nowrap">삭제</button>
-                          </div> */}
                         </div>
                       </div>
-                      {/* <div className="border flex-1 text-[15px]">
-                        <button className="border border-gray-500 px-2 py-3 leading-none">수정</button>
-                        <button className="border border-gray-500 px-2 py-3 leading-none">삭제</button>
-                      </div> */}
                     </div>
                     <div className="w-full border-b-1 border-gray-200"></div>
+                    <MyPageReviewModal id="dialogtest"/>
                   </div>
                 ))}
               </>
