@@ -44,6 +44,7 @@ const MyPageReview = () => {
 
       console.log(response.data.data);
       setData(response.data.data.content);
+      setTotalPages(response.data.data.totalPages || 1);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -52,6 +53,27 @@ const MyPageReview = () => {
       setLoading(false);
     }
   }
+
+  // 이전 페이지
+  const handlePrev = () => {
+    if (page > 0) {
+      setPage(page - 1);
+      fetchBookReview(currentFilter, page - 1);
+    }
+  }
+
+  // 다음 페이지
+  const handleNext = () => {
+    if (page < totalPages - 1) {
+      setPage(page + 1);
+      fetchBookReview(currentFilter, page + 1);
+    }
+  }
+
+  // 페이지 번호
+  const handlePageClick = (pageNumber) => {
+    setPage(pageNumber);
+  }
   
 
   return (
@@ -59,16 +81,16 @@ const MyPageReview = () => {
       <div className="flex flex-col border border-gray-300  mt-2 p-8 leading-10">
         <div className="text-2xl mb-4">리뷰내역 정보</div>
         <div className="flex flex-col w-full items-center">
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full justify-center items-center">
             {/* 대출 내역 items */}
             {!loading && !error && (
               <>
                 {data.map((review) => (
                   <div 
                     key={review.id}
-                    className="flex flex-col w-full border border-gray-200 p-3 mb-2"
+                    className="flex flex-col w-full"
                   >
-                    <div className="flex flex-row w-full overflow-hidden">
+                    <div className="flex flex-row w-full overflow-hidden p-2 hover:border-1 hover:border-teal-600 cursor-pointer">
                       {/* 썸네일 */}
                       <div className="flex w-[100px] min-w-[100px] items-start shrink-0">
                         <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
@@ -78,13 +100,13 @@ const MyPageReview = () => {
                         <div className="font-bold text-black">{review.bookTitle}</div>
                         <div>작성일: {review.createdDate.split('T').join(" ")}</div>
                         <div className="flex flex-row w-full mt-2 leading-6 overflow-hidden items-center">
-                          <div className="min-w-0 px-2 py-1 h-[82px] border border-gray-300 line-clamp-3">
+                          <div className="w-full min-w-0 px-2 py-1 h-[82px] border border-gray-200 rounded line-clamp-3">
                             {review.content}
                           </div>
-                          <div className="flex flex-col self-end ml-2">
+                          {/* <div className="flex flex-col self-end ml-2">
                             <button className="mb-2 px-3 py-2 border border-gray-300 leading-none whitespace-nowrap">수정</button>
                             <button className="px-3 py-2 border border-gray-300 leading-none whitespace-nowrap">삭제</button>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                       {/* <div className="border flex-1 text-[15px]">
@@ -92,34 +114,35 @@ const MyPageReview = () => {
                         <button className="border border-gray-500 px-2 py-3 leading-none">삭제</button>
                       </div> */}
                     </div>
+                    <div className="w-full border-b-1 border-gray-200"></div>
                   </div>
                 ))}
               </>
             )}
-            
-          </div>
-          {/* 페이징 */}
-          {/* <div>
-            <button
-              onClick={ handlePrev }
-              disabled={page === 0 || totalPages === 0}
-              className="px-3 py-1 cursor-pointer disabled:opacity-50"
-            >이전</button>
-            {[...Array(totalPages)].map((_, i) => (
+
+            {/* 페이징 */}
+            <div className="mt-2">
               <button
-                key={i}
-                onClick={() => handlePageClick(i)}
-                className={`px-[10px] py-[6px] mx-[3px] text-base cursor-pointer ${
-                  i === page ? "text-teal-600 font-bold" : ""
-                }`}
-              >{i + 1}</button>
-            ))}
-            <button
-              onClick={ handleNext }
-              disabled={page === totalPages - 1 || totalPages === 0}
-              className="px-3 py-1 cursor-pointer disabled:opacity-50"
-            >이후</button>
-          </div> */}
+                onClick={ handlePrev }
+                disabled={page === 0 || totalPages === 0}
+                className="px-3 py-1 cursor-pointer disabled:opacity-50"
+              >이전</button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageClick(i)}
+                  className={`px-[10px] py-[6px] mx-[3px] text-base cursor-pointer ${
+                    i === page ? "text-teal-600 font-bold" : ""
+                  }`}
+                >{i + 1}</button>
+              ))}
+              <button
+                onClick={ handleNext }
+                disabled={page === totalPages - 1 || totalPages === 0}
+                className="px-3 py-1 cursor-pointer disabled:opacity-50"
+              >이후</button>
+            </div>
+          </div>
         </div>
       </div>
     </>
