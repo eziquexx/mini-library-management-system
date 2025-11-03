@@ -15,6 +15,7 @@ const MyPageReview = () => {
   const [size, setSize] = useState(Number(searchParams.get('size')) || 10);
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
 
 
   useEffect (() => {
@@ -75,6 +76,11 @@ const MyPageReview = () => {
   const handlePageClick = (pageNumber) => {
     setPage(pageNumber);
   }
+
+  // 모달창
+  const handleOpenDialog = (reviewId) => {
+    document.getElementById(`dialogReview${reviewId}`).showModal();
+  }
   
 
   return (
@@ -91,7 +97,7 @@ const MyPageReview = () => {
                     key={review.id}
                     // command="show-modal" 
                     // commandfor="dialogtest"
-                    onClick={() => document.getElementById("dialogtest").showModal()}
+                    onClick={() => handleOpenDialog(review.id)}
                     className="flex flex-col w-full"
                   >
                     <div className="flex flex-row w-full overflow-hidden p-2 hover:border-1 hover:border-teal-600 cursor-pointer">
@@ -111,7 +117,11 @@ const MyPageReview = () => {
                       </div>
                     </div>
                     <div className="w-full border-b-1 border-gray-200"></div>
-                    <MyPageReviewModal id="dialogtest"/>
+                    <MyPageReviewModal 
+                      id={`dialogReview${review.id}`} 
+                      reviewId={review.id}
+                      fetchBookReview={fetchBookReview}
+                    />
                   </div>
                 ))}
               </>
