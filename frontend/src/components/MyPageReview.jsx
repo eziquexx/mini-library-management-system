@@ -85,8 +85,34 @@ const MyPageReview = () => {
 
   return (
     <>
-      <div className="flex flex-col border border-gray-300  mt-2 p-8 leading-10">
+      <div className="flex flex-col border border-gray-300 mt-2 p-8 leading-10">
         <div className="text-2xl mb-4">리뷰내역 정보</div>
+        {/* 검색 영역 */}
+        <div className="w-full bg-gray-100 px-3 py-4 mb-4 flex flex-row justify-center items-center">
+          <div className="w-full flex flex-row justify-center">
+            <input 
+              type="text" 
+              className="
+                w-9/12
+                sm:w-6/12
+                text-sm px-3 py-3 leading-none
+                bg-white
+                border border-gray-300 rounded-sm outline-none
+                focus:border-teal-600"
+              placeholder="검색어를 입력해주세요."
+            />
+            <button 
+              className="
+                w-3/12
+                sm:w-2/12
+                px-5 py-2 ml-2 
+                text-white leading-none
+                bg-teal-600 rounded-sm
+                hover:bg-teal-700
+                cursor-pointer"
+              >검색</button>
+          </div>
+        </div>
         <div className="flex flex-col w-full items-center">
           <div className="flex flex-col w-full justify-center items-center">
             {/* 대출 내역 items */}
