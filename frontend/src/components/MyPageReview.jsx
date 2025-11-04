@@ -15,6 +15,7 @@ const MyPageReview = () => {
   const [size, setSize] = useState(Number(searchParams.get('size')) || 10);
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [keyword, setKeyword] = useState("");
 
@@ -48,6 +49,7 @@ const MyPageReview = () => {
       console.log(response.data.data);
       setData(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
+      setTotalElements(response.data.data.totalElements || 1);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -78,9 +80,11 @@ const MyPageReview = () => {
       console.log("검색결과: ", response.data.data);
       setData(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
+      setTotalElements(response.data.data.totalElements || 1);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
+      setTotalElements(0);
     } finally {
       console.log("리뷰 검색 완료");
     }
@@ -206,6 +210,14 @@ const MyPageReview = () => {
         </div>
         <div className="flex flex-col w-full items-center">
           <div className="flex flex-col w-full justify-center items-center">
+            {/* 총 개수와 페이지 */}
+            <div className="self-start flex flex-row text-sm mb-1">
+              <div>총 {data.length > 0 ? totalElements : 0}건</div> 
+              <div className="mx-2">|</div>
+              <div>{ data.length > 0 ? page + 1 : page }
+                  /{ data.length > 0 ? totalPages : 0 }페이지</div>
+            </div>
+
             {/* 리뷰 내역 items */}
             {content}
 
