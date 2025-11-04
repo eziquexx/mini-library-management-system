@@ -72,6 +72,25 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
     }
   }
 
+  // 리뷰 삭제 api
+  const fetchDeleteReview = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+        { withCredentials: true, }
+      );
+
+      console.log(response.data.data);
+      alert("리뷰 삭제 성공했습니다.");
+      
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("리뷰 삭제 완료");
+    }
+  }
+
   // 닫기 버튼
   const handleClose = () => {
     setUpdateReview(originReview);
@@ -82,6 +101,13 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
     await fetchUpdateReview();
     await fetchBookReview();
 
+    document.getElementById(id)?.close();
+  }
+
+  // 리뷰 삭제 버튼
+  const handleDeleteReview = async () => {
+    await fetchDeleteReview();
+    await fetchBookReview();
     document.getElementById(id)?.close();
   }
 
@@ -142,7 +168,8 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
                             min-h-[82px] max-h-[82px] h-[82px] 
                             px-2 py-1 
                             border border-gray-200 rounded line-clamp-3 
-                            outline-none focus:border-teal-600"
+                            outline-none focus:border-teal-600
+                            resize-none overflow-y-scroll"
                           value={updateReview}
                           onChange={(e) => setUpdateReview(e.target.value)}
                         >
@@ -153,7 +180,27 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
                   
                 </div>
               </div>
-              <div className="px-4 pb-7 sm:pb-5 sm:flex sm:flex-row-reverse sm:px-6">
+              <div 
+                className="
+                  px-4 pb-7 sm:pb-5 
+                  flex-row-reverse justify-end
+                  sm:flex sm:flex-row sm:px-6"
+              >
+                <button
+                  type="button" 
+                  command="close" 
+                  commandfor={id} 
+                  className="
+                    inline-flex w-full justify-center rounded-md 
+                    bg-red-600 hover:bg-red-700 
+                    text-sm font-semibold text-white shadow-xs 
+                    px-3 py-2 sm:ml-2 sm:w-auto
+                    disabled:bg-gray-400
+                  "
+                  onClick={handleDeleteReview}
+                >
+                  삭제
+                </button>
                 <button 
                   type="button" 
                   command="close" 
@@ -163,7 +210,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
                     inline-flex w-full justify-center rounded-md 
                     bg-teal-600 hover:bg-teal-700 
                     text-sm font-semibold text-white shadow-xs 
-                    px-3 py-2 sm:ml-3 sm:w-auto
+                    px-3 py-2 sm:ml-2 sm:w-auto
                     disabled:bg-gray-400
                   "
                   onClick={handleUpdateReview}
@@ -172,7 +219,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
                   type="button" 
                   command="close" 
                   commandfor={id} 
-                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:ml-2"
                   onClick={handleClose}
                 >닫기</button>
               </div>
