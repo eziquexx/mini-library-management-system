@@ -100,7 +100,12 @@ const MyPageReview = () => {
                     onClick={() => handleOpenDialog(review.id)}
                     className="flex flex-col w-full"
                   >
-                    <div className="flex flex-row w-full overflow-hidden p-2 hover:border-1 hover:border-teal-600 cursor-pointer">
+                    <div className="
+                      flex flex-row w-full overflow-hidden p-2 
+                      border-1 border-transparent 
+                      hover:border-teal-600 
+                      cursor-pointer"
+                    >
                       {/* 썸네일 */}
                       <div className="flex w-[100px] min-w-[100px] items-start shrink-0">
                         <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
