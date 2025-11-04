@@ -16,6 +16,7 @@ const MyPageReview = () => {
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [keyword, setKeyword] = useState("");
 
 
   useEffect (() => {
@@ -56,6 +57,35 @@ const MyPageReview = () => {
     }
   }
 
+  // 리뷰 검색 api
+  const fetchReviewSearch = async (keyword) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/user/me/reviews/search`,
+        {
+          params: {
+            keyword: keyword,
+            page: page,
+            size: size,
+          },
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+          }
+        },
+      );
+
+      console.log("검색결과: ", response.data.data);
+      setData(response.data.data.content);
+      setTotalPages(response.data.data.totalPages || 1);
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("리뷰 검색 완료");
+    }
+  }
+
   // 이전 페이지
   const handlePrev = () => {
     if (page > 0) {
@@ -81,7 +111,65 @@ const MyPageReview = () => {
   const handleOpenDialog = (reviewId) => {
     document.getElementById(`dialogReview${reviewId}`).showModal();
   }
+
+  // 검색
+  const handleSearch = () => {
+    fetchReviewSearch(keyword);
+  }
   
+  // 리뷰 목록
+  let content;
+  if (!loading && !error) {
+    if (data && data.length > 0) {
+      content = (
+        <>
+          {data.map((review) => (
+            <div 
+              key={review.id}
+              // command="show-modal" 
+              // commandfor="dialogtest"
+              onClick={() => handleOpenDialog(review.id)}
+              className="flex flex-col w-full"
+            >
+              <div className="
+                flex flex-row w-full overflow-hidden p-2 
+                border-1 border-transparent 
+                hover:border-teal-600 
+                cursor-pointer"
+              >
+                {/* 썸네일 */}
+                <div className="flex w-[100px] min-w-[100px] items-start shrink-0">
+                  <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
+                </div>
+                {/* 텍스트 */}
+                <div className="flex flex-col justify-start self-start w-full min-w-0 leading-6 text-[15px] ml-2 text-gray-700">
+                  <div className="font-bold text-black">{review.bookTitle}</div>
+                  <div>작성일: {review.createdDate.split('T').join(" ")}</div>
+                  <div className="flex flex-row w-full mt-2 leading-6 overflow-hidden items-center">
+                    <div className="w-full min-w-0 px-2 py-1 h-[82px] border border-gray-200 rounded line-clamp-3">
+                      {review.content}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full border-b-1 border-gray-200"></div>
+              <MyPageReviewModal 
+                id={`dialogReview${review.id}`} 
+                reviewId={review.id}
+                fetchBookReview={fetchBookReview}
+              />
+            </div>
+          ))}
+        </>
+      );
+    } else {
+      content = (
+        <>
+          <div className="my-15 text-center">등록된 리뷰가 없습니다.</div>
+        </>
+      );
+    }
+  }
 
   return (
     <>
@@ -100,6 +188,8 @@ const MyPageReview = () => {
                 border border-gray-300 rounded-sm outline-none
                 focus:border-teal-600"
               placeholder="검색어를 입력해주세요."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
             <button 
               className="
@@ -110,53 +200,14 @@ const MyPageReview = () => {
                 bg-teal-600 rounded-sm
                 hover:bg-teal-700
                 cursor-pointer"
-              >검색</button>
+              onClick={handleSearch}  
+            >검색</button>
           </div>
         </div>
         <div className="flex flex-col w-full items-center">
           <div className="flex flex-col w-full justify-center items-center">
-            {/* 대출 내역 items */}
-            {!loading && !error && (
-              <>
-                {data.map((review) => (
-                  <div 
-                    key={review.id}
-                    // command="show-modal" 
-                    // commandfor="dialogtest"
-                    onClick={() => handleOpenDialog(review.id)}
-                    className="flex flex-col w-full"
-                  >
-                    <div className="
-                      flex flex-row w-full overflow-hidden p-2 
-                      border-1 border-transparent 
-                      hover:border-teal-600 
-                      cursor-pointer"
-                    >
-                      {/* 썸네일 */}
-                      <div className="flex w-[100px] min-w-[100px] items-start shrink-0">
-                        <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
-                      </div>
-                      {/* 텍스트 */}
-                      <div className="flex flex-col justify-start self-start w-full min-w-0 leading-6 text-[15px] ml-2 text-gray-700">
-                        <div className="font-bold text-black">{review.bookTitle}</div>
-                        <div>작성일: {review.createdDate.split('T').join(" ")}</div>
-                        <div className="flex flex-row w-full mt-2 leading-6 overflow-hidden items-center">
-                          <div className="w-full min-w-0 px-2 py-1 h-[82px] border border-gray-200 rounded line-clamp-3">
-                            {review.content}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-full border-b-1 border-gray-200"></div>
-                    <MyPageReviewModal 
-                      id={`dialogReview${review.id}`} 
-                      reviewId={review.id}
-                      fetchBookReview={fetchBookReview}
-                    />
-                  </div>
-                ))}
-              </>
-            )}
+            {/* 리뷰 내역 items */}
+            {content}
 
             {/* 페이징 */}
             <div className="mt-2">
