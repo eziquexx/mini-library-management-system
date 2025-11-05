@@ -34,4 +34,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
   // 사용자: 특정 도서 리뷰 작성 체크
   boolean existsByBook_IdAndUser_Id(Long bookId, Long userId);
+
+  // 사용자: 특정 도서에 리뷰 작성한 특정 사용자 조회
+  // 조회가 안되면 null
+  Review findByBook_IdAndUser_Id(Long bookId, Long userId);
 }

@@ -11,6 +11,7 @@ import com.jelee.librarymanagementsystem.domain.loan.dto.user.UserLoanListResDTO
 import com.jelee.librarymanagementsystem.domain.loan.entity.Loan;
 import com.jelee.librarymanagementsystem.domain.loan.enums.LoanStatus;
 import com.jelee.librarymanagementsystem.domain.loan.repository.LoanRepository;
+import com.jelee.librarymanagementsystem.domain.review.entity.Review;
 import com.jelee.librarymanagementsystem.domain.review.repository.ReviewRepository;
 import com.jelee.librarymanagementsystem.domain.user.entity.User;
 import com.jelee.librarymanagementsystem.domain.user.repository.UserRepository;
@@ -49,8 +50,13 @@ public class UserLoanService {
     // 리뷰 작성 여부 체크 추가
     Page<UserLoanListResDTO> pageDTO = loans.map(loan -> {
       boolean reviewWritten = reviewRepository.existsByBook_IdAndUser_Id(loan.getBook().getId(), loan.getUser().getId());
+      Review review = reviewRepository.findByBook_IdAndUser_Id(loan.getBook().getId(), loan.getUser().getId());
 
-      return new UserLoanListResDTO(loan, reviewWritten);
+      Long reviewId = null;
+      if (review != null) {
+        reviewId = review.getId();
+      }
+      return new UserLoanListResDTO(loan, reviewId, reviewWritten);
     });
 
     // 반환
