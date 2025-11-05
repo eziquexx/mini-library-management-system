@@ -16,14 +16,11 @@ const MyPageReview = () => {
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [keyword, setKeyword] = useState("");
-
 
   useEffect (() => {
     fetchBookReview(page, size);
   }, [page, size])
-  
 
   // 리뷰 전체 api
   const fetchBookReview = async (page, size) => {

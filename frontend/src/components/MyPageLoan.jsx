@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useUserStore from "../stores/useUserStore";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
@@ -17,6 +17,11 @@ const MyPageLoan = () => {
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [selectLoanId, setSelectLoanId] = useState(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mode, setMode] = useState(null); // "createReview", "updateReview", "detailReview"
+  const [bookId, setBookId] = useState(null);
+  const [reviewId, setReviewId] = useState(null);
 
   console.log(user);
 
@@ -94,15 +99,20 @@ const MyPageLoan = () => {
     }
   };
 
-  // 리뷰작성 및 수정 버튼
-  const handleClick = (loanId, bookId, mode) => {
-
+  // 리뷰 모달
+  const handleClick = (mode, bookId, reviewId) => {
+    let modalId;
     // 모드별 코드 실행
     if (mode === "createReview") {
-      document.getElementById(`dialogCreateReview${bookId}`).showModal();
+      modalId = `dialogCreateReview${bookId}`;
+      // document.getElementById(`dialogCreateReview${bookId}`).showModal();
     } else if (mode === "updateReview") {
-      document.getElementById(`dialogUpdateReview${bookId}`).showModal();
+      modalId = `dialogUpdateReview${reviewId}`;
+      // document.getElementById(`dialogUpdateReview${reviewId}`).showModal();
     }
+
+    const modal = document.getElementById(modalId);
+    modal.showModal();
   }
 
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
@@ -166,13 +176,14 @@ const MyPageLoan = () => {
                                 <button 
                                   id="createReview" 
                                   className="cursor-pointer hover:underline"
-                                  onClick={() => handleClick(item.id, item.bookId, "createReview")}
+                                  onClick={() => handleClick("createReview", item.bookId, item.reviewId)}
                                 >작성하기&nbsp;&gt;</button>
+                                
                                 <MyPageReviewModal 
                                   id={item.id} 
                                   mode="createReview"
                                   bookId={item.bookId}
-                                  // reviewId={review.id}
+                                  reviewId={item.reviewId}
                                   // fetchBookReview={fetchBookReview}
                                 />
                               </>
@@ -184,13 +195,14 @@ const MyPageLoan = () => {
                                 <button 
                                   id="updateReview" 
                                   className="cursor-pointer hover:underline"
-                                  onClick={() => handleClick(item.id, item.bookId, "updateReview")}
+                                  onClick={() => handleClick("updateReview", item.bookId, item.reviewId)}
                                 >수정하기&nbsp;&gt;</button>
+                              
                                 <MyPageReviewModal 
                                   id={item.id} 
                                   mode="updateReview"
                                   bookId={item.bookId}
-                                  // reviewId={review.id}
+                                  reviewId={item.reviewId}
                                   // fetchBookReview={fetchBookReview}
                                 />
                               </>

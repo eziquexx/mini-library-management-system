@@ -17,7 +17,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
     },
     updateReview: {
       title: "리뷰 수정",
-      modalId: "dialogUpdateReview" + bookId,
+      modalId: "dialogUpdateReview" + reviewId,
     },
     detailReview: {
       title: "리뷰 상세",
@@ -34,21 +34,15 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   const navigate = useNavigate();
   const [content, setContent] = useState("");
 
-  console.log("id: ", id);
-  console.log("reviewId: ", reviewId);
-  console.log("mode: ", mode);
-  console.log("bookId: ", bookId);
-  console.log("modalId: ", modalId);
-
-
+  // console.log("id: ", id);
+  // console.log("reviewId: ", reviewId);
+  // console.log("mode: ", mode);
+  // console.log("bookId: ", bookId);
+  // console.log("modalId: ", modalId);
 
   useEffect(() => {
     fetchData();
-  }, [mode, reviewId]); //bookId 나중에 추가
-
-  // useEffect(() => {
-  //   fetchReviewDetail(reviewId);
-  // }, [reviewId]);
+  }, [modalId]);
 
   // mode별로 맞는 API 호출
   const fetchData = async () => {
@@ -92,36 +86,6 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
       setError(error.response);
     } finally {
       console.log("실행 종료");
-      setLoading(false);
-    }
-  }
-
-  // 리뷰 상세 api
-  const fetchReviewDetail = async (reviewId) => {
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
-        {
-          withCredentials: true,
-          headers: {
-            Accept: "application/json",
-          }
-        }
-      );
-
-      console.log(response.data.data);
-      setData(response.data.data);
-      setOriginReview(response.data.data.content);
-      setUpdateReview(response.data.data.content);
-    } catch (error) {
-      console.log("Error: ", error.response);
-      setError(error.response);
-    } finally {
-      console.log("리뷰 상세 조회 완료");
       setLoading(false);
     }
   }
@@ -242,7 +206,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                           <img src="https://placehold.co/420x600" alt="" className="w-auto block h-auto" />
                         </div>
                         <div className="flex flex-col w-full min-w-0 leading-6 text-[15px] ml-2 text-gray-700">
-                          <div className="font-bold text-black">{data.bookTitle}</div>
+                          <div className="font-bold text-black">{data.bookTitle || data.title}</div>
                           <div className="flex flex-row text-black w-full">
                             <span className="text-gray-500 w-2/11 sm:w-2/12">저자</span>
                             <span className="w-8/11 sm:w-10/12">{data.author}</span>
