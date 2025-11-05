@@ -3,6 +3,7 @@ import useUserStore from "../stores/useUserStore";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import MyPageLoanModal from "./MyPageLoanModal";
+import MyPageReviewModal from "./MyPageReviewModal";
 
 
 const MyPageLoan = () => {
@@ -186,6 +187,13 @@ const MyPageLoan = () => {
                             )
                         }
                       </div>
+                      <MyPageReviewModal 
+                        // id={`dialogReview${review.id}`} 
+                        mode="createReview"
+                        // bookId={}
+                        // reviewId={review.id}
+                        // fetchBookReview={fetchBookReview}
+                      />
                       <div>대출연장:<span className="ml-[4px]">{item.extended != true ? "0" : "1"}</span>회</div>
                       <button 
                         command="show-modal" 

@@ -161,6 +161,7 @@ const MyPageReview = () => {
                 id={`dialogReview${review.id}`} 
                 reviewId={review.id}
                 fetchBookReview={fetchBookReview}
+                mode="detailReview"
               />
             </div>
           ))}

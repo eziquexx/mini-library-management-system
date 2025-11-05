@@ -5,22 +5,81 @@ import axios from "axios";
 
 
 
-const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
+const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   
   const fetchUser = useUserStore((state) => state.fetchUser);
+  // const {title} = modalData[mode] || {};
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
   const [originReview, setOriginReview] = useState("");
   const [updateReview, setUpdateReview] = useState("");
   const navigate = useNavigate();
+  const [content, setContent] = useState("");
 
   console.log("id: ", id);
   console.log("reviewId: ", reviewId);
+  console.log("mode: ", mode);
+
+  const modalData = {
+  createReview: {
+    title: "리뷰 작성",
+  },
+  updateReview: {
+    title: "리뷰 수정",
+  },
+  detailReview: {
+    title: "리뷰 상세",
+  }
+}
 
   useEffect(() => {
-    fetchReviewDetail(reviewId);
-  }, [reviewId]);
+    fetchData();
+  }, [mode, reviewId]); //bookId 나중에 추가
+
+  // useEffect(() => {
+  //   fetchReviewDetail(reviewId);
+  // }, [reviewId]);
+
+
+
+  // mode별로 맞는 API 호출
+  const fetchData = async () => {
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (mode === "createReview") {
+        // 도서 상세 정보 불러오기
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/books/${bookId}`,
+          {}
+        );
+      } else if (mode === "updateReview" || mode === "detailReview") {
+        // 리뷰 상세 불러오기
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+          {
+            withCredentials: true,
+            headers: {
+              Accept: "application/json",
+            }
+          }
+        );
+
+        setData(response.data.data);
+        setOriginReview(response.data.data.content);
+        setUpdateReview(response.data.data.content);
+      }
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("실행 종료");
+      setLoading(false);
+    }
+  }
 
   // 리뷰 상세 api
   const fetchReviewDetail = async (reviewId) => {
@@ -88,6 +147,24 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview}) => {
       setError(error.response);
     } finally {
       console.log("리뷰 삭제 완료");
+    }
+  }
+
+  // 리뷰 작성 api
+  const fetchCreateReview = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/user/books/${bookId}/reviews`,
+        { content: content },
+        { withCredentials: true }
+      );
+
+      console.log(response.data.data);
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("리뷰 작성 완료");
     }
   }
 
