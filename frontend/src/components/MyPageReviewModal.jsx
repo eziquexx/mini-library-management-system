@@ -5,10 +5,27 @@ import axios from "axios";
 
 
 
+
 const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   
   const fetchUser = useUserStore((state) => state.fetchUser);
-  // const {title} = modalData[mode] || {};
+
+  const modalData = {
+    createReview: {
+      title: "리뷰 작성",
+      modalId: "dialogCreateReview" + bookId,
+    },
+    updateReview: {
+      title: "리뷰 수정",
+      modalId: "dialogUpdateReview" + bookId,
+    },
+    detailReview: {
+      title: "리뷰 상세",
+      modalId: "dialogDetailReview" + id,
+    }
+  }
+
+  const { title, modalId } = modalData[mode] || {};
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
@@ -20,18 +37,10 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   console.log("id: ", id);
   console.log("reviewId: ", reviewId);
   console.log("mode: ", mode);
+  console.log("bookId: ", bookId);
+  console.log("modalId: ", modalId);
 
-  const modalData = {
-  createReview: {
-    title: "리뷰 작성",
-  },
-  updateReview: {
-    title: "리뷰 수정",
-  },
-  detailReview: {
-    title: "리뷰 상세",
-  }
-}
+
 
   useEffect(() => {
     fetchData();
@@ -40,8 +49,6 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   // useEffect(() => {
   //   fetchReviewDetail(reviewId);
   // }, [reviewId]);
-
-
 
   // mode별로 맞는 API 호출
   const fetchData = async () => {
@@ -54,8 +61,16 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
         // 도서 상세 정보 불러오기
         const response = await axios.get(
           `http://localhost:8080/api/v1/books/${bookId}`,
-          {}
+          {
+            withCredentials: true,
+            headers: {
+              Accept: "application/json",
+            }
+          }
         );
+
+        console.log(response.data.data);
+        setData(response.data.data);
       } else if (mode === "updateReview" || mode === "detailReview") {
         // 리뷰 상세 불러오기
         const response = await axios.get(
@@ -178,21 +193,21 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
     await fetchUpdateReview();
     await fetchBookReview();
 
-    document.getElementById(id)?.close();
+    document.getElementById(modalId)?.close();
   }
 
   // 리뷰 삭제 버튼
   const handleDeleteReview = async () => {
     await fetchDeleteReview();
     await fetchBookReview();
-    document.getElementById(id)?.close();
+    document.getElementById(modalId)?.close();
   }
 
   return (
     <>
       {/* <button command="show-modal" commandfor="dialog" className="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10">Open dialog</button> */}
       <el-dialog>
-        <dialog id={id} aria-labelledby="dialog-title" className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+        <dialog id={modalId} aria-labelledby="dialog-title" className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
           {/* 배경 */}
           <el-dialog-backdrop className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
 
@@ -217,7 +232,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
 
                   
                   <div className="flex flex-col w-full sm:mt-0 sm:text-left">
-                    <h3 id="dialog-title" className="text-base font-semibold text-gray-900 text-center mb-2 sm:text-left sm:mb-0">리뷰 상세</h3>
+                    <h3 id="dialog-title" className="text-base font-semibold text-gray-900 text-center mb-2 sm:text-left sm:mb-0">{title}</h3>
                     {/* 내용 */}
                     <div className="flex flex-col items-start mt-2">
                       {/* 도서정보 */}
@@ -276,7 +291,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                   <button
                     type="button" 
                     command="close" 
-                    commandfor={id} 
+                    commandfor={modalId} 
                     className="
                       order-3 sm:order-1
                       inline-flex w-full justify-center rounded-md 
@@ -292,7 +307,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                   <button 
                     type="button" 
                     command="close" 
-                    commandfor={id} 
+                    commandfor={modalId} 
                     disabled={originReview === updateReview}
                     className="
                       order-1 sm:order-2
@@ -307,7 +322,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                   <button 
                     type="button" 
                     command="close" 
-                    commandfor={id} 
+                    commandfor={modalId} 
                     className="
                       order-2 sm:order-3
                       inline-flex w-full justify-center rounded-md 

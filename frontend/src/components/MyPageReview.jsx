@@ -113,7 +113,7 @@ const MyPageReview = () => {
 
   // 모달창
   const handleOpenDialog = (reviewId) => {
-    document.getElementById(`dialogReview${reviewId}`).showModal();
+    document.getElementById(`dialogDetailReview${reviewId}`).showModal();
   }
 
   // 검색
@@ -158,7 +158,7 @@ const MyPageReview = () => {
               </div>
               <div className="w-full border-b-1 border-gray-200"></div>
               <MyPageReviewModal 
-                id={`dialogReview${review.id}`} 
+                id={review.id} 
                 reviewId={review.id}
                 fetchBookReview={fetchBookReview}
                 mode="detailReview"

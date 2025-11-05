@@ -95,17 +95,13 @@ const MyPageLoan = () => {
   };
 
   // 리뷰작성 및 수정 버튼
-  const handleClick = (id, mode) => {
-    const reviewAreaId = "reviewArea" + id;
-    const reviewArea = document.getElementById(reviewAreaId);
-
-    if (!reviewArea) return;
+  const handleClick = (loanId, bookId, mode) => {
 
     // 모드별 코드 실행
-    if (mode === "reviewCreate") {
-
-    } else if (mode === "reviewUpdate") {
-
+    if (mode === "createReview") {
+      document.getElementById(`dialogCreateReview${bookId}`).showModal();
+    } else if (mode === "updateReview") {
+      document.getElementById(`dialogUpdateReview${bookId}`).showModal();
     }
   }
 
@@ -168,10 +164,17 @@ const MyPageLoan = () => {
                                 <span className="text-green-700 ml-[4px]">미작성</span>
                                 <div className="mx-2">|</div>
                                 <button 
-                                  id="reviewCreate" 
+                                  id="createReview" 
                                   className="cursor-pointer hover:underline"
-                                  onClick={() => handleClick(item.id, "reviewCreate")}
+                                  onClick={() => handleClick(item.id, item.bookId, "createReview")}
                                 >작성하기&nbsp;&gt;</button>
+                                <MyPageReviewModal 
+                                  id={item.id} 
+                                  mode="createReview"
+                                  bookId={item.bookId}
+                                  // reviewId={review.id}
+                                  // fetchBookReview={fetchBookReview}
+                                />
                               </>
                             )
                           : (
@@ -179,21 +182,21 @@ const MyPageLoan = () => {
                                 <span className="text-green-700 ml-[4px]">작성</span>
                                 <div className="mx-2">|</div>
                                 <button 
-                                  id="reviewUpdate" 
+                                  id="updateReview" 
                                   className="cursor-pointer hover:underline"
-                                  onClick={() => handleClick(item.id, "reviewUpdate")}
+                                  onClick={() => handleClick(item.id, item.bookId, "updateReview")}
                                 >수정하기&nbsp;&gt;</button>
+                                <MyPageReviewModal 
+                                  id={item.id} 
+                                  mode="updateReview"
+                                  bookId={item.bookId}
+                                  // reviewId={review.id}
+                                  // fetchBookReview={fetchBookReview}
+                                />
                               </>
                             )
                         }
                       </div>
-                      <MyPageReviewModal 
-                        // id={`dialogReview${review.id}`} 
-                        mode="createReview"
-                        // bookId={}
-                        // reviewId={review.id}
-                        // fetchBookReview={fetchBookReview}
-                      />
                       <div>대출연장:<span className="ml-[4px]">{item.extended != true ? "0" : "1"}</span>회</div>
                       <button 
                         command="show-modal" 
