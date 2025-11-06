@@ -17,11 +17,8 @@ const MyPageLoan = () => {
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [selectLoanId, setSelectLoanId] = useState(null);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mode, setMode] = useState(null); // "createReview", "updateReview", "detailReview"
-  const [bookId, setBookId] = useState(null);
-  const [reviewId, setReviewId] = useState(null);
+  const [totalElements, setTotalElements] = useState(0);
+  const [keyword, setKeyword] = useState("");
 
   console.log(user);
 
@@ -53,14 +50,37 @@ const MyPageLoan = () => {
       console.log(response.data.data);
       setData(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
+      setTotalElements(response.data.data.totalElements || 1);
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
     } finally {
       setLoading(false);
     }
-
   };
+
+  // 대출 검색 api
+  const fetchLoanSearch = async () => {
+    try {
+      const response = await axios.get(
+        ``,
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json"
+          }
+        }
+      );
+
+      console.log(response.data.data);
+      
+    } catch (error) {
+      console.log("Error: ", error.response);
+      setError(error.response);
+    } finally {
+      console.log("대출 검색 종료");
+    }
+  }
 
   // 페이징 - 이전 버튼
   const handlePrev = () => {
@@ -113,6 +133,11 @@ const MyPageLoan = () => {
 
     const modal = document.getElementById(modalId);
     modal.showModal();
+  }
+
+  // 검색
+  const handleSearch = () => {
+    fetchLoanSearch(keyword);
   }
 
   // 도서 대출 내역 있는 경우와 없는 경우 데이터 처리
@@ -282,10 +307,48 @@ const MyPageLoan = () => {
     <>
       <div className="flex flex-col border border-gray-300 mt-2 p-8 leading-10">
         <div className="text-2xl mb-4">대출내역 정보</div>
+        {/* 검색 영역 */}
+        <div className="w-full bg-gray-100 px-3 py-4 mb-4 flex flex-row justify-center items-center">
+          <div className="w-full flex flex-row justify-center">
+            <input 
+              type="text" 
+              className="
+                w-9/12
+                sm:w-6/12
+                text-sm px-3 py-3 leading-none
+                bg-white
+                border border-gray-300 rounded-sm outline-none
+                focus:border-teal-600"
+              placeholder="검색어를 입력해주세요."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+            <button 
+              className="
+                w-3/12
+                sm:w-2/12
+                px-5 py-2 ml-2 
+                text-white leading-none
+                bg-teal-600 rounded-sm
+                hover:bg-teal-700
+                cursor-pointer"
+              onClick={handleSearch}  
+            >검색</button>
+          </div>
+        </div>
         <div className="flex flex-row items-center">
-          { loading && <p className="text-center">불러오는 중...</p> }
-          { error && <p className="text-red-700 text-center">대출 내역을 불러올 수 없습니다.</p> }
-          { content }
+          <div className="flex flex-col w-full justify-center items-center">
+            { loading && <p className="text-center">불러오는 중...</p> }
+            { error && <p className="text-red-700 text-center">대출 내역을 불러올 수 없습니다.</p> }
+            {/* 총 개수와 페이지 */}
+            <div className="self-start flex flex-row text-sm mb-1">
+              <div>총 {data.length > 0 ? totalElements : 0}건</div> 
+              <div className="mx-2">|</div>
+              <div>{ data.length > 0 ? page + 1 : page }
+                  /{ data.length > 0 ? totalPages : 0 }페이지</div>
+            </div>
+            { content }
+          </div>
         </div>
       </div>
     </>
