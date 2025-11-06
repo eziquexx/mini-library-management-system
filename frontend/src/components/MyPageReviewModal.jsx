@@ -6,7 +6,7 @@ import axios from "axios";
 
 
 
-const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
+const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBookLoans}) => {
   
   const fetchUser = useUserStore((state) => state.fetchUser);
 
@@ -32,7 +32,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   const [originReview, setOriginReview] = useState("");
   const [updateReview, setUpdateReview] = useState("");
   const navigate = useNavigate();
-  const [content, setContent] = useState("");
+  const [createReview, setCreateReview] = useState("");
 
   // console.log("id: ", id);
   // console.log("reviewId: ", reviewId);
@@ -78,8 +78,14 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
         );
 
         setData(response.data.data);
-        setOriginReview(response.data.data.content);
-        setUpdateReview(response.data.data.content);
+
+        if (mode === "updateReview" || "detailReview") {
+          setOriginReview(response.data.data.content);
+          setUpdateReview(response.data.data.content);
+        } else {
+          setCreateReview("");
+        }
+        
       }
     } catch (error) {
       console.log("Error: ", error.response);
@@ -134,11 +140,12 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
     try {
       const response = await axios.post(
         `http://localhost:8080/api/v1/user/books/${bookId}/reviews`,
-        { content: content },
+        { content: createReview },
         { withCredentials: true }
       );
 
       console.log(response.data.data);
+      alert("리뷰 작성 성공했습니다.");
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -150,6 +157,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   // 닫기 버튼
   const handleClose = () => {
     setUpdateReview(originReview);
+    setCreateReview("");
   }
 
   // 리뷰 수정 버튼
@@ -164,6 +172,13 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
   const handleDeleteReview = async () => {
     await fetchDeleteReview();
     await fetchBookReview();
+    document.getElementById(modalId)?.close();
+  }
+
+  // 리뷰 등록 버튼
+  const handleCreateReview = async () => {
+    await fetchCreateReview();
+    await fetchBookLoans();
     document.getElementById(modalId)?.close();
   }
 
@@ -235,8 +250,14 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                             border border-gray-200 rounded line-clamp-3 
                             outline-none focus:border-teal-600
                             resize-none overflow-y-scroll"
-                          value={updateReview}
-                          onChange={(e) => setUpdateReview(e.target.value)}
+                          value={mode === "createReview" ? createReview : updateReview}
+                          onChange={(e) => {
+                            console.log("현재 mode:", mode);
+                            console.log("입력값:", e.target.value);
+                            mode === "createReview"
+                              ? setCreateReview(e.target.value)
+                              : setUpdateReview(e.target.value);
+                          }}
                         >
                         </textarea>
                       </div>
@@ -256,14 +277,9 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                     type="button" 
                     command="close" 
                     commandfor={modalId} 
-                    className="
-                      order-3 sm:order-1
-                      inline-flex w-full justify-center rounded-md 
-                      bg-red-700 hover:bg-red-800 
-                      text-sm font-semibold text-white shadow-xs 
-                      px-3 py-3 sm:px-3 sm:py-2 sm:w-auto
-                      disabled:bg-gray-400
-                    "
+                    className={mode === "createReview" 
+                      ? "hidden" 
+                      : "order-3 sm:order-1 inline-flex w-full justify-center rounded-md bg-red-700 hover:bg-red-800  text-sm font-semibold text-white shadow-xs px-3 py-3 sm:px-3 sm:py-2 sm:w-auto disabled:bg-gray-400"}
                     onClick={handleDeleteReview}
                   >삭제</button>
                 </div>
@@ -272,7 +288,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                     type="button" 
                     command="close" 
                     commandfor={modalId} 
-                    disabled={originReview === updateReview}
+                    disabled={mode !== "createReview" && originReview === updateReview}
                     className="
                       order-1 sm:order-2
                       inline-flex w-full justify-center rounded-md 
@@ -281,8 +297,8 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId}) => {
                       px-3 py-3 mb-2 sm:mb-0 sm:px-3 sm:py-2 sm:w-auto
                       disabled:bg-gray-400
                     "
-                    onClick={handleUpdateReview}
-                  >변경</button>
+                    onClick={mode === "createReview" ? handleCreateReview : handleUpdateReview}
+                  >{mode === "createReview" ? "등록" : "수정"}</button>
                   <button 
                     type="button" 
                     command="close" 
