@@ -63,8 +63,13 @@ const MyPageLoan = () => {
   const fetchLoanSearch = async () => {
     try {
       const response = await axios.get(
-        ``,
+        `http://localhost:8080/api/v1/user/me/loans/search`,
         {
+          params: {
+            keyword: keyword,
+            page: page,
+            size: size
+          },
           withCredentials: true,
           headers: {
             Accept: "application/json"
@@ -72,8 +77,11 @@ const MyPageLoan = () => {
         }
       );
 
-      console.log(response.data.data);
-      
+      console.log("검색결과: ", response.data.data);
+      setData(response.data.data.content);
+      setTotalPages(response.data.data.totalPages || 1);
+      setTotalElements(response.data.data.totalElements || 1);
+
     } catch (error) {
       console.log("Error: ", error.response);
       setError(error.response);
@@ -209,7 +217,9 @@ const MyPageLoan = () => {
                                   mode="createReview"
                                   bookId={item.bookId}
                                   reviewId={item.reviewId}
+                                  keyword={keyword}
                                   fetchBookLoans={fetchBookLoans}
+                                  fetchLoanSearch={fetchLoanSearch}
                                   // fetchBookReview={fetchBookReview}
                                 />
                               </>
@@ -229,7 +239,9 @@ const MyPageLoan = () => {
                                   mode="updateReview"
                                   bookId={item.bookId}
                                   reviewId={item.reviewId}
+                                  keyword={keyword}
                                   fetchBookLoans={fetchBookLoans}
+                                  fetchLoanSearch={fetchLoanSearch}
                                   // fetchBookReview={fetchBookReview}
                                 />
                               </>
