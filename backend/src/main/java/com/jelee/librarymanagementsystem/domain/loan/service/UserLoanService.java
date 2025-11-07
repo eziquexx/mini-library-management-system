@@ -101,4 +101,36 @@ public class UserLoanService {
     // 반환
     return new UserLoanExtendedResDTO(loan);
   }
+
+  /*
+   * 사용자: 도서 대출 검색
+   */
+  public PageResponse<UserLoanListResDTO> searchLoan(String keyword, int page, int size, Long userId) {
+    
+    // 사용자 조회 및 예외 처리
+    User user = userRepository.findById(userId)
+      .orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+
+    // 페이징 정의
+    Pageable pageable = PageRequest.of(page, size);
+
+    // 검색 조회
+    Page<Loan> loans = loanRepository.findByUser_IdAndBook_TitleContainingIgnoreCaseOrBook_AuthorContainingIgnoreCaseOrderByLoanDateDesc(user.getId(), keyword, keyword, pageable);
+
+    // Page<Loan> -> Page<UserLoanListResDTO>로 맵핑
+    // 리뷰 작성 여부 체크 추가
+    Page<UserLoanListResDTO> pageDTO = loans.map(loan -> {
+      boolean reviewWritten = reviewRepository.existsByBook_IdAndUser_Id(loan.getBook().getId(), loan.getUser().getId());
+      Review review = reviewRepository.findByBook_IdAndUser_Id(loan.getBook().getId(), loan.getUser().getId());
+
+      Long reviewId = null;
+      if (review != null) {
+        reviewId = review.getId();
+      }
+      return new UserLoanListResDTO(loan, reviewId, reviewWritten);
+    });
+
+    // 반환
+    return new PageResponse<>(pageDTO);
+  }
 }
