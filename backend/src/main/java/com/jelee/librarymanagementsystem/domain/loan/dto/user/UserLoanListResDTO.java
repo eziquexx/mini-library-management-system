@@ -11,6 +11,7 @@ import lombok.Getter;
 @Getter
 public class UserLoanListResDTO {
   private Long id;
+  private Long bookId;
   private String bookTitle;
   private String author;
   private String publisher;
@@ -22,10 +23,12 @@ public class UserLoanListResDTO {
   private String borrower;
   private LoanStatus status;
   private boolean extended;
+  private Long reviewId;
   private boolean reviewWritten;
 
-  public UserLoanListResDTO(Loan loan, boolean reviewWritten) {
+  public UserLoanListResDTO(Loan loan, Long reviewId, boolean reviewWritten) {
     this.id = loan.getId();
+    this.bookId = loan.getBook().getId();
     this.bookTitle = loan.getBook().getTitle();
     this.author = loan.getBook().getAuthor();
     this.publisher = loan.getBook().getPublisher();
@@ -37,6 +40,7 @@ public class UserLoanListResDTO {
     this.borrower = loan.getUser().getUsername();
     this.status = loan.getStatus();
     this.extended = loan.isExtended();
+    this.reviewId = reviewId;
     this.reviewWritten = reviewWritten;
   }
 }
