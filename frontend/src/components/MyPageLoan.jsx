@@ -217,7 +217,9 @@ const MyPageLoan = () => {
                                   mode="createReview"
                                   bookId={item.bookId}
                                   reviewId={item.reviewId}
+                                  keyword={keyword}
                                   fetchBookLoans={fetchBookLoans}
+                                  fetchLoanSearch={fetchLoanSearch}
                                   // fetchBookReview={fetchBookReview}
                                 />
                               </>
@@ -237,7 +239,9 @@ const MyPageLoan = () => {
                                   mode="updateReview"
                                   bookId={item.bookId}
                                   reviewId={item.reviewId}
+                                  keyword={keyword}
                                   fetchBookLoans={fetchBookLoans}
+                                  fetchLoanSearch={fetchLoanSearch}
                                   // fetchBookReview={fetchBookReview}
                                 />
                               </>

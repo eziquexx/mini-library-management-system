@@ -6,7 +6,7 @@ import axios from "axios";
 
 
 
-const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBookLoans}) => {
+const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBookLoans, fetchLoanSearch, keyword}) => {
   
   const fetchUser = useUserStore((state) => state.fetchUser);
 
@@ -163,7 +163,12 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
   // 리뷰 수정 버튼
   const handleUpdateReview = async () => {
     await fetchUpdateReview();
-    await fetchBookReview();
+
+    if (keyword != null) {
+      await fetchLoanSearch();
+    } else {
+      await fetchBookReview();
+    }
 
     document.getElementById(modalId)?.close();
   }
@@ -171,14 +176,23 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
   // 리뷰 삭제 버튼
   const handleDeleteReview = async () => {
     await fetchDeleteReview();
-    await fetchBookReview();
+    if (keyword != null) {
+      await fetchBookLoans();
+    } else {
+      await fetchBookReview();
+    }
     document.getElementById(modalId)?.close();
   }
 
   // 리뷰 등록 버튼
   const handleCreateReview = async () => {
     await fetchCreateReview();
-    await fetchBookLoans();
+
+    if (keyword != null) {
+      await fetchLoanSearch();
+    } else {
+      await fetchBookLoans();
+    }
     document.getElementById(modalId)?.close();
   }
 
