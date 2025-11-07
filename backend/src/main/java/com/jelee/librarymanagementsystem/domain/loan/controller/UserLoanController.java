@@ -75,4 +75,29 @@ public class UserLoanController {
                   responseDTO));
   }
 
+  /*
+   * 사용자: 도서 대출 검색
+   */
+  @GetMapping("/loans/search")
+  public ResponseEntity<?> searchLoan(
+    @RequestParam(value = "keyword") String keyword,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value="size", defaultValue = "10") int size,
+    @AuthenticationPrincipal User user) {
+
+      // 서비스로직
+      PageResponse<UserLoanListResDTO> responseDTO = userLoanService.searchLoan(keyword, page, size, user.getId());
+
+      // 성공메시지
+      String message = messageProvider.getMessage(LoanSuccessCode.LOAN_FETCHED.getMessage());
+
+      //응답
+      return ResponseEntity
+                .status(LoanSuccessCode.LOAN_FETCHED.getHttpStatus())
+                .body(ApiResponse.success(
+                  LoanSuccessCode.LOAN_FETCHED, 
+                  message, 
+                  responseDTO));
+  }
+
 }
