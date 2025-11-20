@@ -4,9 +4,8 @@
     <meta charset="utf-8">
     <title>Redirect</title>
     <script type="text/javascript">
-      // 모든 경로를 index.html로 리디렉트
-      var path = location.pathname;
-      location.replace("/mini-library-management-system/index.html" + location.search + location.hash);
+      // 현재 페이지 경로를 유지하면서 index.html로 리디렉트
+      location.replace("./index.html" + location.search + location.hash);
     </script>
   </head>
   <body></body>
