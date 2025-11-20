@@ -4,6 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/mini-library-management-system/', // github repo 이름
+  base: '/',
   plugins: [react(), tailwindcss()],
 })
