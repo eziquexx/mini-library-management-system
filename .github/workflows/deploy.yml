@@ -2,10 +2,10 @@ name: Deploy Frontend to Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
     paths:
-      - 'frontend/**'
-    workflow_dispatch:
+      - "frontend/**"
+  workflow_dispatch:
 
 jobs:
   build:
