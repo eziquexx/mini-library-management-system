@@ -1,5 +1,9 @@
 name: Deploy Frontend to Pages
 
+concurrency:
+  group: build-and-deploy
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ "main" ]
