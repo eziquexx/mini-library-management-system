@@ -1,0 +1,14 @@
+version: '3'
+services:
+  springboot-app:
+    image: library-management-system-back
+    container_name: library-management-system-back-container
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
