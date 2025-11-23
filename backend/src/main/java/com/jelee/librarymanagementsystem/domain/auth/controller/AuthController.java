@@ -67,10 +67,10 @@ public class AuthController {
       // Jwt를 HttpOnly 쿠키에 저장
       ResponseCookie cookie = ResponseCookie.from("JWT", responseDTO.getToken())
                   .httpOnly(true)
-                  .secure(true)
+                  .secure(false) // aws lightsail은 http이므로 false로
                   .path("/")
                   .maxAge(24 * 60 * 60)
-                  .sameSite("Strict")
+                  .sameSite("None") // cross-site 요청에서 쿠기 허용하기 위해서는 "Strict" 가 아니라 "None" 처리 해야 함.
                   .build();
 
       response.addHeader("Set-Cookie", cookie.toString());
@@ -98,7 +98,7 @@ public class AuthController {
     // Jwt 제거
     ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(true) // aws lightsail은 http이므로 false로
                 .path("/")
                 .maxAge(0) // 쿠키 즉시 만료
                 .sameSite("Strict")
