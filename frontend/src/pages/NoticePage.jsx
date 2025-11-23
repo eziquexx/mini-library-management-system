@@ -14,6 +14,8 @@ const NoticePage = () => {
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // 공지 전체 목록 조회
   const fetchNotice = async (page) => {
     setLoading(true);
@@ -21,7 +23,7 @@ const NoticePage = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v1/notices",
+        `${apiUrl}/api/v1/notices`,
         {
           params: {
             page: page,
@@ -81,7 +83,7 @@ const NoticePage = () => {
     console.log(keyword)
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v1/notices/search",
+        `${apiUrl}/api/v1/notices/search`,
         {
           params: {
             keyword: keyword,

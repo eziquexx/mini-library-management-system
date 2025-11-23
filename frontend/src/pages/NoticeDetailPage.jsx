@@ -11,13 +11,15 @@ const NoticeDetailPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const fetchPost = async (noticeId) => {
     setLoanding(true);
     setError(null);
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/notices/${noticeId}`,
+        `${apiUrl}/api/v1/notices/${noticeId}`,
         {
           withCredentials: true,
           headers: {

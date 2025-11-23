@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import axios from 'axios'
 
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const useUserStore = create((set) => ({
   user: null,
@@ -13,11 +14,11 @@ const useUserStore = create((set) => ({
   fetchUser: async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/v1/user/me', 
+        `${apiUrl}/api/v1/user/me`, 
         { withCredentials: true, },
       );
 
-      console.log(response.data.data);
+      console.log("data: ", response.data.data);
       set({user: response.data.data, loading: false});
 
     } catch (error) {
@@ -29,7 +30,7 @@ const useUserStore = create((set) => ({
   logout: async () => {
     try {
       await axios.post(
-        'http://localhost:8080/api/v1/auth/logout',
+        `${apiUrl}/api/v1/auth/logout`,
         null,
         { withCredentials: true, },
       )

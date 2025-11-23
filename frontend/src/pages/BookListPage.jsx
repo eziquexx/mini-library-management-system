@@ -17,6 +17,8 @@ const BookListPage = () => {
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const newPage = Number(searchParams.get('page')) || 0;
     const newSize = Number(searchParams.get('size')) || 10;
@@ -39,7 +41,7 @@ const BookListPage = () => {
       if (type && keyword) {
         // 검색 조건이 있을 경우 api
         response = await axios.get(
-          `http://localhost:8080/api/v1/books/search`,
+          `${apiUrl}/api/v1/books/search`,
           {
             params: {
               type: type,
@@ -57,7 +59,7 @@ const BookListPage = () => {
       } else {
         // 전체 목록 조회
         response = await axios.get(
-          `http://localhost:8080/api/v1/books`,
+          `${apiUrl}/api/v1/books`,
           {
             params: {
               page: page,
@@ -166,7 +168,7 @@ const BookListPage = () => {
     
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/books/search`,
+        `${apiUrl}/api/v1/books/search`,
         {
           params: {
             type: type,

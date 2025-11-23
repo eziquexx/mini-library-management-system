@@ -10,13 +10,15 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // 회원가입
   const handleSignup = async (e) => {
     e.preventDefault(); // 새로고침 방지
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/v1/auth/signup',
+        `${apiUrl}/api/v1/auth/signup`,
         { username, password, email },
         { withCredentials: true }
       );

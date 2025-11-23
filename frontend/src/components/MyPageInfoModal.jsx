@@ -36,11 +36,13 @@ const MyPageInfoModal = ({id}) => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // 이메일 수정 api
   const updateEmail = async () => {
     try {
       const response = await axios.patch(
-        "http://localhost:8080/api/v1/user/me/email",
+        `${apiUrl}/api/v1/user/me/email`,
         { email: emailValue },
         { withCredentials: true },
       );
@@ -62,7 +64,7 @@ const MyPageInfoModal = ({id}) => {
   const updatePw = async () => {
     try {
       const response = await axios.patch(
-        "http://localhost:8080/api/v1/user/me/password",
+        `${apiUrl}/api/v1/user/me/password`,
         { password: pwValue,
           repassword: repwValue,
         },
@@ -86,7 +88,7 @@ const MyPageInfoModal = ({id}) => {
   const delAccount = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/user/me/withdraw",
+        `${apiUrl}/api/v1/user/me/withdraw`,
         { password: delPwValue },
         { withCredentials: true },
       );

@@ -22,6 +22,8 @@ const BookDetailPage = () => {
   const [reviewPage, setReviewPage] = useState("");
   const reviewSize = 5;
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // 도서 상세 api
   const fetchPost = async (bookId) => {
     setLoading(true);
@@ -29,7 +31,7 @@ const BookDetailPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/books/${bookId}`,
+        `${apiUrl}/api/v1/books/${bookId}`,
         {
           withCredentials: true,
           headers: {
@@ -55,7 +57,7 @@ const BookDetailPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/books/${bookId}/reviews`,
+        `${apiUrl}/api/v1/books/${bookId}/reviews`,
         { 
           withCredentials: true, 
           headers: "application/json"

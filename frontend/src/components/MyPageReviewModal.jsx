@@ -34,6 +34,8 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
   const navigate = useNavigate();
   const [createReview, setCreateReview] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // console.log("id: ", id);
   // console.log("reviewId: ", reviewId);
   // console.log("mode: ", mode);
@@ -54,7 +56,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
       if (mode === "createReview") {
         // 도서 상세 정보 불러오기
         const response = await axios.get(
-          `http://localhost:8080/api/v1/books/${bookId}`,
+          `${apiUrl}/api/v1/books/${bookId}`,
           {
             withCredentials: true,
             headers: {
@@ -68,7 +70,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
       } else if (mode === "updateReview" || mode === "detailReview") {
         // 리뷰 상세 불러오기
         const response = await axios.get(
-          `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+          `${apiUrl}/api/v1/user/me/reviews/${reviewId}`,
           {
             withCredentials: true,
             headers: {
@@ -100,7 +102,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
   const fetchUpdateReview = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+        `${apiUrl}/api/v1/user/me/reviews/${reviewId}`,
         { content: updateReview, },
         { withCredentials: true, }
       );
@@ -120,7 +122,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
   const fetchDeleteReview = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/v1/user/me/reviews/${reviewId}`,
+        `${apiUrl}/api/v1/user/me/reviews/${reviewId}`,
         { withCredentials: true, }
       );
 
@@ -139,7 +141,7 @@ const MyPageReviewModal = ({id, reviewId, fetchBookReview, mode, bookId, fetchBo
   const fetchCreateReview = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/user/books/${bookId}/reviews`,
+        `${apiUrl}/api/v1/user/books/${bookId}/reviews`,
         { content: createReview },
         { withCredentials: true }
       );

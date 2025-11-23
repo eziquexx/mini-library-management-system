@@ -18,6 +18,8 @@ const MyPageReview = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [keyword, setKeyword] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect (() => {
     fetchBookReview(page, size);
   }, [page, size])
@@ -30,7 +32,7 @@ const MyPageReview = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/user/me/reviews`,
+        `${apiUrl}/api/v1/user/me/reviews`,
         {
           params: {
             page: page,
@@ -60,7 +62,7 @@ const MyPageReview = () => {
   const fetchReviewSearch = async (keyword) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/user/me/reviews/search`,
+        `${apiUrl}/api/v1/user/me/reviews/search`,
         {
           params: {
             keyword: keyword,

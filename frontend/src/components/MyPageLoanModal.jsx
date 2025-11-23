@@ -20,11 +20,13 @@ const MyPageLoanModal = ({id, loanId, fetchBookLoans}) => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // 도서 대출 연장 api
   const updateExtended = async (loanId) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8080/api/v1/user/me/loans/${loanId}/extend`,
+        `${apiUrl}/api/v1/user/me/loans/${loanId}/extend`,
         {},
         { 
           withCredentials: true,

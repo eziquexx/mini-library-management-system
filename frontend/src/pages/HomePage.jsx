@@ -13,6 +13,8 @@ const HomePage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const navigator = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const newPage = Number(searchParams.get('page')) || 0;
     const newSize = Number(searchParams.get('size')) || 10;
@@ -30,7 +32,7 @@ const HomePage = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v1/books",
+        `${apiUrl}/api/v1/books`,
         {
           params: {
             page: page,

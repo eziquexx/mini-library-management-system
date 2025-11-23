@@ -20,6 +20,8 @@ const MyPageLoan = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [keyword, setKeyword] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   console.log(user);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const MyPageLoan = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v1/user/me/loans",
+        `${apiUrl}/api/v1/user/me/loans`,
         {
           params: {
             page: page,
@@ -63,7 +65,7 @@ const MyPageLoan = () => {
   const fetchLoanSearch = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/user/me/loans/search`,
+        `${apiUrl}/api/v1/user/me/loans/search`,
         {
           params: {
             keyword: keyword,

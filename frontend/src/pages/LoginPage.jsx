@@ -11,12 +11,14 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const handleLogin = async (e) => {
     e.preventDefault(); // 새로고침 방지
 
     try {
       await axios.post(
-        'http://localhost:8080/api/v1/auth/signin', 
+        `${apiUrl}/api/v1/auth/signin`, 
         { username, password },
         { withCredentials: true }
       );
@@ -24,6 +26,8 @@ const LoginPage = () => {
       await fetchUser();
       
       navigate('/');
+      alert("로그인 성공");
+      console.log();
     
     } catch (error) {
       console.log('로그인 실패: ', error.response?.data || error.message);
