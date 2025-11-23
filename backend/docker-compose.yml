@@ -1,8 +1,8 @@
 version: '3'
 services:
   springboot-app:
-    image: library-management-system-back
-    container_name: library-management-system-back-container
+    image: library-back
+    container_name: library-back-container
     ports:
       - "8080:8080"
     env_file:

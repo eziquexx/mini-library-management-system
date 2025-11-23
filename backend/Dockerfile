@@ -1,22 +1,39 @@
-# Step 1: 기본 이미지로 openjdk 사용
-FROM openjdk:17-jdk-slim AS build
+# ==========================
+# 1) Build Stage - Gradle로 JAR 빌드
+# ==========================
+FROM gradle:8.10.2-jdk17 AS build
 
-# Step 2: 애플리케이션 소스 코드를 복사
+# 작업 디렉토리 설정
 WORKDIR /app
+
+# Gradle 캐시 최적화를 위해 build.gradle, settings.gradle 먼저 복사
+COPY build.gradle settings.gradle /app/
+COPY gradle /app/gradle
+
+# gradlew 파일 복사 후 실행 권한 부여 (Windows/Linux 호환)
+COPY gradlew /app/
+RUN chmod +x gradlew
+
+# 프로젝트 전체 소스코드 복사
 COPY . /app/
 
-# Step 3: gradle wrapper로 빌드 실행
-RUN ./gradlew bootJar
+# 테스트를 제외하고 JAR 빌드 (가장 안정적)
+RUN gradle clean bootJar -x test
 
-# Step 4: 빌드된 JAR 파일을 컨테이너로 복사
-FROM openjdk:17-jdk-slim
-COPY --from=build /app/build/libs/librarymanagementsystem-0.0.1-SNAPSHOT.jar /usr/app/app.jar
 
-# Step 5: 작업 디렉토리 설정
-WORKDIR /usr/app
+# ==========================
+# 2) Run Stage - 경량 JDK 이미지로 실행
+# ==========================
+FROM eclipse-temurin:17-jre
 
-# Step 6: 포트 8080을 외부에 노출
+# 컨테이너 작업 디렉토리
+WORKDIR /app
+
+# Build Stage에서 생성된 jar 복사
+COPY --from=build /app/build/libs/librarymanagementsystem-0.0.1-SNAPSHOT.jar /app/app.jar
+
+# 외부에 노출할 포트
 EXPOSE 8080
 
-# Step 7: Spring Boot JAR 파일 실행
+# Spring Boot 애플리케이션 실행
 CMD ["java", "-jar", "app.jar"]
