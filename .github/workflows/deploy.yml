@@ -77,7 +77,7 @@ jobs:
           scp -i ~/.ssh/id_rsa .env ${{ secrets.LIGHTSAIL_USER }}@${{ secrets.LIGHTSAIL_IP }}:/home/ubuntu/.env
       
       # 10단계: AWS Lightsail에서 Docker 이미지 다운로드 및 컨테이너 실행
-      # Step 1: Front-end 배포
+      # Step 1: Front-end 정리 & pull
       - name: Deploy Front-end to Lightsail
         uses: appleboy/ssh-action@v0.1.9
         with:
@@ -85,6 +85,8 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
+            echo "--- Front-end 정리 및 Pull 시작 ---"
+
             # 1. 컨테이너 ID 찾기 (Front)
             CONTAINER_ID_FRONT=$(docker ps -a -q --filter "name=my-react-app")
 
@@ -101,10 +103,9 @@ jobs:
             # 5. Front-end 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
 
-            # 6. Front-end 컨테이너 실행
-            docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+            echo "--- Front-end Pull 완료 ---"
       
-      # Step 2: Back-end 배포      
+      # Step 2: Back-end 정리 & pull  
       - name: Deploy Back-end to Lightsail
         uses: appleboy/ssh-action@v0.1.9
         with:
@@ -112,6 +113,8 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
+            echo "--- Back-end 정리 및 Pull 시작 ---"
+
             # 1. 컨테이너 ID 찾기 (Back)
             CONTAINER_ID_BACK=$(docker ps -a -q --filter "name=my-backend-app")
 
@@ -128,8 +131,25 @@ jobs:
             # 5. Back-end 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
 
-            # 6. 기존 `none` 이미지 삭제
+            echo "--- Back-end Pull 완료 ---"
+
+      # Step 3: Front-end, Back-end 컨테이너 실행  
+      - name: Container start
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.LIGHTSAIL_IP }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            echo "--- 컨테이너 실행 시작 ---"
+
+            # 1. Back-end 컨테이너 실행
+            docker run -d -p 8080:8080 --name my-backend-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-back:latest
+
+            # 2. Front-end 컨테이너 실행
+            docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+
+            # 3. 기존 `none` 이미지 삭제
             docker images -f "dangling=true" -q | xargs -r docker rmi
 
-            # 7. Back-end 컨테이너 실행
-            docker run -d -p 8080:8080 --name my-backend-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-back:latest
+            echo "--- 배포 완료 ---"
