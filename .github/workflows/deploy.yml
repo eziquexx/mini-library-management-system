@@ -85,12 +85,12 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             # 1. 컨테이너 ID 찾기 (PID 확인을 위한 ID)
-            CONTAINER_ID_FRONT=$(docker ps -q --filter "name=my-react-app")
-            CONTAINER_ID_BACK=$(docker ps -q --filter "name=my-backend-app")
+            CONTAINER_ID_FRONT=$(docker ps -a -q --filter "name=my-react-app")
+            CONTAINER_ID_BACK=$(docker ps -a -q --filter "name=my-backend-app")
 
             # 2. PID 확인 및 강제 종료
-            FRONT_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_FRONT)
-            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK)
+            FRONT_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_FRONT 2>/dev/null)
+            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK 2>/dev/null)
 
             # 강제 종료
             sudo kill -9 $FRONT_PID || true
