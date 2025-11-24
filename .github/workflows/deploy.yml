@@ -77,6 +77,35 @@ jobs:
           scp -i ~/.ssh/id_rsa .env ${{ secrets.LIGHTSAIL_USER }}@${{ secrets.LIGHTSAIL_IP }}:/home/ubuntu/.env
       
       # 10단계: AWS Lightsail에서 Docker 이미지 다운로드 및 컨테이너 실행
+
+      # Step 2: Back-end 정리 & pull  
+      - name: Deploy Back-end to Lightsail
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.LIGHTSAIL_IP }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            echo "--- Back-end 정리 및 Pull 시작 ---"
+
+            # 1. 컨테이너 ID 찾기 (Back)
+            CONTAINER_ID_BACK=$(docker ps -a -q --filter "name=my-backend-app")
+
+            # 2. PID 확인 및 강제 종료
+            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK 2>/dev/null)
+            sudo kill -9 $BACK_PID || true
+
+            # 3. 컨테이너 삭제
+            docker rm -f $CONTAINER_ID_BACK || true
+
+            # 4. 메모리 확보 (불필요한 자원 정리)
+            # docker system prune -f
+
+            # 5. Back-end 이미지 pull
+            docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
+
+            echo "--- Back-end Pull 완료 ---"
+            
       # Step 1: Front-end 정리 & pull
       - name: Deploy Front-end to Lightsail
         uses: appleboy/ssh-action@v0.1.9
@@ -108,33 +137,7 @@ jobs:
             sleep 60  # 1분 대기
             echo "--- Front-end Pull 완료 ---"
       
-      # Step 2: Back-end 정리 & pull  
-      - name: Deploy Back-end to Lightsail
-        uses: appleboy/ssh-action@v0.1.9
-        with:
-          host: ${{ secrets.LIGHTSAIL_IP }}
-          username: ${{ secrets.LIGHTSAIL_USER }}
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-          script: |
-            echo "--- Back-end 정리 및 Pull 시작 ---"
-
-            # 1. 컨테이너 ID 찾기 (Back)
-            CONTAINER_ID_BACK=$(docker ps -a -q --filter "name=my-backend-app")
-
-            # 2. PID 확인 및 강제 종료
-            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK 2>/dev/null)
-            sudo kill -9 $BACK_PID || true
-
-            # 3. 컨테이너 삭제
-            docker rm -f $CONTAINER_ID_BACK || true
-
-            # 4. 메모리 확보 (불필요한 자원 정리)
-            # docker system prune -f
-
-            # 5. Back-end 이미지 pull
-            docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
-
-            echo "--- Back-end Pull 완료 ---"
+      
 
       # Step 3: Front-end, Back-end 컨테이너 실행  
       - name: Container start
