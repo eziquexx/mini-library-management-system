@@ -96,13 +96,17 @@ jobs:
             sudo kill -9 $FRONT_PID || true
             sudo kill -9 $BACK_PID || true
 
-            # 3. 새 Docker 이미지 pull
+            # 3. 컨테이너 삭제
+            docker rm -f $CONTAINER_ID_FRONT || true
+            docker rm -f $CONTAINER_ID_BACK || true
+
+            # 4. 새 Docker 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
 
-            # 4. 기존 `none` 이미지 삭제
+            # 5. 기존 `none` 이미지 삭제
             docker images -f "dangling=true" -q | xargs -r docker rmi
 
-            # 5. 새 컨테이너 실행
+            # 6. 새 컨테이너 실행
             docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
             docker run -d -p 8080:8080 --name my-backend-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-back:latest
