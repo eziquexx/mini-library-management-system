@@ -100,13 +100,16 @@ jobs:
             docker rm -f $CONTAINER_ID_FRONT || true
             docker rm -f $CONTAINER_ID_BACK || true
 
-            # 4. 새 Docker 이미지 pull
+            # 5. [메모리 확보] 모든 불필요한 자원 먼저 정리 (Pull 전에 수행)
+            docker system prune -f
+
+            # 6. 새 Docker 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
 
-            # 5. 기존 `none` 이미지 삭제
+            # 7. 기존 `none` 이미지 삭제
             docker images -f "dangling=true" -q | xargs -r docker rmi
 
-            # 6. 새 컨테이너 실행
+            # 8. 새 컨테이너 실행
             docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
             docker run -d -p 8080:8080 --name my-backend-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-back:latest
