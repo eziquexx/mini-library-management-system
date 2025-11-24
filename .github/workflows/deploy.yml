@@ -96,7 +96,7 @@ jobs:
             docker rm -f $CONTAINER_ID_FRONT || true
 
             # 4. 메모리 확보 (불필요한 자원 정리)
-            docker system prune -f
+            # docker system prune -f
 
             # 5. Front-end 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
