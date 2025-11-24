@@ -97,12 +97,15 @@ jobs:
             # 3. 컨테이너 삭제
             docker rm -f $CONTAINER_ID_FRONT || true
 
+            sleep 60  # 1분 대기
+
             # 4. 메모리 확보 (불필요한 자원 정리)
             # docker system prune -f
 
             # 5. Front-end 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
 
+            sleep 60  # 1분 대기
             echo "--- Front-end Pull 완료 ---"
       
       # Step 2: Back-end 정리 & pull  
