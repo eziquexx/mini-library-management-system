@@ -105,6 +105,7 @@ jobs:
 
             # 5. 새 Docker 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+            sleep 15 # 메모리가 회복될 시간을 주기 (15초)
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
 
             # 6. 기존 `none` 이미지 삭제
