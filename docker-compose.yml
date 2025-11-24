@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "80:80"
+    restart: always
+
+  backend:
+    build: 
+      context: ./backend
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+    restart: always

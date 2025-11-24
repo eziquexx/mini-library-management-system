@@ -1,4 +1,4 @@
-name: Deploy Frontend to Pages
+name: Deploy to Lightsail
 
 concurrency:
   group: build-and-deploy
@@ -9,41 +9,100 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1단계: GitHub 리포지토리 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # 2단계: Docker Hub 로그인
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3단계: Node.js 및 Frontend 빌드
+      - name: Setup Node.js for Frontend
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies for Frontend
         working-directory: ./frontend
         run: npm install
 
-      - name: Build
+      - name: Build React app
         working-directory: ./frontend
         run: npm run build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # 4단계: Frontend Docker 이미지 빌드
+      - name: Build Docker image for Frontend
+        working-directory: ./frontend
+        run: |
+          docker build -t library-front:latest .
+
+      # 5단계: Backend Docker 이미지 빌드
+      - name: Build Docker image for Backend
+        working-directory: ./backend
+        run: |
+          docker build -t library-back:latest .
+      
+      # 6단계: Docker 이미지 태그 및 푸시
+      - name: Tag and Push Docker images to Docker Hub
+        run: |
+          docker tag library-front:latest ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+          docker tag library-back:latest ${{ secrets.DOCKER_USERNAME }}/library-back:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/library-back:latest
+      
+      # 7단계: SSH 설정 (Lightsail에 SSH 접속)
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.LIGHTSAIL_IP }} >> ~/.ssh/known_hosts
+
+      # 8단계: GitHub Secrets에서 .env 파일 내용 읽어서 파일로 저장
+      - name: Create .env file from Secrets
+        run: echo "${{ secrets.MY_ENV_FILE }}" > .env
+
+      # 9단계: .env 파일 Lightsail로 업로드
+      - name: Upload .env file to Lightsail
+        run: |
+          scp -i ~/.ssh/id_rsa .env ${{ secrets.LIGHTSAIL_USER }}@${{ secrets.LIGHTSAIL_IP }}:/home/ubuntu/.env
+      
+      # 10단계: AWS Lightsail에서 Docker 이미지 다운로드 및 컨테이너 실행
+      - name: Deploy Docker images to Lightsail
+        uses: appleboy/ssh-action@v0.1.9
         with:
-          path: ./frontend/dist
+          host: ${{ secrets.LIGHTSAIL_IP }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            # 1. 컨테이너 ID 찾기 (PID 확인을 위한 ID)
+            CONTAINER_ID_FRONT=$(docker ps -q --filter "name=my-react-app")
+            CONTAINER_ID_BACK=$(docker ps -q --filter "name=my-backend-app")
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
+            # 2. PID 확인 및 강제 종료
+            FRONT_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_FRONT)
+            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK)
 
-    steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+            # 강제 종료
+            sudo kill -9 $FRONT_PID || true
+            sudo kill -9 $BACK_PID || true
+
+            # 3. 새 Docker 이미지 pull
+            docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
+
+            # 4. 기존 `none` 이미지 삭제
+            docker images -f "dangling=true" -q | xargs -r docker rmi
+
+            # 5. 새 컨테이너 실행
+            docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+            docker run -d -p 8080:8080 --name my-backend-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-back:latest
