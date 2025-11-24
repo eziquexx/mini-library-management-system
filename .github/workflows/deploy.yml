@@ -77,40 +77,59 @@ jobs:
           scp -i ~/.ssh/id_rsa .env ${{ secrets.LIGHTSAIL_USER }}@${{ secrets.LIGHTSAIL_IP }}:/home/ubuntu/.env
       
       # 10단계: AWS Lightsail에서 Docker 이미지 다운로드 및 컨테이너 실행
-      - name: Deploy Docker images to Lightsail
+      # Step 1: Front-end 배포
+      - name: Deploy Front-end to Lightsail
         uses: appleboy/ssh-action@v0.1.9
         with:
           host: ${{ secrets.LIGHTSAIL_IP }}
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
-            # 1. 컨테이너 ID 찾기 (PID 확인을 위한 ID)
+            # 1. 컨테이너 ID 찾기 (Front)
             CONTAINER_ID_FRONT=$(docker ps -a -q --filter "name=my-react-app")
-            CONTAINER_ID_BACK=$(docker ps -a -q --filter "name=my-backend-app")
 
             # 2. PID 확인 및 강제 종료
             FRONT_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_FRONT 2>/dev/null)
-            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK 2>/dev/null)
-
-            # 강제 종료
             sudo kill -9 $FRONT_PID || true
-            sudo kill -9 $BACK_PID || true
 
             # 3. 컨테이너 삭제
             docker rm -f $CONTAINER_ID_FRONT || true
-            docker rm -f $CONTAINER_ID_BACK || true
 
-            # 4. 메모리 확보: 모든 불필요한 자원 먼저 정리 (Pull 전에 수행)
+            # 4. 메모리 확보 (불필요한 자원 정리)
             docker system prune -f
 
-            # 5. 새 Docker 이미지 pull
+            # 5. Front-end 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-front:latest
-            sleep 15 # 메모리가 회복될 시간을 주기 (15초)
+
+            # 6. Front-end 컨테이너 실행
+            docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+      
+      # Step 2: Back-end 배포      
+      - name: Deploy Back-end to Lightsail
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.LIGHTSAIL_IP }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            # 1. 컨테이너 ID 찾기 (Back)
+            CONTAINER_ID_BACK=$(docker ps -a -q --filter "name=my-backend-app")
+
+            # 2. PID 확인 및 강제 종료
+            BACK_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_BACK 2>/dev/null)
+            sudo kill -9 $BACK_PID || true
+
+            # 3. 컨테이너 삭제
+            docker rm -f $CONTAINER_ID_BACK || true
+
+            # 4. 메모리 확보 (불필요한 자원 정리)
+            # docker system prune -f
+
+            # 5. Back-end 이미지 pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/library-back:latest
 
             # 6. 기존 `none` 이미지 삭제
-            # docker images -f "dangling=true" -q | xargs -r docker rmi
+            docker images -f "dangling=true" -q | xargs -r docker rmi
 
-            # 7. 새 컨테이너 실행
-            docker run -d -p 80:80 --name my-react-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-front:latest
+            # 7. Back-end 컨테이너 실행
             docker run -d -p 8080:8080 --name my-backend-app --env-file /home/ubuntu/.env ${{ secrets.DOCKER_USERNAME }}/library-back:latest
