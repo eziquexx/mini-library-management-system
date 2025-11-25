@@ -67,10 +67,10 @@ public class AuthController {
       // Jwt를 HttpOnly 쿠키에 저장
       ResponseCookie cookie = ResponseCookie.from("JWT", responseDTO.getToken())
                   .httpOnly(true)
-                  .secure(true) 
+                  .secure(false) 
                   .path("/")
                   .maxAge(24 * 60 * 60)
-                  .sameSite("Strict")
+                  .sameSite("Lax")
                   .build();
 
       response.addHeader("Set-Cookie", cookie.toString());
