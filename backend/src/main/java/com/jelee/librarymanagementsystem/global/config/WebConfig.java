@@ -14,9 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Value("${frontend.user-url}")
   private String frontendUserUrl;
-
-  @Value("${frontend.test.base-url}")
-  private String frontendTestBaseUrl;
   
   @Override
   public void addCorsMappings(@NonNull CorsRegistry registry) {
@@ -25,8 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
               "http://localhost:3000", 
               "http://localhost:5173",
               frontendBaseUrl,
-              frontendUserUrl,
-              frontendTestBaseUrl
+              frontendUserUrl
             ) // React 앱 주소 허용
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // 허용 HTTP 메서드
             .allowedHeaders("*")
