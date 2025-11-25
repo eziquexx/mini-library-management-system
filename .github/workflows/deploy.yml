@@ -120,8 +120,8 @@ jobs:
             CONTAINER_ID_FRONT=$(docker ps -a -q --filter "name=my-react-app")
 
             # 2. PID 확인 및 강제 종료
-            # FRONT_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_FRONT 2>/dev/null)
-            # sudo kill -9 $FRONT_PID || true
+            FRONT_PID=$(sudo docker inspect --format '{{.State.Pid}}' $CONTAINER_ID_FRONT 2>/dev/null)
+            sudo kill -9 $FRONT_PID || true
 
             # 3. 컨테이너 삭제
             docker rm -f $CONTAINER_ID_FRONT || true
