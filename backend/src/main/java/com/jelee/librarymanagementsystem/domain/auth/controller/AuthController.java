@@ -70,7 +70,7 @@ public class AuthController {
                   .secure(false) 
                   .path("/")
                   .maxAge(24 * 60 * 60)
-                  .sameSite("Lax")
+                  .sameSite("Strict")
                   .build();
 
       response.addHeader("Set-Cookie", cookie.toString());
@@ -98,7 +98,7 @@ public class AuthController {
     // Jwt 제거
     ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(0) // 쿠키 즉시 만료
                 .sameSite("Strict")
