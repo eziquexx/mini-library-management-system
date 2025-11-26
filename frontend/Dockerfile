@@ -11,12 +11,15 @@ COPY package*.json ./
 # 의존성 설치
 RUN npm install
 
+# .env.production 파일 복사 추가 (이 파일에 VITE_API_URL이 정의되어 있어야 합니다.)
+COPY .env.production ./.env.production
+
 # 소스 코드 전체 복사
 COPY . .
 
 # 빌드 시 env 전달
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+# ARG VITE_API_URL
+# ENV VITE_API_URL=$VITE_API_URL
 
 # 여기서 React/Vite 앱 빌드
 RUN npm run build
