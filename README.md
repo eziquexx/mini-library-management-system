@@ -1,4 +1,4 @@
-# 📚 도서관 관리 시스템 (React, SpringBoot, JPA) - 개발 중
+# 📚 도서관 운영 웹 관리 시스템 (Backend 중심 개인 프로젝트)
 
 Spring Boot와 JPA를 사용해 <br>
 도서관 운영에 필요한 핵심 도메인(회원, 도서, 대출, 리뷰, 공지)을 <br>
