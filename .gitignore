@@ -41,7 +41,7 @@ out/
 .vscode/
 
 ### README ###
-# **/README.md
+**/README.md
 
 ### sql ###
 *.sql
