@@ -1,124 +1,61 @@
-# 📚 도서관 관리 시스템 (React, SpringBoot, JPA) - 개발 중
+# 📚 도서관 운영 웹 관리 시스템 (Backend 중심 개인 프로젝트)
 
-> 도서 대여 시스템을 위한 React, Spring Boot 기반 서비스입니다.<br>
-> 회원가입, 로그인, 도서 관리, 대출/반납, 리뷰, 공지사항, 관리자 기능을 포함합니다.<br>
-> 개발하고 있는 상태이며 현재 백엔드 - 회원가입, 로그인, 도서 등록/수정까지 작업이 되었습니다.<br>
-> 개발 기록은 [블로그-개발 기록/도서관 관리 시스템](https://dev-jelee.tistory.com/category/%EA%B0%9C%EB%B0%9C%20%EA%B8%B0%EB%A1%9D/%EB%8F%84%EC%84%9C%EA%B4%80%20%EA%B4%80%EB%A6%AC%20%EC%8B%9C%EC%8A%A4%ED%85%9C) 에
-> 기록하고 있습니다.
+Spring Boot와 JPA를 사용해 <br>
+도서관 운영에 필요한 핵심 도메인(회원, 도서, 대출, 리뷰, 공지)을 <br>
+백엔드 중심으로 설계·구현한 웹 관리 시스템입니다. <br><br>
+단순 CRUD 구현을 넘어 <br>
+인증/권한 분리, 트랜잭션 관리, 예외 처리, 배포 환경 구성까지 <br>
+실제 서비스 흐름을 고려하며 개발했습니다.
 
----
+ <br>
 
-## 🏗️ 기술 스택
+## 🚧 프로젝트 진행 현황
+- 백엔드 API 설계 및 구현 완료 (Postman을 통한 테스트 진행)
+- 사용자 페이지 UI 개발 및 테스트 완료
+- Docker, Nginx 기반으로 AWS Lightsail에 배포
+- 관리자 페이지 UI 개발 진행 중
 
-- **Backend**: Java 17.0.12, Spring Boot 3.5.4
-- **Build Tool**: Gradle
-- **Database**: MySQL
-- **ORM**: Spring Data JPA
-- **Security**: Spring Security, JWT
-- **Documentation**: Spring REST Docs, Postman
-- **Deploy/Infra**: Docker, AWS (예정)
+ <br>
+ 
+## 🛠 기술 스택
+- Backend: Java 17, Spring Boot, Spring Security, JPA
+- Frontend: React (User Page)
+- Auth: JWT (HttpOnly Cookie)
+- DB: MySQL
+- Infra/Deploy: Docker, Nginx, AWS Lightsail
+- CI/CD: GitHub Actions
 
----
+ <br>
 
-## 📁 프로젝트 구조 (backend)
-```
-com.jelee.librarymanagementsystem.backend
-│
-├── global # 전역 설정, 예외, 응답, 메시지 등
-│ ├── config
-│ ├── exception
-│ ├── response
-│ ├── jwt
-│ ├── enums
-│ └── util
-│
-├── domain
-│ ├── auth # 인증/인가 관련
-│ ├── user # 회원
-│ ├── book # 도서
-│ ├── loan # 대출
-│ ├── review # 리뷰
-│ ├── notice # 공지사항
-│ └── admin # 관리자
-```
+## 🧩 주요 기능
+- 회원/관리자 권한 분리
+- 도서 등록 및 대출/반납 관리
+- 리뷰 작성 및 관리
+- 공지사항 관리
 
----
+ <br>
 
-## 📁 프로젝트 구조 (frontend)
-- 구체적인 방향 아직 미정
-```
-com.jelee.librarymanagementsystem.frontend
-│
-├── assets
-├── components
-├── pages
-├── styles
-├── ...
+## 🏗️ 아키텍처 개요
+- Layered Architecture 기반 (Controller → Service → Repository)
+- JWT 인증 기반 요청 흐름
 
-```
+ <br>
 
----
+## 🔍 개발 중 집중한 포인트
+- 도메인 기준 패키지 구조 설계
+- 공통 응답 / 에러 코드 구조화
+- JPA 트랜잭션 경계(@Transactional) 이해 및 적용
+- 배포 환경에서의 인증(Cookie, SameSite) 이슈 경험
 
-## 🔐 인증 및 보안
-- JWT 기반 인증/인가
-- 로그인 시 토큰 발급
-- 모든 요청은 토큰 기반 인증 필요 (`/api/v1/auth/**` 경로 제외)
+ <br>
 
----
+## 📖 상세 설계 및 트러블슈팅
+프로젝트의 상세 설계, ERD, 트러블슈팅, 회고는
+아래 Notion 문서에 정리되어 있습니다.
 
-## 💬 공통 응답 구조
+👉 [Notion 링크](https://dev-jelee.notion.site/2c3d0316bc68809081a2d361f8fd03e5?pvs=74)
 
-```json
-{
-  "code": "USER_201",
-  "message": "회원가입이 완료되었습니다.",
-  "data": {
-    // 응답 데이터
-  }
-}
-```
-| 필드        | 설명                                     |
-| --------- | ------------------------------------------ |
-| `code`    | 에러/성공 코드 (`USER_001`, `BOOK_404` 등) |
-| `message` | 다국어 메시지 키 기반의 응답 메시지         |
-| `data`    | 실제 응답 데이터                           |
-
----
-
-## 📑 예외/성공 코드 관리 전략
-- ErrorCode, SuccessCode는 각 도메인 별로 Enum으로 분리
-- 공통 인터페이스 BaseErrorCode, BaseSuccessCode로 통합
-- 메시지는 messages.properties에서 키로 관리 (다국어 확장 가능)
-
-### ✅ ErrorCode 예시 (UserErrorCode.java)
-| HttpStatus       | Code       | Message Key                     | 메시지              |
-| ---------------- | ---------- | ------------------------------- | ---------------- |
-| 409 CONFLICT     | `USER_001` | `error.user.username.duplicate` | 이미 사용 중인 아이디입니다. |
-| 401 UNAUTHORIZED | `USER_401` | `error.user.invalid_password`   | 비밀번호가 일치하지 않습니다. |
-
-### ✅ SuccessCode 예시 (BookSuccessCode.java)
-| HttpStatus  | Code       | Message Key            | 메시지                |
-| ----------- | ---------- | ---------------------- | ------------------ |
-| 201 CREATED | `BOOK_201` | `success.book.created` | 도서가 성공적으로 등록되었습니다. |
-
-### 📜 메시지 관리 예시 (messages.properties)
-``` properties
-# User
-error.user.username.duplicate=이미 사용 중인 아이디입니다.
-success.user.signup=회원가입이 완료되었습니다.
-
-# Book
-error.book.title.blank=도서 제목은 필수입니다.
-success.book.created=도서가 성공적으로 등록되었습니다.
-```
-
----
-
-## 📌 향후 계획
-- 각 도메인별 기능 모두 추가
-- React로 프론트엔드 개발
-
----
+ <br>
 
 ## 👨‍💻 개발자 정보
 - JiEun Lee
