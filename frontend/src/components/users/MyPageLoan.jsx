@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useUserStore from "../stores/useUserStore";
+import useUserStore from "../../stores/useUserStore";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import MyPageLoanModal from "./MyPageLoanModal";

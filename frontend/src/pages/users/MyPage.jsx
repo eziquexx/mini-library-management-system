@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import useUserStore from "../stores/useUserStore";
-import MyPageInfo from "../components/MyPageInfo";
-import MyPageLoan from "../components/MyPageLoan";
-import MyPageReview from "../components/MyPageReview";
+import useUserStore from "../../stores/useUserStore";
+import MyPageInfo from "../../components/users/MyPageInfo";
+import MyPageLoan from "../../components/users/MyPageLoan";
+import MyPageReview from "../../components/users/MyPageReview";
 
 
 const MyPage = () => {

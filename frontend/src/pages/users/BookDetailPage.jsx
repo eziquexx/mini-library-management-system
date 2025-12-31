@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useUserStore from "../stores/useUserStore";
+import useUserStore from "../../stores/useUserStore";
 
 
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import useUserStore from "../stores/useUserStore";
+import useUserStore from "../../stores/useUserStore";
 import axios from "axios";
 import MyPageReviewModal from "./MyPageReviewModal";
 

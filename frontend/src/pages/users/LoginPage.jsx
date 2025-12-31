@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import FocusPlaceholderInput from '../components/FocusPlaceholderInput';
+import FocusPlaceholderInput from '../../components/users/FocusPlaceholderInput';
 import { Link, useNavigate } from 'react-router-dom';
-import useUserStore from '../stores/useUserStore';
+import useUserStore from '../../stores/useUserStore';
 
 const LoginPage = () => {
   
