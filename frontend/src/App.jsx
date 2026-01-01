@@ -1,31 +1,23 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import LoginPage from './pages/LoginPage'
-import HomePage from './pages/HomePage'
-import SignupPage from './pages/SignupPage'
-import NoticePage from './pages/NoticePage'
-import SignupSuccessPage from './pages/SingupSuccessPage'
-import Layout from './components/Layout'
-import NoticeDetailPage from './pages/NoticeDetailPage'
-import BookDetailPage from './pages/BookDetailPage'
-import BookListPage from './pages/BookListPage'
-import MyPage from './pages/MyPage'
+import LoginPage from './pages/users/LoginPage'
+import HomePage from './pages/users/HomePage'
+import SignupPage from './pages/users/SignupPage'
+import NoticePage from './pages/users/NoticePage'
+import SignupSuccessPage from './pages/users/SingupSuccessPage'
+import Layout from './components/users/Layout'
+import NoticeDetailPage from './pages/users/NoticeDetailPage'
+import BookDetailPage from './pages/users/BookDetailPage'
+import BookListPage from './pages/users/BookListPage'
+import MyPage from './pages/users/MyPage'
+import AdminPage from './components/admin/Adminpage'
 
 function App() {
 
-  /**
-   * HomePage: 메인
-   * LoginPage: 로그인 페이지
-   * SignupPage: 회원가입 페이지
-   * MyPage: 마이페이지
-   * NoticePage: 공지사항 페이지
-   * NoticeDetailPage: 공지 상세 페이지
-   * BookListPage: 도서 목록 페이지
-   * BookDetailPage: 도서 상세 페이지
-   */
   return (
     <Routes>
+      {/* Users Layout */}
       <Route element={<Layout />}>
         <Route path='/' element={<HomePage />} />
         <Route path='/login' element={<LoginPage />} />
@@ -36,6 +28,11 @@ function App() {
         <Route path='/notice/:noticeId' element={<NoticeDetailPage />}/>
         <Route path='/books' element={<BookListPage />}/>
         <Route path='/books/:bookId' element={<BookDetailPage />}/>
+      </Route>
+      <Route>
+        <Route path="/admin" element={<AdminPage />}>
+        
+        </Route>
       </Route>
     </Routes>
   )
