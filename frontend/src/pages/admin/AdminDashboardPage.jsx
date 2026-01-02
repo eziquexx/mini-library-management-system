@@ -1,9 +1,12 @@
+import AdminHeader from "../../components/admin/AdminHeader";
 
 
 const AdminDashboardPage = () => {
+  const title = ["대시보드"];
+
   return (
     <div>
-      <h1>대시보드 페이지</h1>
+      <AdminHeader title={title} />
     </div>
   );
 }

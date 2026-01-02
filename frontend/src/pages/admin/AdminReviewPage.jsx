@@ -1,9 +1,12 @@
+import AdminHeader from "../../components/admin/AdminHeader";
 
 
 const AdminReviewPage = () => {
+  const title = ["리뷰관리"];
+
   return (
     <div>
-      <h1>리뷰관리 페이지</h1>
+      <AdminHeader title={title} />
     </div>
   );
 }

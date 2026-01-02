@@ -1,9 +1,12 @@
+import AdminHeader from "../../components/admin/AdminHeader";
 
 
 const AdminNoticePage = () => {
+  const title = ["공지관리"];
+
   return (
     <div>
-      <h1>공지관리 페이지</h1>
+      <AdminHeader title={title} />
     </div>
   );
 }

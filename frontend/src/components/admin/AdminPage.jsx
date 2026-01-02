@@ -6,7 +6,7 @@ const AdminPage = () => {
   return (
     <div className="w-full min-h-screen flex">
       <SidebarAdmin />
-      <main className="grow-9 bg-[#f9fafc]">
+      <main className="grow-9 bg-[#f9fafc] p-8">
         <Outlet />
       </main>
     </div>

@@ -1,9 +1,12 @@
+import AdminHeader from "../../components/admin/AdminHeader";
 
 
 const AdminLoanPage = () => {
+  const title = ["대출관리"];
+
   return (
     <div>
-      <h1>대출관리 페이지</h1>
+      <AdminHeader title={title} />
     </div>
   );
 }

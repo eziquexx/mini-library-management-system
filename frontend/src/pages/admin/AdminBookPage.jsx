@@ -1,9 +1,12 @@
+import AdminHeader from "../../components/admin/AdminHeader";
 
 
 const AdminBookPage = () => {
+  const title = ["도서관리"];
+
   return (
     <div>
-      <h1>도서관리 페이지</h1>
+      <AdminHeader title={title} />
     </div>
   );
 }
