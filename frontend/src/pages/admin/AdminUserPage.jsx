@@ -1,4 +1,5 @@
 import AdminHeader from "../../components/admin/AdminHeader";
+import CustomInputSearch from "../../components/admin/CustomInputSearch";
 import CustomSelect from "../../components/admin/CustomSelect";
 
 
@@ -16,17 +17,7 @@ const AdminUserPage = () => {
         <h4 className="text-lg font-bold">회원목록</h4>
         <div className="flex flex-row mt-5.5">
           <CustomSelect options={options} defaultOption={defaultOption} />
-          <div>
-            <input 
-              type="text" 
-              id="usrkwd" 
-              name="usrkwd"
-              className="border"
-            />
-            <button 
-              className="border"
-            >버튼</button>
-          </div>
+          <CustomInputSearch />
         </div>
       </div>
     </div>
