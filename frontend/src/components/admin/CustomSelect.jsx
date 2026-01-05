@@ -45,11 +45,11 @@ const CustomSelect = ({ options, defaultOption }) => {
           rounded-md 
           text-gray-600 text-sm 
           bg-white
-          cursor-pointer"
+          cursor-pointer z-20"
         ref={dropdownRef}
         >
         <div 
-          className="selected-option flex flex-row w-full h-full pl-3"
+          className="selected-option flex flex-row w-full h-full pl-3 bg-white rounded-md "
           onClick={toggleDropdown}
         >
           <span className="justify-self-center self-center">{selectedValue}</span>
