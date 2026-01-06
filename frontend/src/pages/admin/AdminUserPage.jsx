@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AdminHeader from "../../components/admin/AdminHeader";
 import CustomInputSearch from "../../components/admin/CustomInputSearch";
 import CustomSelect from "../../components/admin/CustomSelect";
@@ -8,6 +9,13 @@ const AdminUserPage = () => {
   const title = ["회원관리"];
   const defaultOption = "사용자 ID";
   const options = ["사용자 ID", "이메일"];
+  const [totalElements, setTotalElements] = useState("");
+
+  const apiUrl = `http://localhost:8080/api/v1/admin`;
+
+  const handleChildData = (data) => {
+    setTotalElements(data);
+  }
 
   return (
     <div>
@@ -17,16 +25,15 @@ const AdminUserPage = () => {
       <div className="bg-white p-5 rounded-xl shadow-[0px_0px_14px_rgba(0,0,0,0.08)]">
         <div>
           <h4 className="text-lg font-bold inline-block">회원목록</h4>
-          <span className="text-sm ml-3 text-gray-400">총 50명</span>
+          <span className="text-sm ml-3 text-gray-400">총 {totalElements}명</span>
         </div>
         <div className="flex flex-row mt-5.5">
           <CustomSelect options={options} defaultOption={defaultOption} />
           <CustomInputSearch />
         </div>
 
-
         <div className="mt-4">
-          <CustomTable />
+          <CustomTable apiUrl={apiUrl} sendData={handleChildData} />
         </div>
       </div>
 
