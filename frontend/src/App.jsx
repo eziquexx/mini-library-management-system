@@ -18,6 +18,7 @@ import AdminBookPage from './pages/admin/AdminBookPage'
 import AdminLoanPage from './pages/admin/AdminLoanPage'
 import AdminReviewPage from './pages/admin/AdminReviewPage'
 import AdminNoticePage from './pages/admin/AdminNoticePage'
+import AdminLoginPage from './pages/admin/AdminLoginPage'
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
         <Route path='/books/:bookId' element={<BookDetailPage />}/>
       </Route>
       <Route>
+        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route element={<AdminPage />}>
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
