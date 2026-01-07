@@ -45,7 +45,7 @@ const CustomSelect = ({ options, defaultOption }) => {
           rounded-md 
           text-gray-600 text-sm 
           bg-white
-          cursor-pointer z-20"
+          cursor-pointer z-10"
         ref={dropdownRef}
         >
         <div 

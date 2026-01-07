@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import CustomPagination from "./CustomPagination";
 
-const CustomTable = ({apiUrl, sendData}) => {
+const CustomTable = ({apiUrl, sendData, onRowClick}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
@@ -55,6 +55,7 @@ const CustomTable = ({apiUrl, sendData}) => {
   const handlePageClick = (pageNumber) => {
     setPage(pageNumber);
   }
+  
 
   useEffect(() => {
     fetchPost(page, size).then(() => { 
@@ -68,7 +69,11 @@ const CustomTable = ({apiUrl, sendData}) => {
       content = (
         <tbody>
           {posts.map((post) => (
-            <tr key={post.id} className="border-b-1 border-gray-300">
+            <tr 
+              key={post.id} 
+              className="border-b-1 border-gray-300 hover:bg-gray-200 cursor-pointer" 
+              onClick={() => onRowClick(post.id)}
+            >
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
                 <div className="custom-scrollbar">{post.id}</div>
               </td>
@@ -123,7 +128,7 @@ const CustomTable = ({apiUrl, sendData}) => {
         <thead className="w-full">
           <tr className="w-full">
             <th className="w-1/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">id</div>
+              <div className="bg-[#f2f3f7] py-2.5 mr-[2px]">id</div>
             </th>
             <th className="w-3/22">
               <div className="bg-[#f2f3f7] p-2.5 mx-[2px]">username</div>
@@ -150,7 +155,7 @@ const CustomTable = ({apiUrl, sendData}) => {
               <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">deleted_at</div>
             </th>
             <th className="w-2/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">status</div>
+              <div className="bg-[#f2f3f7] py-2.5 ml-[2px]">status</div>
             </th>
           </tr>
         </thead>

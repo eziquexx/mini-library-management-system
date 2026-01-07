@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminHeader from "../../components/admin/AdminHeader";
 import CustomInputSearch from "../../components/admin/CustomInputSearch";
 import CustomSelect from "../../components/admin/CustomSelect";
 import CustomTable from "../../components/admin/CustomTable";
+import CustomDetailModal from "../../components/admin/CustomDetailModal";
 
 
 const AdminUserPage = () => {
@@ -10,12 +11,21 @@ const AdminUserPage = () => {
   const defaultOption = "사용자 ID";
   const options = ["사용자 ID", "이메일"];
   const [totalElements, setTotalElements] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);  // 클릭한 아이템 저장
 
   const apiUrl = `http://localhost:8080/api/v1/admin`;
 
   const handleChildData = (data) => {
     setTotalElements(data);
   }
+
+  // 트리거: 테이블의 tr 클릭 시
+  const handleRowClick = (item) => {
+    setSelectedItem(item); // 클릭한 아이템 설정
+    setOpen(true);  // 모달 열기
+  };
+  
 
   return (
     <div>
@@ -33,9 +43,15 @@ const AdminUserPage = () => {
         </div>
 
         <div className="mt-4">
-          <CustomTable apiUrl={apiUrl} sendData={handleChildData} />
+          <CustomTable apiUrl={apiUrl} sendData={handleChildData} onRowClick={handleRowClick}/>
         </div>
       </div>
+      
+      <CustomDetailModal 
+        open={open} 
+        onClose={() => setOpen(false)}
+        item={selectedItem} // 선택된 아이템을 Modal에 전달
+      />
 
       <style jsx>{`
         .custom-scrollbar {
