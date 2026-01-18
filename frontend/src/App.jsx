@@ -19,6 +19,7 @@ import AdminLoanPage from './pages/admin/AdminLoanPage'
 import AdminReviewPage from './pages/admin/AdminReviewPage'
 import AdminNoticePage from './pages/admin/AdminNoticePage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
+import AdminRoute from './components/admin/AdminRoute'
 
 function App() {
 
@@ -38,14 +39,16 @@ function App() {
       </Route>
       <Route>
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route element={<AdminPage />}>
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-          <Route path="/admin/users" element={<AdminUserPage />} />
-          <Route path="/admin/books" element={<AdminBookPage />} />
-          <Route path="/admin/loans" element={<AdminLoanPage />} />
-          <Route path="/admin/reviews" element={<AdminReviewPage />} />
-          <Route path="/admin/notices" element={<AdminNoticePage />} />
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminPage />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin/users" element={<AdminUserPage />} />
+            <Route path="/admin/books" element={<AdminBookPage />} />
+            <Route path="/admin/loans" element={<AdminLoanPage />} />
+            <Route path="/admin/reviews" element={<AdminReviewPage />} />
+            <Route path="/admin/notices" element={<AdminNoticePage />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

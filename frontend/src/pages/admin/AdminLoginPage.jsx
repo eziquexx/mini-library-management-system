@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useUserStore from "../../stores/useUserStore";
 import { Link, useNavigate } from "react-router-dom";
 import FocusPlaceholderInput from "../../components/users/FocusPlaceholderInput";
@@ -7,19 +7,32 @@ import axios from "axios";
 
 const AdminLoginPage = () => {
 
-  const { fetchUser } = useUserStore();
+  const { user, loading, fetchUser } = useUserStore();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
   const apiUrl = `http://localhost:8080/api/v1`;
+
+  useEffect(() => {
+    if (!user && loading) {
+      fetchUser();
+    }
+
+    // 로그인 되어있거나 role이 admin, manager이면 페이지 이동
+    if (user && (user.role === 'ROLE_ADMIN' || user.role === 'ROLE_MANAGER')) {
+      navigate('/admin', { replace: true });
+    }
+
+  }, [user, loading, navigate]);
+
+  if (loading) return null;
 
   const handleLogin = async (e) => {
     e.preventDefault(); // 새로고침 방지
 
     try {
       await axios.post(
-        `http://localhost:8080/api/v1/auth/signin`,
+        `${apiUrl}/auth/signin`,
         { username, password },
         { withCredentials: true }
       );

@@ -1,7 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useUserStore from "../../stores/useUserStore";
 
 
 const SidebarAdmin = () => {
+  const { logout } = useUserStore();
+  const navigate = useNavigate();
+
+  // 로그아웃
+  const goToLogout = async () => {
+    await logout();
+    navigate('/admin/login');
+  }
+
   return (
     <div className="flex flex-col justify-start min-w-48 max-w-48 min-h-screen bg-white shadow-[3px_0_20px_rgba(0,0,0,0.05)] z-10 text-[#676768]">
       <h1 className="blcok py-8 px-3 text-center text-teal-600 font-black text-xl"><Link to="/admin">행복도서관</Link></h1>
@@ -97,13 +107,13 @@ const SidebarAdmin = () => {
           </Link>
         </li>
       </ul>
-      <div className="mt-auto flex mx-3 my-3 py-2 px-3 text-sm leading-5 rounded-md hover:bg-teal-600 hover:text-white cursor-pointer">
+      <div className="mt-auto flex mx-3 my-3 py-2 px-3 text-sm leading-5 rounded-md hover:bg-teal-600 hover:text-white cursor-pointer" onClick={goToLogout}>
         <div className="w-[22px] h-[22px]">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[22px]">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
             </svg>
           </div>
-        <span className="ml-3">로그아웃</span>
+        <span className="ml-3" >로그아웃</span>
       </div>
     </div>
   );

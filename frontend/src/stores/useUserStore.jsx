@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import axios from 'axios'
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const testUrl = `http://localhost:8080`;
 
 const useUserStore = create((set) => ({
   user: null,
@@ -12,9 +13,10 @@ const useUserStore = create((set) => ({
 
   // 유저 정보 불러오기
   fetchUser: async () => {
+    set({ loading: true }); // 요청 시작 시 로딩 true
     try {
       const response = await axios.get(
-        `${apiUrl}/api/v1/user/me`, 
+        `${testUrl}/api/v1/user/me`, 
         { withCredentials: true, },
       );
 
@@ -30,7 +32,7 @@ const useUserStore = create((set) => ({
   logout: async () => {
     try {
       await axios.post(
-        `${apiUrl}/api/v1/auth/logout`,
+        `${testUrl}/api/v1/auth/logout`,
         null,
         { withCredentials: true, },
       )
@@ -38,6 +40,7 @@ const useUserStore = create((set) => ({
       set({ user: null })
     }
   },
+
 }))
 
 export default useUserStore;
