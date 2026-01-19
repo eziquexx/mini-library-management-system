@@ -2,23 +2,31 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import AdminUserDetailPage from "../../pages/admin/AdminUserDetailPage";
+import axios from "axios";
 
+let modalContent = {
+  userDetailPage: {
+    title: "사용자 상세페이지",
+    button1: "수정",
+    button2: "닫기",
+  },
+  bookDetailPage: {
+    title: "도서 상세페이지",
+    button1: "수정",
+    button2: "닫기",
+  }
+};
 
-const CustomDetailModal = ({open, onClose, item, pageType, apiUrl}) => {
+const CustomDetailModal = ({open, onClose, item, pageType, apiUrl, onDataUpdated}) => {
 
-  let modalContent = {
-    userDetailPage: {
-      title: "사용자 상세페이지",
-      button1: "수정",
-      button2: "닫기",
-    },
-    bookDetailPage: {
-      title: "도서 상세페이지",
-      button1: "수정",
-      button2: "닫기",
-    }
-  };
-
+  const [childValChange, setChildValChange] = useState(false); // 자식 변경값 감지
+  const [error, setError] = useState(null);
+  const [changeRoleVal, setChangeRoleVal] = useState('');
+  const [changeStatusVal, setChangeStatusVal] = useState('');
+  const [originRole, setOriginRole] = useState('');
+  const [originStatus, setOriginStatus] = useState('');
+  const id = item;
+  // item값 확인
   console.log("item: ", item);
 
   const content = modalContent[pageType] || { title: "Unknown Page", button1: "", button2: "" };
@@ -32,17 +40,89 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl}) => {
       // 모달이 열렸을 때 추가 작업이 필요하다면 여기에 추가
       console.log("모달이 열렸습니다.");
     }
-  }, [open]);  // open 값이 변경될 때마다 실행
-
+  }, [open]);  // open 값이 변경될 때마다 실행 
 
   const renderPage = () => {
     switch (pageType) {
       case "userDetailPage":
-        return <AdminUserDetailPage item={item} apiUrl={apiUrl} />;
+        return <AdminUserDetailPage item={item} apiUrl={apiUrl} onValueChange={handleChildChange} onChangedValue={handleChangedVal} onOriginValue={originValues} />;
       default:
         return <div>Loading...</div>;
     }
   };
+
+  // 기존 Role, Status 값
+  const originValues = (originValue) => {
+    setOriginRole(originValue[0]);
+    setOriginStatus(originValue[1]);
+  }
+
+  // 변경된 Role, Status 값
+  const handleChangedVal = (changeValue) => {
+    setChangeRoleVal(changeValue[0]);
+    setChangeStatusVal(changeValue[1]);
+  }
+
+  // Role, Status 값 변경 감지
+  const handleChildChange = (newValue) => {
+    setChildValChange(newValue);
+  }
+
+  // Role, Status 값 수정
+  const onUpdateValue = async () => {
+    try {
+      if (originRole !== changeRoleVal) { await fetchRoleUpdate(); }
+      if (originStatus !== changeStatusVal) { await fetchStatusUpdate(); }
+
+      onClose();
+      onDataUpdated();
+    } catch (err) {
+      console.error('수정 실패: ', err);
+    }
+  }
+
+  // role 변경
+  const fetchRoleUpdate = async () => {
+    try {
+      await axios.patch(
+        `${apiUrl}/users/${id}/role`,
+        {
+          "role": changeRoleVal
+        }, 
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json"
+          }
+        });
+
+      alert("수정 성공");
+    } catch(err) {
+      console.log("error: ", err);
+      setError(error);
+    } 
+  }
+
+  // status 변경
+  const fetchStatusUpdate = async () => {
+    try {
+      await axios.patch(
+        `${apiUrl}/users/${id}/status`, 
+        {
+          "status": changeStatusVal
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json"
+          }
+        })
+    } catch(error) {
+      console.log("error: ", error);
+      setError(error);
+    }
+  }
+
 
   return (
     <div>
@@ -66,7 +146,7 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl}) => {
                   <div className="mx-3 text-left">
                     <div className="flex flex-row justify-end text-gray-700">
                       <button onClick={onClose} className="cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="size-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -75,9 +155,9 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl}) => {
                       {content.title}
                     </DialogTitle>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500">
                         {renderPage()}
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -85,8 +165,9 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl}) => {
               <div className="bg-gray-50 px-7 py-4 flex flex-row justify-end">
                 <button
                   type="button"
-                  onClick={onClose}
-                  className="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:w-auto mr-3"
+                  onClick={onUpdateValue}
+                  disabled={!childValChange}
+                  className={`inline-flex justify-center rounded-md ${childValChange ? "bg-red-600 hover:bg-red-500" : ""} bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-xs sm:w-auto mr-3`}
                 >
                   {content.button1}
                 </button>

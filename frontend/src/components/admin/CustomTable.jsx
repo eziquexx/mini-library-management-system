@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import CustomPagination from "./CustomPagination";
 
-const CustomTable = ({apiUrl, sendData, onRowClick}) => {
+const CustomTable = ({apiUrl, sendData, onRowClick, shouldReload, onReloadComplete}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
@@ -36,6 +36,8 @@ const CustomTable = ({apiUrl, sendData, onRowClick}) => {
       setTotalPages(response.data.data.totalPages || 1);
       setTotalElements(response.data.data.totalElements || 1);
       sendTotalElements(totalElements);
+
+      onReloadComplete();
     } catch (error) {
       setError(error);
       console.log("Error: ", error);
@@ -61,7 +63,7 @@ const CustomTable = ({apiUrl, sendData, onRowClick}) => {
     fetchPost(page, size).then(() => { 
       sendTotalElements(totalElements); // 비동기 요청 후 부모에게 데이터 전달
     });
-  }, [page, size, totalElements]);
+  }, [page, size, totalElements, shouldReload]);
 
   let content;
   if (!loading && !error) {
@@ -75,34 +77,34 @@ const CustomTable = ({apiUrl, sendData, onRowClick}) => {
               onClick={() => onRowClick(post.id)}
             >
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.id}</div>
+                <div className="custom-scrollbar">{post.id ? post.id : '-'}</div>
               </td>
               <td className="w-3/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.username}</div>
+                <div className="custom-scrollbar">{post.username ? post.username : '-'}</div>
               </td>
               <td className="w-2/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.email}</div>
+                <div className="custom-scrollbar">{post.email ? post.email : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.role}</div>
+                <div className="custom-scrollbar">{post.role ? post.role : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.joinDate}</div>
+                <div className="custom-scrollbar text-center">{post.joinDate ? post.joinDate.split('T').join(' / ') : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">last_login_date</div>
+                <div className="custom-scrollbar text-center">{post.lastLoginDate ? post.lastLoginDate.split('T').join(' / ') : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">updated_at</div>
+                <div className="custom-scrollbar text-center">{post.updatedAt ? post.updatedAt.split('T').join(' / ') : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">inactive_at</div>
+                <div className="custom-scrollbar text-center">{post.inactiveAt ? post.inactiveAt.split('T').join(' / ') : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">deleted_at</div>
+                <div className="custom-scrollbar text-center">{post.deletedAt ? post.deletedAt.split('T').join(' / ') : '-'}</div>
               </td>
               <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">status</div>
+                <div className="custom-scrollbar text-center">{post.status ? post.status : '-'}</div>
               </td>
             </tr>
           ))}
@@ -123,7 +125,7 @@ const CustomTable = ({apiUrl, sendData, onRowClick}) => {
     <div className="flex flex-col justify-center">
       <table className="
           table-fixed border-collapse
-          text-xs w-full h-full min-w-[1280px] "
+          text-xs w-full h-full min-w-[1400px] "
         >
         <thead className="w-full">
           <tr className="w-full">

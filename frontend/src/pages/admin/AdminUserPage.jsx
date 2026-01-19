@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AdminHeader from "../../components/admin/AdminHeader";
 import CustomInputSearch from "../../components/admin/CustomInputSearch";
 import CustomSelect from "../../components/admin/CustomSelect";
@@ -13,6 +13,7 @@ const AdminUserPage = () => {
   const [totalElements, setTotalElements] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);  // 클릭한 아이템 저장
+  const [isDataUpdated, setIsDataUpdated] = useState(false); // 데이터 수정 여부
 
   const apiUrl = `http://localhost:8080/api/v1/admin`;
 
@@ -24,6 +25,16 @@ const AdminUserPage = () => {
   const handleRowClick = (item) => {
     setSelectedItem(item); // 클릭한 아이템 설정
     setOpen(true);  // 모달 열기
+  };
+
+  // 데이터 수정되면 테이블 리로드
+  const handleDataUpdated = () => {
+    setIsDataUpdated(true); // 데이터 수정됨을 알림
+  };
+
+  // 테이블 리로드 후 상태 초기화
+  const handleTableReloadComplete = () => {
+    setIsDataUpdated(false); 
   };
   
 
@@ -43,7 +54,7 @@ const AdminUserPage = () => {
         </div>
 
         <div className="mt-4">
-          <CustomTable apiUrl={apiUrl} sendData={handleChildData} onRowClick={handleRowClick}/>
+          <CustomTable apiUrl={apiUrl} sendData={handleChildData} onRowClick={handleRowClick} shouldReload={isDataUpdated} onReloadComplete={handleTableReloadComplete}/>
         </div>
       </div>
       
@@ -53,6 +64,7 @@ const AdminUserPage = () => {
         item={selectedItem} // 선택된 아이템을 Modal에 전달
         apiUrl={apiUrl}
         pageType={"userDetailPage"}
+        onDataUpdated={handleDataUpdated}
       />
 
       <style jsx>{`
