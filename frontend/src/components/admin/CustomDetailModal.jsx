@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import AdminUserDetailPage from "../../pages/admin/AdminUserDetailPage";
+import AdminUserDetailPage from "../../pages/admin/users/AdminUserDetailPage";
 import axios from "axios";
 
 let modalContent = {

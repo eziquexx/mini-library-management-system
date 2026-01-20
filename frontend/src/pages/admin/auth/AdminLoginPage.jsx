@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import useUserStore from "../../stores/useUserStore";
-import { Link, useNavigate } from "react-router-dom";
-import FocusPlaceholderInput from "../../components/users/FocusPlaceholderInput";
+import useUserStore from "../../../stores/useUserStore";
+import { useNavigate } from "react-router-dom";
+import FocusPlaceholderInput from "../../../components/users/FocusPlaceholderInput";
 import axios from "axios";
 
 

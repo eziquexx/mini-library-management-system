@@ -1,9 +1,9 @@
 import { useState } from "react";
-import AdminHeader from "../../components/admin/AdminHeader";
-import CustomInputSearch from "../../components/admin/CustomInputSearch";
-import CustomSelect from "../../components/admin/CustomSelect";
-import CustomTable from "../../components/admin/CustomTable";
-import CustomDetailModal from "../../components/admin/CustomDetailModal";
+import AdminHeader from "../../../components/admin/AdminHeader";
+import CustomInputSearch from "../../../components/admin/CustomInputSearch";
+import CustomSelect from "../../../components/admin/CustomSelect";
+import CustomTable from "../../../components/admin/CustomTable";
+import CustomDetailModal from "../../../components/admin/CustomDetailModal";
 
 
 const AdminUserPage = () => {
