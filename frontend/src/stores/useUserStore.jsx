@@ -20,7 +20,7 @@ const useUserStore = create((set) => ({
         { withCredentials: true, },
       );
 
-      console.log("data: ", response.data.data);
+      // console.log("data: ", response.data.data);
       set({user: response.data.data, loading: false});
 
     } catch (error) {
