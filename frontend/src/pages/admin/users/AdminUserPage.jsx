@@ -63,7 +63,7 @@ const AdminUserPage = () => {
         onClose={() => setOpen(false)}
         item={selectedItem} // 선택된 아이템을 Modal에 전달
         apiUrl={apiUrl}
-        pageType={"userDetailPage"}
+        pageType="users"
         onDataUpdated={handleDataUpdated}
       />
 

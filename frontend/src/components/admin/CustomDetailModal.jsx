@@ -1,36 +1,11 @@
-import { useEffect, useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import AdminUserDetailPage from "../../pages/admin/users/AdminUserDetailPage";
-import axios from "axios";
+import { useEffect } from "react";
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
+// import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import AdminUserDetailModalPage from "../../pages/admin/users/AdminUserDetailModalPage";
 
-let modalContent = {
-  userDetailPage: {
-    title: "사용자 상세페이지",
-    button1: "수정",
-    button2: "닫기",
-  },
-  bookDetailPage: {
-    title: "도서 상세페이지",
-    button1: "수정",
-    button2: "닫기",
-  }
-};
 
 const CustomDetailModal = ({open, onClose, item, pageType, apiUrl, onDataUpdated}) => {
 
-  const [childValChange, setChildValChange] = useState(false); // 자식 변경값 감지
-  const [error, setError] = useState(null);
-  const [changeRoleVal, setChangeRoleVal] = useState('');
-  const [changeStatusVal, setChangeStatusVal] = useState('');
-  const [originRole, setOriginRole] = useState('');
-  const [originStatus, setOriginStatus] = useState('');
-  const id = item;
-  
-  // item값 확인
-  // console.log("item: ", item);
-
-  const content = modalContent[pageType] || { title: "Unknown Page", button1: "", button2: "" };
   // 예시로 pageType을 외부 API로부터 받거나 사용자 입력에 따라 설정
   useEffect(() => {
     renderPage(pageType);
@@ -44,84 +19,12 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl, onDataUpdated
 
   const renderPage = () => {
     switch (pageType) {
-      case "userDetailPage":
-        return <AdminUserDetailPage item={item} apiUrl={apiUrl} onValueChange={handleChildChange} onChangedValue={handleChangedVal} onOriginValue={originValues} />;
+      case "users":
+        return <AdminUserDetailModalPage item={item} apiUrl={apiUrl} onClose={onClose} onDataUpdated={onDataUpdated} />;
       default:
         return <div>Loading...</div>;
     }
   };
-
-  // 기존 Role, Status 값
-  const originValues = (originValue) => {
-    setOriginRole(originValue[0]);
-    setOriginStatus(originValue[1]);
-  }
-
-  // 변경된 Role, Status 값
-  const handleChangedVal = (changeValue) => {
-    setChangeRoleVal(changeValue[0]);
-    setChangeStatusVal(changeValue[1]);
-  }
-
-  // Role, Status 값 변경 감지
-  const handleChildChange = (newValue) => {
-    setChildValChange(newValue);
-  }
-
-  // Role, Status 값 수정
-  const onUpdateValue = async () => {
-    try {
-      if (originRole !== changeRoleVal) { await fetchRoleUpdate(); }
-      if (originStatus !== changeStatusVal) { await fetchStatusUpdate(); }
-
-      onClose();
-      onDataUpdated();
-    } catch (err) {
-      console.error('수정 실패: ', err);
-    }
-  }
-
-  // role 변경
-  const fetchRoleUpdate = async () => {
-    try {
-      await axios.patch(
-        `${apiUrl}/users/${id}/role`,
-        {
-          "role": changeRoleVal
-        }, 
-        {
-          withCredentials: true,
-          headers: {
-            Accept: "application/json"
-          }
-        });
-
-      alert("수정 성공");
-    } catch(err) {
-      console.log("error: ", err);
-      setError(error);
-    } 
-  }
-
-  // status 변경
-  const fetchStatusUpdate = async () => {
-    try {
-      await axios.patch(
-        `${apiUrl}/users/${id}/status`, 
-        {
-          "status": changeStatusVal
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Accept: "application/json"
-          }
-        })
-    } catch(error) {
-      console.log("error: ", error);
-      setError(error);
-    }
-  }
 
 
   return (
@@ -138,48 +41,7 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl, onDataUpdated
               transition
               className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
             >
-              <div className="bg-white px-3 pt-5 pb-4 ">
-                <div className="sm:flex sm:items-start">
-                  {/* <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
-                    <ExclamationTriangleIcon aria-hidden="true" className="size-6 text-red-600" />
-                  </div> */}
-                  <div className="mx-3 text-left">
-                    <div className="flex flex-row justify-end text-gray-700">
-                      <button onClick={onClose} className="cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    <DialogTitle as="h3" className="text-base text-center font-semibold text-gray-900 sm:text-left mt-1">
-                      {content.title}
-                    </DialogTitle>
-                    <div className="mt-2">
-                      <div className="text-sm text-gray-500">
-                        {renderPage()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-7 py-4 flex flex-row justify-end">
-                <button
-                  type="button"
-                  onClick={onUpdateValue}
-                  disabled={!childValChange}
-                  className={`inline-flex justify-center rounded-md ${childValChange ? "bg-red-600 hover:bg-red-500" : ""} bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-xs sm:w-auto mr-3`}
-                >
-                  {content.button1}
-                </button>
-                <button
-                  type="button"
-                  data-autofocus
-                  onClick={onClose}
-                  className="inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:w-auto"
-                >
-                  {content.button2}
-                </button>
-              </div>
+              { renderPage() }
             </DialogPanel>
           </div>
         </div>
