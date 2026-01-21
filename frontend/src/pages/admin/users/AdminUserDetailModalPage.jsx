@@ -29,6 +29,12 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
   // 권한, 상태 변경
   const [childValChange, setChildValChange] = useState(false);
 
+  // 탈퇴처리 유무
+  const [deletedChange, setDeletedChange] = useState(false);
+
+  // 이미 탈퇴처리
+  const [alreadyDeleted, setAlreadyDeleted] = useState(true);
+
 
   // 상세 페이지 조회
   useEffect(() => {
@@ -47,7 +53,7 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
           }
         );
 
-        // console.log(response.data.data);
+        console.log(response.data.data);
         setData(response.data.data);
 
         // 권한 role
@@ -60,8 +66,8 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
         setAvailableStatusOpt(remainingStatusOpts);
         setSelectedStatusOpt(response.data.data.status);
 
-        // onOriginValue([response.data.data.role, response.data.data.status]);
         
+
       } catch (error) {
         setError(error);
         console.log(error);
@@ -101,12 +107,23 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
 
     if (data.role !== selectedRoleOpt || data.status !== selectedStatusOpt) {
       setChildValChange(true);
-      // onValueChange(true);
-      // onChangedValue([selectedRoleOpt, selectedStatusOpt]);
     } else {
       setChildValChange(false);
-      // onValueChange(false);
     }
+
+    // 탈퇴처리 버튼 활성화
+    if (data.status === 'DELETED' ) { // 활성화 조건
+      if (data.username.includes('_deleted_')) {
+        setDeletedChange(false);
+        setAlreadyDeleted(false);
+      } else {
+        setDeletedChange(true);
+        setAlreadyDeleted(true);
+      }
+    }
+
+    console.log(data.role);
+    
   }, [selectedRoleOpt, selectedStatusOpt, data.role, data.status, roleChange, statusChange]);
 
 
@@ -123,7 +140,16 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
     }
   }
 
-  // role 변경
+  // 탈퇴 처리
+  const onUpdateDeleted = () => {
+    fetchDeletedUpdate();
+
+    onClose();
+    onDataUpdated();
+
+  }
+
+  // role 변경 api
   const fetchRoleUpdate = async () => {
     try {
       await axios.patch(
@@ -145,7 +171,7 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
     } 
   }
 
-  // status 변경
+  // status 변경 api
   const fetchStatusUpdate = async () => {
     try {
       await axios.patch(
@@ -159,9 +185,28 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
             Accept: "application/json"
           }
         })
+
+      alert("수정 성공");
     } catch(error) {
       console.log("error: ", error);
       setError(error);
+    }
+  }
+
+  // DELETED 탈퇴처리 api
+  const fetchDeletedUpdate = async () => {
+    try {
+      await axios.patch(
+        `${apiUrl}/users/${id}/deactivate`, 
+        null,
+        {
+          withCredentials: true,
+        }
+      )
+      alert("탈퇴처리 성공");
+    } catch (err) {
+      console.error("에러 발생: ", err);
+      setError(err);
     }
   }
 
@@ -187,8 +232,8 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
             <div className="mt-2">
               <div className="text-sm text-gray-500">
                 <div className="w-full mt-4">
-                  { loading && <p>불러오는 중...</p> }
-                  { error && <p style={{ color: "red" }}>{error}</p> }
+                  { loading && <div>불러오는 중...</div> }
+                  { error && <div style={{ color: "red" }}>{error}</div> }
 
                   { !loading && !error && (
                     <>
@@ -199,8 +244,11 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
                             <td className="px-3 py-3 w-4/6 border border-gray-300">{data.id ? data.id : "-"}</td>
                           </tr>
                           <tr className="w-full">
-                            <td className="px-3 py-3 w-2/6 border border-gray-300">username</td>
-                            <td className="px-3 py-3 w-4/6 border border-gray-300">{data.username ? data.username : "-"}</td>
+                            <td className="px-3 py-3 w-2/6 border border-gray-300">username </td>
+                            <td className="px-3 py-3 w-4/6 border border-gray-300">
+                              {data.username ? data.username : "-"}
+                              {alreadyDeleted ? "" : <div className="text-red-600"> ※ 탈퇴처리가 된 회원입니다.</div>}
+                            </td>
                           </tr>
                           <tr className="w-full">
                             <td className="px-3 py-3 w-2/6 border border-gray-300">email</td>
@@ -209,39 +257,46 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
                           <tr className="w-full">
                             <td className="px-3 py-3 w-2/6 border border-gray-300">role</td>
                             <td className="px-3 py-3 w-4/6 border border-gray-300">
-                              <select 
-                                name="roles" 
-                                id="roles" 
-                                value={selectedRoleOpt}
-                                onChange={handleRoleChange}
-                                className="border-1 outline-none px-0.5 pb-0.5 text-sm"
-                              >
-                                <option value={data.role || ""}>{data.role ? data.role : "-"}</option>
-                                {availableRoleOpt.map((option, index) => (
-                                  <option key={index} value={option}>
-                                    {option}
-                                  </option>
-                                ))}
-                              </select>
+                              {alreadyDeleted ? 
+                                <select 
+                                  name="roles" 
+                                  id="roles" 
+                                  value={selectedRoleOpt}
+                                  onChange={handleRoleChange}
+                                  disabled={!alreadyDeleted}
+                                  className="border-1 outline-none px-0.5 pb-0.5 text-sm"
+                                >
+                                  <option value={data.role || ""}>{data.role ? data.role : "-"}</option>
+                                  {availableRoleOpt.map((option, index) => (
+                                    <option key={index} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select> : data.role
+                              }
                             </td>
                           </tr>
                           <tr className="w-full">
                             <td className="px-3 py-3 w-2/6 border border-gray-300">status</td>
                             <td className="px-3 py-3 w-4/6 border border-gray-300">
-                              <select 
-                                name="roles" 
-                                id="roles" 
-                                value={selectedStatusOpt}
-                                onChange={handleStatusChange}
-                                className="border-1 outline-none px-0.5 pb-0.5 text-sm"
-                              >
-                                <option value={data.status || ""}>{data.status ? data.status : "-"}</option>
-                                {availableStatusOpt.map((option, index) => (
-                                  <option key={index} value={option}>
-                                    {option}
-                                  </option>
-                                ))}
-                              </select>
+                              {alreadyDeleted ? 
+                                <select 
+                                  name="roles" 
+                                  id="roles" 
+                                  value={selectedStatusOpt}
+                                  onChange={handleStatusChange}
+                                  disabled={!alreadyDeleted}
+                                  className="border-1 outline-none px-0.5 pb-0.5 text-sm"
+                                >
+                                  <option value={data.status || ""}>{data.status ? data.status : "-"}</option>
+                                  {availableStatusOpt.map((option, index) => (
+                                    <option key={index} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select> : 
+                                <span className="text-red-600">{data.status}</span>
+                              }
                             </td>
                           </tr>
                           <tr className="w-full">
@@ -276,23 +331,41 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
       </div>
 
       {/* buttons */}
-      <div className="bg-gray-50 px-7 py-4 flex flex-row justify-end">
-        <button
-          type="button"
-          onClick={onUpdateValue}
-          disabled={!childValChange}
-          className={`inline-flex justify-center rounded-md ${childValChange ? "bg-red-600 hover:bg-red-500" : ""} bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-xs sm:w-auto mr-3 cursor-pointer`}
-        >
-          수정
-        </button>
-        <button
-          type="button"
-          data-autofocus
-          onClick={onClose}
-          className="inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:w-auto cursor-pointer"
-        >
-          닫기
-        </button>
+      <div className="bg-gray-50 px-7 py-4 flex flex-row justify-between">
+        <div>
+          {alreadyDeleted ? 
+            <button
+              type="button"
+              onClick={onUpdateDeleted}
+              disabled={!deletedChange}
+              className={`inline-flex justify-center rounded-md ${deletedChange ? "bg-red-600 hover:bg-red-500" : ""} bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-xs sm:w-auto mr-3 cursor-pointer`}
+            >
+              탈퇴처리
+            </button> : 
+            ""
+          }
+        </div>
+        
+        <div>
+          {alreadyDeleted ? 
+            <button
+              type="button"
+              onClick={onUpdateValue}
+              disabled={!childValChange}
+              className={`inline-flex justify-center rounded-md ${childValChange ? "bg-red-600 hover:bg-red-500" : ""} bg-gray-400 px-3 py-2 text-sm font-semibold text-white shadow-xs sm:w-auto mr-3 cursor-pointer`}
+            >
+              수정
+            </button> : ""
+          }
+          <button
+            type="button"
+            data-autofocus
+            onClick={onClose}
+            className="inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:w-auto cursor-pointer"
+          >
+            닫기
+          </button>
+        </div>
       </div>
     </>
   );
