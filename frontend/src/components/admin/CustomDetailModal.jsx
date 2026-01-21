@@ -26,8 +26,9 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl, onDataUpdated
   const [originRole, setOriginRole] = useState('');
   const [originStatus, setOriginStatus] = useState('');
   const id = item;
+  
   // item값 확인
-  console.log("item: ", item);
+  // console.log("item: ", item);
 
   const content = modalContent[pageType] || { title: "Unknown Page", button1: "", button2: "" };
   // 예시로 pageType을 외부 API로부터 받거나 사용자 입력에 따라 설정
@@ -35,12 +36,11 @@ const CustomDetailModal = ({open, onClose, item, pageType, apiUrl, onDataUpdated
     renderPage(pageType);
   }, [pageType]);
 
-  useEffect(() => {
-    if (open) {
-      // 모달이 열렸을 때 추가 작업이 필요하다면 여기에 추가
-      console.log("모달이 열렸습니다.");
-    }
-  }, [open]);  // open 값이 변경될 때마다 실행 
+  // useEffect(() => {
+  //   if (open) {
+  //     console.log("모달이 열렸습니다.");
+  //   }
+  // }, [open]);  // open 값이 변경될 때마다 실행 
 
   const renderPage = () => {
     switch (pageType) {

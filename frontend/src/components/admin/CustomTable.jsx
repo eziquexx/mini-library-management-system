@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CustomPagination from "./CustomPagination";
+import AdminUserTable from "../../pages/admin/users/AdminUserTable";
 
-const CustomTable = ({apiUrl, sendData, onRowClick, shouldReload, onReloadComplete}) => {
+const CustomTable = ({apiUrl, type, sendData, onRowClick, shouldReload, onReloadComplete}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
@@ -11,15 +12,30 @@ const CustomTable = ({apiUrl, sendData, onRowClick, shouldReload, onReloadComple
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
+  useEffect(() => {
+    tableTypeRenderPage(type);
+  }, [type]);
+
+  const tableTypeRenderPage = () => {
+    switch (type) {
+      case "users":
+        return <AdminUserTable onRowClick={onRowClick} postList={posts} />;
+      default:
+        return <div>Loading...</div>;
+    }
+  };
+
   const fetchPost = async (page, size) => {
     setLoading(true);
     setError(null);
+    console.log("loading: ", loading);
+    console.log("error: ", error);
 
     try {
       let response;
 
       response = await axios.get(
-        `${apiUrl}/users`,
+        `${apiUrl}/${type}`,
         {
           params: {
             page: page,
@@ -65,61 +81,7 @@ const CustomTable = ({apiUrl, sendData, onRowClick, shouldReload, onReloadComple
     });
   }, [page, size, totalElements, shouldReload]);
 
-  let content;
-  if (!loading && !error) {
-    if (posts && posts.length > 0) {
-      content = (
-        <tbody>
-          {posts.map((post) => (
-            <tr 
-              key={post.id} 
-              className="border-b-1 border-gray-300 hover:bg-gray-200 cursor-pointer" 
-              onClick={() => onRowClick(post.id)}
-            >
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.id ? post.id : '-'}</div>
-              </td>
-              <td className="w-3/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.username ? post.username : '-'}</div>
-              </td>
-              <td className="w-2/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.email ? post.email : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar">{post.role ? post.role : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar text-center">{post.joinDate ? post.joinDate.split('T').join(' / ') : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar text-center">{post.lastLoginDate ? post.lastLoginDate.split('T').join(' / ') : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar text-center">{post.updatedAt ? post.updatedAt.split('T').join(' / ') : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar text-center">{post.inactiveAt ? post.inactiveAt.split('T').join(' / ') : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar text-center">{post.deletedAt ? post.deletedAt.split('T').join(' / ') : '-'}</div>
-              </td>
-              <td className="w-1/22 px-2 py-4 mx-[2px] overflow-hidden">
-                <div className="custom-scrollbar text-center">{post.status ? post.status : '-'}</div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      );
-    }
-  } else {
-    content = (
-      <tbody>
-        <tr>
-          <td>등록된 게시물이 없습니다.</td>
-        </tr>
-      </tbody>
-    )
-  }
+  
 
   return (
     <div className="flex flex-col justify-center">
@@ -127,42 +89,8 @@ const CustomTable = ({apiUrl, sendData, onRowClick, shouldReload, onReloadComple
           table-fixed border-collapse
           text-xs w-full h-full min-w-[1400px] "
         >
-        <thead className="w-full">
-          <tr className="w-full">
-            <th className="w-1/22">
-              <div className="bg-[#f2f3f7] py-2.5 mr-[2px]">id</div>
-            </th>
-            <th className="w-3/22">
-              <div className="bg-[#f2f3f7] p-2.5 mx-[2px]">username</div>
-            </th>
-            <th className="w-4/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px] ">email</div>
-            </th>
-            <th className="w-2/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">role</div>
-            </th>
-            <th className="w-3/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">join_date</div>
-            </th>
-            <th className="w-3/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">last_login_date</div>
-            </th>
-            <th className="w-3/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">updated_at</div>
-            </th>
-            <th className="w-3/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">inactive_at</div>
-            </th>
-            <th className="w-3/22">
-              <div className="bg-[#f2f3f7] py-2.5 mx-[2px]">deleted_at</div>
-            </th>
-            <th className="w-2/22">
-              <div className="bg-[#f2f3f7] py-2.5 ml-[2px]">status</div>
-            </th>
-          </tr>
-        </thead>
-        {/* tbody 부분 */}
-        { content }        
+        {/* thead, tbody 부분 */}
+        { tableTypeRenderPage() }
       </table>
 
       <div className="flex relative mt-4 h-10">

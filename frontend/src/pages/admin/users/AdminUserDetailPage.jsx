@@ -42,7 +42,7 @@ const AdminUserDetailPage = ({item, apiUrl, onValueChange, onChangedValue, onOri
           }
         );
 
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setData(response.data.data);
 
         // 권한 role
@@ -80,6 +80,7 @@ const AdminUserDetailPage = ({item, apiUrl, onValueChange, onChangedValue, onOri
   }
 
   useEffect(() => {
+    
     // 권한 변경 감지
     if (data.role !== selectedRoleOpt) {
       setRoleChange(true); // 변경가능
@@ -100,7 +101,7 @@ const AdminUserDetailPage = ({item, apiUrl, onValueChange, onChangedValue, onOri
     } else {
       onValueChange(false);
     }
-  }, [selectedRoleOpt, selectedStatusOpt, data.role, data.status]);
+  }, [selectedRoleOpt, selectedStatusOpt, data.role, data.status, roleChange, statusChange, onChangedValue, onValueChange]);
 
   
   return (

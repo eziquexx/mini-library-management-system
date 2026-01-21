@@ -54,7 +54,7 @@ const AdminUserPage = () => {
         </div>
 
         <div className="mt-4">
-          <CustomTable apiUrl={apiUrl} sendData={handleChildData} onRowClick={handleRowClick} shouldReload={isDataUpdated} onReloadComplete={handleTableReloadComplete}/>
+          <CustomTable apiUrl={apiUrl} sendData={handleChildData} onRowClick={handleRowClick} shouldReload={isDataUpdated} onReloadComplete={handleTableReloadComplete} type="users" />
         </div>
       </div>
       
