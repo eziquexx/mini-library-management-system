@@ -11,6 +11,7 @@ import NoticeDetailPage from './pages/users/NoticeDetailPage'
 import BookDetailPage from './pages/users/BookDetailPage'
 import BookListPage from './pages/users/BookListPage'
 import MyPage from './pages/users/MyPage'
+import AdminRoute from './components/admin/AdminRoute'
 import AdminPage from './components/admin/Adminpage'
 import AdminDashboardPage from './pages/admin/dashboard/AdminDashboardPage'
 import AdminUserPage from './pages/admin/users/AdminUserPage'
@@ -19,7 +20,6 @@ import AdminLoanPage from './pages/admin/loan/AdminLoanPage'
 import AdminReviewPage from './pages/admin/review/AdminReviewPage'
 import AdminNoticePage from './pages/admin/notice/AdminNoticePage'
 import AdminLoginPage from './pages/admin/auth/AdminLoginPage'
-import AdminRoute from './components/admin/AdminRoute'
 
 function App() {
 
