@@ -19,6 +19,7 @@ import AdminLoanPage from './pages/admin/loan/AdminLoanPage'
 import AdminReviewPage from './pages/admin/review/AdminReviewPage'
 import AdminNoticePage from './pages/admin/notice/AdminNoticePage'
 import AdminLoginPage from './pages/admin/auth/AdminLoginPage'
+import AdminPage from './components/admin/AdminPage'
 
 function App() {
 
