@@ -69,7 +69,7 @@ public class AuthController {
                   .httpOnly(true)
                   .secure(false) 
                   .path("/")
-                  .maxAge(24 * 60 * 60)
+                  .maxAge(-1) // 브라우저 종료 시 삭제하도록 변경
                   .sameSite("Strict")
                   .build();
 

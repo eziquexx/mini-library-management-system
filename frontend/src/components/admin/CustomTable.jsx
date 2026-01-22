@@ -46,8 +46,8 @@ const CustomTable = ({
       // 키워드가 있으면 '/search', 없으면 기본 경로 사용
       const isSearch = searchParams?.keyword && searchParams.keyword.trim() !== "";
       const url = isSearch 
-        ? `${apiUrl}/${pageType}/search` 
-        : `${apiUrl}/${pageType}`;
+        ? `${apiUrl}/api/v1/admin/${pageType}/search` 
+        : `${apiUrl}/api/v1/admin/${pageType}`;
 
       console.log(`🚀 요청 URL: ${url}`);
 

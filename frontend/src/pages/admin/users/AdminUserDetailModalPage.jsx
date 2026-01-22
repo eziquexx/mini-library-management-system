@@ -44,7 +44,7 @@ const AdminUserDetailModalPage = ({onClose, item, apiUrl, onDataUpdated}) => {
 
       try {
         const response = await axios.get(
-          `${apiUrl}/users/${id}`,
+          `${apiUrl}/api/v1/admin/users/${id}`,
           {
             withCredentials: true,
             headers: {

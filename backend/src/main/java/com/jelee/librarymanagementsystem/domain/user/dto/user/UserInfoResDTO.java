@@ -10,12 +10,14 @@ import lombok.Getter;
 public class UserInfoResDTO {
   private String username;
   private String email;
+  private String role;
   private LocalDateTime joinDate;
   private LocalDateTime lastLoginDate;
 
   public UserInfoResDTO(User user) {
     this.username = user.getUsername();
     this.email = user.getEmail();
+    this.role = user.getRole().toString();
     this.joinDate = user.getJoinDate();
     this.lastLoginDate = user.getLastLoginDate();
   }

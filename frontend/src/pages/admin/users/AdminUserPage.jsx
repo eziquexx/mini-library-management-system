@@ -18,7 +18,7 @@ const AdminUserPage = () => {
   const [searchParams, setSearchParams] = useState({type: "USERNAME", keyword: ""});
   const [searchTrigger, setSearchTrigger] = useState(0);
 
-  const apiUrl = `http://localhost:8080/api/v1/admin`;
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleChildData = (data) => {
     setTotalElements(data);

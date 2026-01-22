@@ -24,10 +24,9 @@ const LoginPage = () => {
       );
 
       await fetchUser();
-      
+
       navigate('/');
       alert("로그인 성공");
-      console.log();
     
     } catch (error) {
       console.log('로그인 실패: ', error.response?.data || error.message);

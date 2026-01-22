@@ -11,7 +11,8 @@ const AdminLoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const apiUrl = `http://localhost:8080/api/v1`;
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!user && loading) {
@@ -32,7 +33,7 @@ const AdminLoginPage = () => {
 
     try {
       await axios.post(
-        `${apiUrl}/auth/signin`,
+        `${apiUrl}/api/v1/auth/signin`,
         { username, password },
         { withCredentials: true }
       );
