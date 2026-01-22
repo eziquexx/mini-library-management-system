@@ -3,7 +3,16 @@ import { useEffect, useState } from "react";
 import CustomPagination from "./CustomPagination";
 import AdminUserTable from "../../pages/admin/users/AdminUserTable";
 
-const CustomTable = ({apiUrl, type, sendData, onRowClick, shouldReload, onReloadComplete}) => {
+const CustomTable = ({
+  apiUrl, 
+  pageType, 
+  searchParams, 
+  searchTrigger,
+  sendData, 
+  onRowClick, 
+  shouldReload, 
+  onReloadComplete
+}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
@@ -11,13 +20,14 @@ const CustomTable = ({apiUrl, type, sendData, onRowClick, shouldReload, onReload
   const [posts, setPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  
 
   useEffect(() => {
-    tableTypeRenderPage(type);
-  }, [type]);
+    tableTypeRenderPage(pageType);
+  }, [pageType]);
 
   const tableTypeRenderPage = () => {
-    switch (type) {
+    switch (pageType) {
       case "users":
         return <AdminUserTable onRowClick={onRowClick} postList={posts} />;
       default:
@@ -25,33 +35,46 @@ const CustomTable = ({apiUrl, type, sendData, onRowClick, shouldReload, onReload
     }
   };
 
-  const fetchPost = async (page, size) => {
+  // 기본 전체 조회
+  const fetchData = async () => {
     setLoading(true);
     setError(null);
-    console.log("loading: ", loading);
-    console.log("error: ", error);
+
+    console.log(loading, error);
 
     try {
-      let response;
+      // 키워드가 있으면 '/search', 없으면 기본 경로 사용
+      const isSearch = searchParams?.keyword && searchParams.keyword.trim() !== "";
+      const url = isSearch 
+        ? `${apiUrl}/${pageType}/search` 
+        : `${apiUrl}/${pageType}`;
 
-      response = await axios.get(
-        `${apiUrl}/${type}`,
+      console.log(`🚀 요청 URL: ${url}`);
+
+      const response = await axios.get(
+        url,
         {
           params: {
             page: page,
             size: size,
+            type: searchParams?.type,
+            keyword: searchParams?.keyword,
           },
           withCredentials: true,
           headers: {
-            Aceept: "application/json",
+            Accept: "application/json",
           }
         }
       );
+
+      console.log(response);
 
       setPosts(response.data.data.content);
       setTotalPages(response.data.data.totalPages || 1);
       setTotalElements(response.data.data.totalElements || 1);
       sendTotalElements(totalElements);
+
+      sendData(response.data.data.totalElements || 0);
 
       onReloadComplete();
     } catch (error) {
@@ -73,16 +96,13 @@ const CustomTable = ({apiUrl, type, sendData, onRowClick, shouldReload, onReload
   const handlePageClick = (pageNumber) => {
     setPage(pageNumber);
   }
-  
 
   useEffect(() => {
-    fetchPost(page, size).then(() => { 
-      sendTotalElements(totalElements); // 비동기 요청 후 부모에게 데이터 전달
-    });
-  }, [page, size, totalElements, shouldReload]);
+    console.log("searchTrigger 변경 감지됨!");
+    fetchData();
+  }, [page, size, searchTrigger, shouldReload]);
 
   
-
   return (
     <div className="flex flex-col justify-center">
       <table className="

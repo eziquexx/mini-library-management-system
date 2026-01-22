@@ -8,12 +8,15 @@ import CustomDetailModal from "../../../components/admin/CustomDetailModal";
 
 const AdminUserPage = () => {
   const title = ["회원관리"];
-  const defaultOption = "사용자 ID";
-  const options = ["사용자 ID", "이메일"];
+  const defaultOption = "USERNAME";
+  const options = [{"USERNAME":"사용자 ID"}, {"EMAIL":"이메일"}];
   const [totalElements, setTotalElements] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);  // 클릭한 아이템 저장
   const [isDataUpdated, setIsDataUpdated] = useState(false); // 데이터 수정 여부
+
+  const [searchParams, setSearchParams] = useState({type: "USERNAME", keyword: ""});
+  const [searchTrigger, setSearchTrigger] = useState(0);
 
   const apiUrl = `http://localhost:8080/api/v1/admin`;
 
@@ -36,6 +39,15 @@ const AdminUserPage = () => {
   const handleTableReloadComplete = () => {
     setIsDataUpdated(false); 
   };
+
+  const handleSearchType = (value) => {
+    setSearchParams(prev => ({ ...prev, type: value }));
+  };
+
+  const handleSearchKeyword = (value) => {
+    setSearchParams(prev => ({ ...prev, keyword: value }));
+    setSearchTrigger(prev => prev + 1);
+  }
   
 
   return (
@@ -49,12 +61,27 @@ const AdminUserPage = () => {
           <span className="text-sm ml-3 text-gray-400">총 {totalElements}명</span>
         </div>
         <div className="flex flex-row mt-5.5">
-          <CustomSelect options={options} defaultOption={defaultOption} />
-          <CustomInputSearch />
+          <CustomSelect 
+            options={options} 
+            defaultOption={defaultOption} 
+            handleSearchType={handleSearchType} 
+          />
+          <CustomInputSearch 
+            handleSearchKeyword={handleSearchKeyword} 
+          />
         </div>
 
         <div className="mt-4">
-          <CustomTable apiUrl={apiUrl} sendData={handleChildData} onRowClick={handleRowClick} shouldReload={isDataUpdated} onReloadComplete={handleTableReloadComplete} type="users" />
+          <CustomTable 
+            apiUrl={apiUrl} 
+            sendData={handleChildData} 
+            onRowClick={handleRowClick} 
+            shouldReload={isDataUpdated} 
+            onReloadComplete={handleTableReloadComplete} 
+            pageType="users" 
+            searchParams={searchParams}
+            searchTrigger={searchTrigger}
+          />
         </div>
       </div>
       

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CustomInputSearch = () => {
+const CustomInputSearch = ({handleSearchKeyword}) => {
   const [keyword, setKeyword] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
@@ -22,6 +22,7 @@ const CustomInputSearch = () => {
   const search = () => {
     setIsFocused(false); // focus 해제
     console.log(keyword); // 입력한 keyword 출력 테스트
+    handleSearchKeyword(keyword); // keyword 전달
   }
 
   return (

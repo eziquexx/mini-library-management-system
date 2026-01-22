@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
 
-const CustomSelect = ({ options, defaultOption }) => {
+const CustomSelect = ({ options, defaultOption, handleSearchType }) => {
   const [selectedValue, setSelectedValue] = useState(defaultOption);
   const [isOpen, setIsOpen] = useState(false); // 드롭다운
   const dropdownRef = useRef(null); // 드롭다운 외부 클릭 감지
 
+
   // 옵션 클릭 시 선택된 값 설정
   const handleOptionClick = (value) => {
     setSelectedValue(value);
+    handleSearchType(value);
     setIsOpen(false);
   }
 
@@ -52,7 +54,7 @@ const CustomSelect = ({ options, defaultOption }) => {
           className="selected-option flex flex-row w-full h-full pl-3 bg-white rounded-md "
           onClick={toggleDropdown}
         >
-          <span className="justify-self-center self-center">{selectedValue}</span>
+          <span className="justify-self-center self-center">{options.find(item => Object.keys(item)[0] === selectedValue)?.[selectedValue] ?? defaultOption}</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="ml-auto mr-3 h-full size-3">
             <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
           </svg>
@@ -61,13 +63,15 @@ const CustomSelect = ({ options, defaultOption }) => {
         {/* 드롭다운 옵션들 */}
         {isOpen && (
           <ul className="options border border-gray-300 rounded-md bg-white overflow-hidden">
-            {options.map((option, index) => (
-              <li 
+            {options.map((option, index) => {
+              const key = Object.keys(option)[0];
+              const value = Object.values(option)[0]; 
+              return <li 
                 key={index}
                 className="option p-2 py-2.5 hover:bg-teal-600 hover:text-white"
-                onClick={() => handleOptionClick(option)}
-              >{option}</li>
-            ))}
+                onClick={() => handleOptionClick(key)}
+              >{value}</li>
+            })}
           </ul>
         )}
       </div>
